@@ -1,0 +1,3 @@
+Tải lên đây file tồn kho, đặt tên có ngày: TỒN KHO dd.mm.xlsx (vd TỒN KHO 30.09.xlsx)
+Ngày trong tên file = ngày của báo cáo.
+Nên xóa file ngày cũ sau khi tải file mới (báo cáo cũ vẫn giữ trong lich_su).

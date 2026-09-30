@@ -1,0 +1,5 @@
+cong_cu/_tmp/
+cong_cu/*.pkl
+cong_cu/kho/*.pkl
+__pycache__/
+~$*

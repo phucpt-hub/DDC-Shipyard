@@ -1,0 +1,2 @@
+File cấu hình MAP_VA_QUY_TAC.xlsx: map công trình Cutting sang dự án kho.
+Sửa ô nền vàng khi có dự án mới rồi tải lên đè.

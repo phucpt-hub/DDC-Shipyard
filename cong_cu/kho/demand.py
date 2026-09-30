@@ -1,0 +1,10 @@
+exec(open('load.py').read())
+L1=lct(); L1['src']='List Chi Tiết'; L2=lct('2-List Chi Tiết'); L2['src']='2-List Chi Tiết'
+C=pd.concat([L1,L2]); C['xrow']=C.index+2; C=C[C.lsx.notna()].copy()
+exec(open('clean.py').read())
+C,_FIXC=lam_sach(C)
+C['cut']=C.d_cut.notna()
+m=C.qc_vt.astype(str).str.extract(r'^PL\s*([\d.]+)\s*[xX]\s*(\d+)\s*[xX]\s*(\d+)')
+C['pt']=pd.to_numeric(m[0]); C['pw']=pd.to_numeric(m[1]); C['pl']=pd.to_numeric(m[2])
+C['is_pl']=C.pt.notna()
+C['nguon']=np.where(C.g_nk.notna(),'Nguyên khổ',np.where(C.g_td.notna(),'Tận dụng','(trống)'))

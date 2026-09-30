@@ -1,0 +1,23 @@
+exec(open('analyze.py').read())
+issues=[]  # (code, row-level df)
+def add(code, mask, note):
+    sub=V[mask].copy(); sub['ma_loi']=code; sub['mo_ta']=note; issues.append(sub)
+add('E01', V.d_bg.notna()&V.d_cut.isna(), 'Có ngày BÀN GIAO nhưng chưa có ngày CUTTING')
+add('E02', V.d_bg_dt.notna()&V.d_cut_dt.notna()&(V.d_bg_dt<V.d_cut_dt), 'Ngày BÀN GIAO sớm hơn ngày CUTTING')
+fut=pd.Series(False,index=V.index)
+for c in ['d_cut','d_khoan','d_chan','d_vat','d_bg']: fut|=V[c+'_dt']>TODAY
+add('E03', fut, 'Ngày công đoạn nằm ở TƯƠNG LAI (> '+TODAY.strftime('%d/%m/%Y')+') – nghi gõ sai')
+txt=pd.Series(False,index=V.index)
+for c in ['d_khoan','d_chan','d_vat','d_bg']: txt|=V[c].notna()&V[c+'_dt'].isna()
+add('E04', txt, 'Ô ngày công đoạn chứa TEXT (vd "K", "Anh Quỳnh", "16/06/2026 (Quỳnh)") – không cộng được vào báo cáo')
+for st,lab in [('khoan','KHOAN'),('chan','CHẤN-LỐC'),('vat','VÁT MÉP')]:
+    add('E05', V['d_'+st].notna()&V['x_'+st].isna(), f'Có ngày {lab} nhưng KHÔNG đánh dấu "x" ở cột công việc {lab} → LỆNH SX bỏ qua, BCSL theo ngày vẫn cộng')
+r=(V.kl_ct*V.qty-V.kl_tong).abs()/V.kl_tong.replace(0,np.nan)
+add('E06', r>0.01, 'KL TỔNG ≠ QTY × KL CHI TIẾT (lệch >1%)')
+add('E07', V.d_cut.notna()&V.may.isna(), 'Đã cắt nhưng trống MÁY CẮT')
+add('E08', V.nhom.isna(), 'Trống cột phân loại thép (không tick NGUYÊN KHỔ / TẬN DỤNG)')
+add('E09', V.g_nk.notna()&V.g_td.notna(), 'Tick cả NGUYÊN KHỔ và TẬN DỤNG')
+dup=V.duplicated(['lsx','ten_ct','nesting','qty','kl_tong','qc_vt','may'],keep=False)
+add('E10', dup, 'Dòng trùng hoàn toàn (LSX + tên CT + nesting + qty + KL + máy) – cần xác nhận có phải cắt 2 lần/2 máy')
+add('E11', V.chk_date.isna()|V.chk_kl.isna(), 'Thiếu công thức kiểm tra (cột AH/AI/AM)')
+X=pd.concat(issues)

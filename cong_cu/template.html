@@ -1,0 +1,517 @@
+<title>Chuỗi Thép Sơ Chế Vũng Tàu</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: dark-red vertical rail (views + project list) | work area with red header band, KPI strip, chart grid, detail tables.
+   Red = brand chrome and key figures. Data marks: slate (done) / light (remaining); semantic green/amber/red only for sufficiency and status. */
+:root{
+  --bg:#f4f2f1; --panel:#ffffff; --ink:#1f1a1a; --muted:#6b6262; --line:#e2dcdb; --soft:#efeae9;
+  --brand:#b3261e; --brand-d:#7a1712; --brand-dd:#5a100c; --brand-soft:#fbe9e7; --on-brand:#ffffff; --rail-ink:#f6dcd9;
+  --d1:#3b4a54; --d2:#9fb0ba; --d3:#c9d3d9;
+  --good:#2e7d4f; --warn:#c07a12; --bad:#d32f2f; --neutral:#a59c9b;
+  --good-bg:#e6f3ea; --warn-bg:#fbf0dc; --bad-bg:#fde4e1;
+  --f-disp:"IBM Plex Sans Condensed","Arial Narrow",Arial,sans-serif;
+  --f-body:"IBM Plex Sans",Arial,sans-serif;
+  --f-mono:"IBM Plex Mono",Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#151112; --panel:#1f1a1b; --ink:#efe8e7; --muted:#a89b9a; --line:#352d2e; --soft:#29221f;
+  --brand:#e5534b; --brand-d:#5c1511; --brand-dd:#420e0b; --brand-soft:#3a1a18; --on-brand:#ffffff; --rail-ink:#f2cfcb;
+  --d1:#a9bcc8; --d2:#5d707c; --d3:#3b4850;
+  --good:#5fb783; --warn:#e0a84a; --bad:#ff6b5e; --neutral:#6e6363;
+  --good-bg:#1c3226; --warn-bg:#3a2e17; --bad-bg:#40201d; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#151112; --panel:#1f1a1b; --ink:#efe8e7; --muted:#a89b9a; --line:#352d2e; --soft:#29221f;
+  --brand:#e5534b; --brand-d:#5c1511; --brand-dd:#420e0b; --brand-soft:#3a1a18; --on-brand:#ffffff; --rail-ink:#f2cfcb;
+  --d1:#a9bcc8; --d2:#5d707c; --d3:#3b4850;
+  --good:#5fb783; --warn:#e0a84a; --bad:#ff6b5e; --neutral:#6e6363;
+  --good-bg:#1c3226; --warn-bg:#3a2e17; --bad-bg:#40201d; color-scheme:dark}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font:14px/1.5 var(--f-body);margin:0}
+h1,h2,h3{font-family:var(--f-disp);margin:0;text-wrap:balance;letter-spacing:.01em}
+h2{font-size:19px;font-weight:600}
+h3{font-size:12.5px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}
+.num,td.n{font-variant-numeric:tabular-nums;font-family:var(--f-mono)}
+a{color:var(--brand)}
+:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+
+/* ---------- app shell ---------- */
+.app{display:grid;grid-template-columns:264px minmax(0,1fr);min-height:100%}
+.rail{background:linear-gradient(180deg,var(--brand-d),var(--brand-dd));color:var(--rail-ink);position:sticky;top:0;height:100vh;overflow-y:auto;display:flex;flex-direction:column;gap:14px;padding:18px 12px 24px}
+.logo{padding:2px 8px 12px;border-bottom:1px solid rgba(255,255,255,.14)}
+.logo b{display:block;font:700 19px/1.2 var(--f-disp);color:var(--on-brand);letter-spacing:.02em}
+.logo span{font-size:12px;opacity:.85}
+.rail h4{margin:4px 8px 2px;font:600 11px var(--f-disp);letter-spacing:.12em;text-transform:uppercase;opacity:.7}
+.nav{display:flex;flex-direction:column;gap:2px}
+.nav button{all:unset;cursor:pointer;display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:7px;color:var(--rail-ink);font-weight:500;font-size:14px}
+.nav button svg{width:18px;height:18px;flex:none;stroke:currentColor;fill:none;stroke-width:1.8}
+.nav button:hover{background:rgba(255,255,255,.08)}
+.nav button[aria-current=true]{background:var(--on-brand);color:var(--brand-d);font-weight:600}
+.nav button .cnt{margin-left:auto;font:11px var(--f-mono);background:rgba(255,255,255,.16);padding:1px 7px;border-radius:9px}
+.nav button[aria-current=true] .cnt{background:var(--brand-soft);color:var(--brand)}
+.plist{display:flex;flex-direction:column;gap:1px}
+.plist button{all:unset;cursor:pointer;display:grid;grid-template-columns:8px minmax(0,1fr) auto;gap:4px 8px;align-items:center;padding:7px 10px;border-radius:7px;color:var(--rail-ink);font-size:13px}
+.plist button:hover{background:rgba(255,255,255,.08)}
+.plist button[aria-current=true]{background:var(--on-brand);color:var(--brand-d)}
+.plist .dot{width:8px;height:8px;border-radius:50%}
+.plist .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.plist .pc{font:11px var(--f-mono);opacity:.85}
+.plist .bar{grid-column:2/4;height:3px;background:rgba(255,255,255,.18);border-radius:2px;overflow:hidden}
+.plist .bar i{display:block;height:100%;background:var(--on-brand)}
+.plist button[aria-current=true] .bar{background:var(--brand-soft)} .plist button[aria-current=true] .bar i{background:var(--brand)}
+.dot-good{background:#7ddc9e}.dot-warn{background:#ffc862}.dot-bad{background:#ff8a80}
+.rail .foot{margin-top:auto;font-size:11.5px;opacity:.75;padding:0 8px}
+.rail .foot a{color:var(--on-brand)}
+.menu-btn{display:none}
+
+.main{min-width:0}
+.band{background:var(--panel);border-bottom:3px solid var(--brand);position:sticky;top:0;z-index:10}
+.band .in{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;justify-content:space-between;padding:12px 24px}
+.band h1{font-size:22px;font-weight:700}
+.band h1 small{display:block;font:500 12.5px var(--f-body);color:var(--muted)}
+.crumb{font:600 11.5px var(--f-disp);letter-spacing:.1em;text-transform:uppercase;color:var(--brand)}
+.band .right{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.chip-date{background:var(--brand);color:var(--on-brand);font:600 12.5px var(--f-mono);padding:5px 10px;border-radius:6px}
+.content{padding:4px 24px 48px;max-width:1400px}
+section{margin-top:22px}
+.sec-h{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:10px;border-left:4px solid var(--brand);padding-left:10px}
+.sec-h p{margin:0;color:var(--muted);font-size:12.5px}
+select,button.b,input[type=search]{font:inherit;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:7px 10px}
+button.b{cursor:pointer}
+
+/* ---------- blocks ---------- */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
+.kpi{background:var(--panel);border:1px solid var(--line);border-top:3px solid var(--brand);border-radius:8px;padding:12px 14px;min-width:0}
+.kpi .l{font-size:12px;color:var(--muted)}
+.kpi .v{font:700 26px/1.2 var(--f-disp);font-variant-numeric:tabular-nums;margin-top:2px;color:var(--brand)}
+.kpi .v small{font-size:13px;font-weight:500;color:var(--muted);margin-left:3px}
+.kpi .s{font-size:12px;color:var(--muted)}
+.kpi .m{height:5px;background:var(--soft);border-radius:3px;margin-top:8px;overflow:hidden}
+.kpi .m i{display:block;height:100%;background:var(--brand)}
+.kpi.good{border-top-color:var(--good)} .kpi.good .v{color:var(--good)}
+.kpi.bad{border-top-color:var(--bad)} .kpi.bad .v{color:var(--bad)}
+.kpi.dim{border-top-color:var(--d1)} .kpi.dim .v{color:var(--ink)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,480px),1fr));gap:16px}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:16px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px 16px;min-width:0}
+.card h3{margin-bottom:10px}
+.note{font-size:12px;color:var(--muted);margin:8px 0 0}
+.chain{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border:1px solid var(--line);border-radius:8px;background:var(--panel);overflow:hidden}
+.step{padding:14px 16px;position:relative;min-width:0;border-right:1px solid var(--line)}
+.step:last-child{border-right:0}
+.step:not(:last-child)::after{content:"";position:absolute;right:-8px;top:50%;width:14px;height:14px;background:var(--panel);border-top:1px solid var(--line);border-right:1px solid var(--line);transform:translateY(-50%) rotate(45deg);z-index:1}
+.step .t{font:600 12px var(--f-disp);letter-spacing:.1em;text-transform:uppercase;color:var(--brand)}
+.step .v{font:700 23px/1.25 var(--f-disp);font-variant-numeric:tabular-nums}
+.step .d{font-size:12px;color:var(--muted)} .step .d b{color:var(--ink);font-weight:600}
+.hb{display:grid;grid-template-columns:minmax(90px,180px) minmax(0,1fr) auto;gap:6px 10px;align-items:center;font-size:13px}
+.hb .lab{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hb .lab.click{cursor:pointer;color:var(--brand);font-weight:500}
+.hb .lab.click:hover{text-decoration:underline}
+.track{height:16px;background:var(--soft);border-radius:3px;display:flex;overflow:hidden;min-width:0}
+.track i{display:block;height:100%}
+.hb .val{font:12px var(--f-mono);font-variant-numeric:tabular-nums;color:var(--muted);text-align:right;white-space:nowrap}
+.legend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:12px;color:var(--muted);margin-bottom:8px}
+.legend span{display:inline-flex;align-items:center;gap:5px}
+.legend i{width:10px;height:10px;border-radius:2px;display:inline-block}
+.c-cut{background:var(--d1)} .c-rem{background:var(--soft);box-shadow:inset 0 0 0 1px var(--line)} .c-bg{background:var(--d2)}
+.c-own{background:var(--good)} .c-com{background:var(--warn)} .c-buy{background:var(--bad)} .c-neu{background:var(--neutral)} .c-br{background:var(--brand)}
+svg text{fill:var(--muted);font:11px var(--f-mono)}
+svg .grid-l{stroke:var(--line);stroke-width:1} svg .axis{stroke:var(--muted);stroke-width:1}
+.tbl-wrap{overflow:auto;border:1px solid var(--line);border-radius:8px;background:var(--panel);max-height:560px}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{padding:7px 10px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+th{font:600 12px var(--f-disp);letter-spacing:.03em;color:var(--on-brand);background:var(--brand-d);position:sticky;top:0;cursor:pointer;user-select:none;z-index:1}
+th.n,td.n{text-align:right}
+tbody tr:nth-child(even){background:color-mix(in srgb,var(--soft) 45%,transparent)}
+tbody tr:hover{background:var(--brand-soft)}
+tr.click{cursor:pointer}
+td.wrapc{white-space:normal;min-width:220px}
+tfoot td{font-weight:600;background:var(--soft)}
+.mini{display:inline-block;width:64px;height:6px;background:var(--soft);border-radius:3px;vertical-align:middle;margin-left:6px;overflow:hidden}
+.mini i{display:block;height:100%;background:var(--d1)}
+.pill{display:inline-block;padding:1px 8px;border-radius:10px;font-size:11.5px;font-weight:600;white-space:nowrap}
+.p-good{background:var(--good-bg);color:var(--good)} .p-warn{background:var(--warn-bg);color:var(--warn)} .p-bad{background:var(--bad-bg);color:var(--bad)} .p-neu{background:var(--soft);color:var(--muted)}
+.alerts{display:flex;flex-direction:column;gap:6px;margin:0;padding:0;list-style:none}
+.alerts li{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px;align-items:center;background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--warn);border-radius:6px;padding:8px 12px;font-size:13px}
+.alerts li.bad{border-left-color:var(--bad)}
+.alerts li a{cursor:pointer;font-weight:600}
+.pcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
+.pcard{all:unset;cursor:pointer;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px 14px;display:grid;grid-template-columns:62px minmax(0,1fr);gap:4px 12px;align-items:center;min-width:0}
+.pcard:hover{border-color:var(--brand);box-shadow:0 2px 10px color-mix(in srgb,var(--brand) 18%,transparent)}
+.pcard .nm{font:600 15px/1.25 var(--f-disp);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pcard .meta{font-size:12px;color:var(--muted)}
+.pcard .row{grid-column:1/3;display:flex;justify-content:space-between;gap:6px;flex-wrap:wrap;font-size:12px;border-top:1px dashed var(--line);padding-top:6px;margin-top:4px}
+.ring text{font:700 13px var(--f-disp);fill:var(--ink)}
+.stage{display:grid;grid-template-columns:100px minmax(0,1fr) auto;gap:10px;align-items:center;font-size:13px;margin:6px 0}
+.stage .track{height:12px}
+.stage>span:last-child{white-space:nowrap;font-size:12px}
+.filters{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:8px}
+.chip{border:1px solid var(--line);background:var(--panel);border-radius:14px;padding:3px 10px;font-size:12px;cursor:pointer;color:var(--ink)}
+.chip[aria-pressed=true]{background:var(--brand);border-color:var(--brand);color:var(--on-brand)}
+.empty{color:var(--muted);font-size:13px;padding:10px 0}
+.flow{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.flow .col{display:flex;flex-direction:column;gap:4px}
+.flow .blk{display:flex;justify-content:space-between;gap:8px;padding:6px 10px;border-radius:4px;font-size:12.5px;color:#fff;min-height:28px;align-items:center}
+.flow .blk span:last-child{font-family:var(--f-mono)}
+.heat td.h{text-align:right;font-family:var(--f-mono)}
+.src-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:12px}
+.src-list .card p{margin:4px 0;font-size:13px}
+code{font-family:var(--f-mono);font-size:12px;background:var(--soft);padding:1px 5px;border-radius:3px}
+#tip{position:fixed;pointer-events:none;background:var(--ink);color:var(--bg);font-size:12px;padding:6px 9px;border-radius:5px;max-width:300px;z-index:50;display:none;white-space:pre-line}
+
+@media (max-width:900px){
+  .app{grid-template-columns:1fr}
+  .rail{position:relative;height:auto;padding:12px 16px;gap:10px}
+  .menu-btn{display:inline-flex;all:unset;cursor:pointer;position:absolute;right:16px;top:14px;border:1px solid rgba(255,255,255,.4);border-radius:6px;padding:4px 10px;color:var(--on-brand);font-size:13px}
+  .rail:not(.open) .collapse{display:none}
+  .band{position:relative}
+  .band .in,.content{padding-inline:16px}
+  .chain{grid-template-columns:1fr 1fr}.step:nth-child(2){border-right:0}.step:nth-child(-n+2){border-bottom:1px solid var(--line)}.step::after{display:none}
+}
+@media (max-width:600px){.hb{grid-template-columns:minmax(70px,110px) minmax(0,1fr) auto}.stage{grid-template-columns:80px minmax(0,1fr) 110px}.flow{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:no-preference){.track i,.kpi .m i{transition:width .3s}}
+</style>
+
+<div class="app">
+  <aside class="rail" id="rail">
+    <div class="logo"><b>CHUỖI THÉP · SC VŨNG TÀU</b><span>Kho → Nesting → Cutting → Bàn giao</span></div>
+    <button class="menu-btn" id="menu" aria-expanded="false">Menu</button>
+    <div class="collapse" style="display:flex;flex-direction:column;gap:14px">
+      <div><h4>Chức năng</h4><nav class="nav" id="nav"></nav></div>
+      <div><h4>Dự án</h4><div class="plist" id="plist"></div></div>
+      <div class="foot"><span id="asof"></span><br><a href="lich_su/">Báo cáo các ngày trước</a></div>
+    </div>
+  </aside>
+  <div class="main">
+    <header class="band"><div class="in">
+      <div><div class="crumb" id="crumb">Tổng quan</div><h1 id="title">Toàn bộ dự án</h1></div>
+      <div class="right"><span class="chip-date" id="dchip"></span></div>
+    </div></header>
+    <main class="content" id="view"></main>
+  </div>
+</div>
+<div id="tip"></div>
+
+<script>
+const D=/*DATA*/null;
+const P=D.projects;
+const TODAY=new Date(D.date+'T00:00:00');
+const nf1=new Intl.NumberFormat('vi-VN',{maximumFractionDigits:1,minimumFractionDigits:1});
+const nf0=new Intl.NumberFormat('vi-VN',{maximumFractionDigits:0});
+const T=v=>v==null?'–':nf1.format(v), T0=v=>v==null?'–':nf0.format(v);
+const PC=v=>v==null?'–':nf1.format(v*100)+'%';
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const $=id=>document.getElementById(id);
+const MLAB=D.months.map(m=>{const[y,mm]=m.split('-');return 'T'+(+mm)+'/'+y.slice(2)});
+const sum=(a,f)=>a.reduce((s,x)=>s+(f(x)||0),0);
+const days=d=>d?Math.round((TODAY-new Date(d+'T00:00:00'))/864e5):null;
+
+/* ---------- derived ---------- */
+function health(p){
+  const bad=p.alerts.some(a=>a.s==='bad');
+  if((p.pc??1)>=0.999&&!bad) return {c:'good',t:'Đã cắt xong'};
+  if(bad) return {c:'bad',t:'Rủi ro thép/LSX'};
+  if(p.alerts.length) return {c:'warn',t:'Theo dõi'};
+  return {c:'good',t:'Đúng tiến độ'};
+}
+const buyOf=p=>{if(p.nes){const nb=p.nes.alloc.find(a=>a.k==='Phải mua');return nb?nb.t:0}return p.kho?p.kho.buy:null};
+const openLsx=[]; P.forEach(p=>p.lsx.forEach(l=>{if((l.pc??0)<0.999&&l.kl>0){openLsx.push({...l,p,age:days(l.bh),rem:l.kl*(1-(l.pc||0))})}}));
+const BUCK=[['≤ 7 ngày',0,7],['8–14 ngày',8,14],['15–30 ngày',15,30],['31–60 ngày',31,60],['> 60 ngày',61,1e9]];
+const bucketOf=a=>a==null?null:BUCK.findIndex(b=>a>=b[1]&&a<=b[2]);
+const kprojs=(()=>{const seen=new Set();return P.filter(p=>p.kho&&!seen.has(p.kho.name)&&seen.add(p.kho.name))})();
+
+/* ---------- chart helpers ---------- */
+function hbars(rows,max,{click}={}){
+  return `<div class="hb">${rows.map(r=>{
+    const segs=r.segs.map(s=>{const w=max?Math.max(0,s.v)/max*100:0;return w>0?`<i class="${s.c}" style="width:${w}%" data-tip="${esc(r.label)}\n${esc(s.n)}: ${s.fmt?s.fmt(s.v):T(s.v)+' t'}"></i>`:''}).join('');
+    return `<div class="lab${click&&r.id?' click':''}" ${click&&r.id?`data-go="${esc(r.id)}" role="button" tabindex="0"`:''} title="${esc(r.label)}">${esc(r.label)}</div><div class="track">${segs}</div><div class="val">${r.right??''}</div>`}).join('')}</div>`;
+}
+function nice(max){if(max<=0)return[1,[0,1]];const p=Math.pow(10,Math.floor(Math.log10(max)));const st=[1,2,2.5,5,10].map(k=>k*p).find(s=>max/s<=5);const top=Math.ceil(max/st)*st;const t=[];for(let v=0;v<=top+1e-9;v+=st)t.push(v);return[top,t]}
+function cols(series,labels,{h=230,line=null}={}){
+  const W=680,L=48,R=line?52:8,Tp=12,B=26,n=labels.length,gw=(W-L-R)/n,k=series.length,bw=Math.min(22,(gw-8)/k);
+  const mx=Math.max(0,...series.flatMap(s=>s.v));const[top,ticks]=nice(mx);const y=v=>Tp+(h-Tp-B)*(1-v/top);
+  let g=ticks.map(t=>`<line class="grid-l" x1="${L}" x2="${W-R}" y1="${y(t)}" y2="${y(t)}"/><text x="${L-6}" y="${y(t)+4}" text-anchor="end">${T0(t)}</text>`).join('');
+  labels.forEach((lb,i)=>{const x0=L+i*gw+(gw-bw*k)/2;
+    series.forEach((s,j)=>{const v=s.v[i]||0;const yy=y(v);g+=`<rect x="${x0+j*bw}" y="${yy}" width="${bw-2}" height="${Math.max(0,h-B-yy)}" rx="1.5" style="fill:var(${s.col})" data-tip="${lb}\n${s.n}: ${T(v)} t"></rect>`});
+    g+=`<text x="${L+i*gw+gw/2}" y="${h-8}" text-anchor="middle">${lb}</text>`});
+  if(line){const lm=Math.max(...line.v)||1;const[lt,lticks]=nice(lm);const yl=v=>Tp+(h-Tp-B)*(1-v/lt);
+    const pts=line.v.map((v,i)=>`${L+i*gw+gw/2},${yl(v)}`).join(' ');
+    g+=`<polyline points="${pts}" fill="none" style="stroke:var(${line.col})" stroke-width="2.2"/>`+line.v.map((v,i)=>`<circle cx="${L+i*gw+gw/2}" cy="${yl(v)}" r="${i===line.v.length-1?4:2.6}" style="fill:var(${line.col})" data-tip="${labels[i]}\n${line.n}: ${T(v)} t"/>`).join('')
+      +lticks.map(t=>`<text x="${W-R+6}" y="${yl(t)+4}">${T0(t)}</text>`).join('');}
+  g+=`<line class="axis" x1="${L}" x2="${W-R}" y1="${h-B}" y2="${h-B}"/>`;
+  const leg=series.map(s=>`<span><i style="background:var(${s.col})"></i>${s.n}</span>`).join('')+(line?`<span><i style="background:var(${line.col});height:3px"></i>${line.n} (trục phải)</span>`:'');
+  return `<div class="legend">${leg}</div><svg viewBox="0 0 ${W} ${h}" width="100%" role="img" aria-label="Biểu đồ theo tháng">${g}</svg>`;
+}
+function ring(v,size=58,col='--brand'){const r=size/2-6,c=2*Math.PI*r,f=Math.max(0,Math.min(1,v||0));
+  return `<svg class="ring" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" role="img" aria-label="${PC(v)}"><circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" style="stroke:var(--soft)" stroke-width="7"/><circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" style="stroke:var(${col})" stroke-width="7" stroke-linecap="round" stroke-dasharray="${c*f} ${c}" transform="rotate(-90 ${size/2} ${size/2})"/><text x="50%" y="54%" text-anchor="middle" dominant-baseline="middle">${v==null?'–':Math.round(f*100)+'%'}</text></svg>`}
+function seg100(parts){const tot=parts.reduce((a,b)=>a+b.v,0)||1;
+  return `<div class="track" style="height:22px">${parts.map(p=>p.v>0?`<i class="${p.c}" style="width:${p.v/tot*100}%" data-tip="${esc(p.n)}: ${p.fmt?p.fmt(p.v):T(p.v)} (${PC(p.v/tot)})"></i>`:'').join('')}</div>
+  <div class="legend" style="margin-top:6px">${parts.map(p=>`<span><i class="${p.c}"></i>${esc(p.n)}: <b class="num" style="color:var(--ink)">${p.fmt?p.fmt(p.v):T(p.v)}</b></span>`).join('')}</div>`}
+function kpi(l,v,u,s,cls='',bar=null){return `<div class="kpi ${cls}"><div class="l">${l}</div><div class="v">${v}${u?`<small>${u}</small>`:''}</div>${s?`<div class="s">${s}</div>`:''}${bar!=null?`<div class="m"><i style="width:${Math.min(100,bar*100)}%"></i></div>`:''}</div>`}
+function table(id,cols,rows,{click,foot}={}){
+  return `<div class="tbl-wrap"><table id="${id}"><thead><tr>${cols.map((c,i)=>`<th class="${c.n?'n':''}" data-i="${i}" title="Bấm để sắp xếp">${c.h}</th>`).join('')}</tr></thead><tbody>${
+    rows.map(r=>`<tr ${click&&r._id?`class="click" data-go="${esc(r._id)}"`:''}>${cols.map(c=>`<td class="${c.n?'n':''} ${c.w?'wrapc':''}" data-s="${esc(c.s?c.s(r):'')}">${c.f(r)}</td>`).join('')}</tr>`).join('')}</tbody>${foot?`<tfoot><tr>${foot.map((f,i)=>`<td class="${cols[i]&&cols[i].n?'n':''}">${f}</td>`).join('')}</tr></tfoot>`:''}</table></div>`}
+function sortable(root){root.querySelectorAll('th').forEach(th=>th.addEventListener('click',()=>{
+  const tb=th.closest('table').tBodies[0],i=+th.dataset.i,asc=th.dataset.o!=='a';th.dataset.o=asc?'a':'d';
+  [...tb.rows].sort((a,b)=>{const x=a.cells[i].dataset.s,y=b.cells[i].dataset.s;const nx=parseFloat(x),ny=parseFloat(y);
+    const r=(!isNaN(nx)&&!isNaN(ny))?nx-ny:x.localeCompare(y,'vi');return asc?r:-r}).forEach(r=>tb.appendChild(r))}))}
+const pill=(c,t)=>`<span class="pill p-${c}">${esc(t)}</span>`;
+const stPill=s=>pill(s==='Đã cắt xong'||s==='Đã cắt hết'?'good':s==='Đang cắt'||s==='Cắt dở'?'warn':s==='Chưa nạp Cutting'?'bad':'neu',s);
+const ageCell=a=>a==null?'–':`<span style="color:${a>30?'var(--bad)':a>14?'var(--warn)':'var(--ink)'};font-weight:${a>30?600:400}">${a} ngày</span>`;
+const secH=(t,p)=>`<div class="sec-h"><h2>${t}</h2>${p?`<p>${p}</p>`:''}</div>`;
+
+/* ---------- views ---------- */
+const V={};
+V.ov={name:'Tổng quan',title:'Toàn bộ dự án',ico:'<path d="M3 13h8V3H3zM13 21h8V11h-8zM3 21h8v-6H3zM13 3v6h8V3z"/>',render(){
+  const t=D.tot,b=D.bal,k=D.kho,remain=t.req-t.cut;
+  const alerts=P.flatMap(p=>p.alerts.map(a=>({...a,p}))).sort((a,b)=>(a.s==='bad'?0:1)-(b.s==='bad'?0:1));
+  const act=P.filter(p=>(p.pc??1)<0.999);
+  const nesBuy=sum(P,p=>p.nes?(p.nes.alloc.find(x=>x.k==='Phải mua')||{t:0}).t:0);
+  const open=openLsx.length, old=openLsx.filter(l=>l.age>30).length;
+  return `<section><div class="kpis">
+   ${kpi('Tổng KL lệnh sản xuất',T(t.kl),'t',`${t.n_lsx} LSX · ${t.n_proj} dự án`,'dim')}
+   ${kpi('Đã cắt',PC(t.cut/t.req),'',`${T(t.cut)} t · còn ${T(remain)} t`,'',t.cut/t.req)}
+   ${kpi('Đã bàn giao',PC(t.bg/t.kl),'',`${T(t.bg)} t`,'',t.bg/t.kl)}
+   ${kpi('LSX chưa cắt xong',open,'',`${old} lệnh ban hành quá 30 ngày`,old?'bad':'')}
+   ${kpi('Phôi chờ cắt',T(b.need),'t','nesting chưa cắt, nguyên khổ','dim')}
+   ${kpi('Thiếu thép phải mua',T(b.buy),'t',`sau tồn dự án + Kho chung · nesting chi tiết: ${T(nesBuy)} t`,'bad')}
+  </div></section>
+  <section>${secH('Dòng chảy vật tư','Kho → Nesting → Cutting → Bàn giao')}
+  <div class="chain">
+   <div class="step"><div class="t">Kho thép</div><div class="v">${T(k.ton)} t</div><div class="d">tồn · Kho chung <b>${T(k.common)}</b> · BRAVO <b>${T(k.bravo)}</b> · đã xuất <b>${T(k.xuat)}</b></div></div>
+   <div class="step"><div class="t">Nesting chờ cắt</div><div class="v">${T(b.need)} t</div><div class="d">tồn dự án <b>${T(b.own)}</b> · Kho chung <b>${T(b.common)}</b> · thiếu <b style="color:var(--bad)">${T(b.buy)}</b></div></div>
+   <div class="step"><div class="t">Cutting</div><div class="v">${T(t.cut)} t</div><div class="d">${PC(t.cut/t.req)} yêu cầu cắt · còn <b>${T(remain)}</b> t</div></div>
+   <div class="step"><div class="t">Bàn giao</div><div class="v">${T(t.bg)} t</div><div class="d">${PC(t.bg/t.kl)} tổng KL · chờ bàn giao <b>${T(Math.max(0,t.cut-t.bg))}</b> t</div></div>
+  </div></section>
+  <section>${secH('Dự án đang chạy',`${act.length} dự án chưa cắt xong · bấm thẻ để xem chi tiết`)}
+   <div class="pcards">${act.sort((a,b)=>b.req-b.cut-(a.req-a.cut)).map(pcard).join('')}</div></section>
+  <section>${secH('Cảnh báo cần xử lý',`${alerts.filter(a=>a.s==='bad').length} mức cao · ${alerts.filter(a=>a.s!=='bad').length} cần theo dõi`)}
+  <ul class="alerts">${alerts.slice(0,12).map(a=>`<li class="${a.s}">${pill(a.s==='bad'?'bad':'warn',a.s==='bad'?'Cao':'Theo dõi')}<span><a data-go="${esc(a.p.id)}">${esc(a.p.name)}</a> — ${esc(a.m)}</span></li>`).join('')}</ul></section>
+  <section class="grid">
+   <div class="card"><h3>Tiến độ cắt theo dự án (tấn)</h3>
+    <div class="legend"><span><i class="c-cut"></i>Đã cắt</span><span><i class="c-rem"></i>Còn phải cắt</span></div>
+    ${hbars(P.filter(p=>p.kl>=1).map(p=>({id:p.id,label:p.name,segs:[{v:p.cut,c:'c-cut',n:'Đã cắt'},{v:p.req-p.cut,c:'c-rem',n:'Còn phải cắt'}],right:`${T0(p.kl)} t · ${PC(p.pc)}`})),Math.max(...P.map(p=>p.req)),{click:1})}</div>
+   <div class="card"><h3>Đủ thép cho nesting chưa cắt? (tấn)</h3>
+    <div class="legend"><span><i class="c-own"></i>Tồn dự án</span><span><i class="c-com"></i>Kho chung/BRAVO</span><span><i class="c-buy"></i>Phải mua</span></div>
+    ${(()=>{const rows=kprojs.filter(p=>p.kho.need>0.05).sort((a,b)=>b.kho.need-a.kho.need);
+      return hbars(rows.map(p=>({id:p.id,label:p.kho.shared.length?p.name+' (+'+p.kho.shared.length+')':p.name,segs:[{v:p.kho.own,c:'c-own',n:'Tồn dự án'},{v:p.kho.common,c:'c-com',n:'Kho chung/BRAVO'},{v:p.kho.buy,c:'c-buy',n:'Phải mua'}],right:p.kho.buy>0.05?`<span style="color:var(--bad);font-weight:600">thiếu ${T(p.kho.buy)}</span>`:'đủ'})),Math.max(...rows.map(p=>p.kho.need)),{click:1})})()}
+    <p class="note">So theo độ dày/quy cách hình. Hùng Vương, RMG, Shiplift đối chiếu thêm đến từng tấm trong trang dự án.</p></div>
+  </section>
+  <section class="grid">
+   <div class="card"><h3>Sản lượng cắt và bàn giao theo tháng (tấn)</h3>${cols([{n:'Cắt',v:D.m_cut,col:'--d1'},{n:'Bàn giao',v:D.m_bg,col:'--d2'}],MLAB,{line:{n:'Tồn cắt chưa giao lũy kế',v:D.m_cut.map((_,i)=>Math.max(0,sum(D.m_cut.slice(0,i+1),x=>x)-sum(D.m_bg.slice(0,i+1),x=>x))),col:'--brand'}})}
+    <p class="note">Đường đỏ: cộng dồn (cắt − bàn giao) trong 12 tháng, cho thấy lượng hàng cắt xong còn nằm ở xưởng.</p></div>
+   <div class="card"><h3>LSX chưa cắt xong theo tuổi (tấn còn phải cắt)</h3>${agingChart(openLsx)}
+    <p class="note">Tuổi = số ngày từ ngày ban hành LSX đến ngày số liệu. Xem danh sách chi tiết ở mục Tiến độ sản xuất.</p></div>
+  </section>
+  <section>${secH('Bảng tổng hợp dự án','Bấm một dòng để xem chi tiết · bấm tiêu đề cột để sắp xếp')}${projTable()}</section>`;}};
+
+function pcard(p){const hs=health(p),bu=buyOf(p);
+  return `<button class="pcard" data-go="${esc(p.id)}">${ring(p.pc,58,hs.c==='bad'?'--bad':'--brand')}
+   <div style="min-width:0"><div class="nm" title="${esc(p.name)}">${esc(p.name)}</div><div class="meta">${T0(p.kl)} t · ${p.n_lsx} LSX</div><div style="margin-top:3px">${pill(hs.c,hs.t)}</div></div>
+   <div class="row"><span>Còn cắt <b class="num">${T(Math.max(0,p.req-p.cut))}</b> t</span><span>BG <b class="num">${PC(p.pb)}</b></span>${bu!=null&&bu>0.05?`<span style="color:var(--bad)">Thiếu <b class="num">${T(bu)}</b> t</span>`:''}</div></button>`}
+function agingChart(list){
+  const rows=BUCK.map((b,i)=>{const L=list.filter(l=>bucketOf(l.age)===i);return{label:b[0],n:L.length,chua:sum(L.filter(l=>!l.pc),l=>l.rem),dang:sum(L.filter(l=>l.pc>0),l=>l.rem)}});
+  const mx=Math.max(1,...rows.map(r=>r.chua+r.dang));
+  return `<div class="legend"><span><i class="c-br"></i>Chưa cắt</span><span><i class="c-com"></i>Đang cắt dở</span></div>`+
+   hbars(rows.map(r=>({label:r.label,segs:[{v:r.chua,c:'c-br',n:'Chưa cắt'},{v:r.dang,c:'c-com',n:'Đang cắt dở'}],right:`${r.n} LSX · ${T(r.chua+r.dang)} t`})),mx);
+}
+function projTable(){
+  return table('t-ov',[
+    {h:'Dự án',f:p=>`<b>${esc(p.name)}</b><br><span style="color:var(--muted);font-size:11.5px">${esc(p.code||p.id)}</span>`,s:p=>p.name},
+    {h:'Trạng thái',f:p=>{const x=health(p);return pill(x.c,x.t)},s:p=>health(p).c},
+    {h:'KL (t)',n:1,f:p=>T(p.kl),s:p=>p.kl},
+    {h:'% cắt',n:1,f:p=>`${PC(p.pc)}<span class="mini"><i style="width:${(p.pc||0)*100}%"></i></span>`,s:p=>p.pc??0},
+    {h:'Còn cắt (t)',n:1,f:p=>T(Math.max(0,p.req-p.cut)),s:p=>p.req-p.cut},
+    {h:'% bàn giao',n:1,f:p=>PC(p.pb),s:p=>p.pb??0},
+    {h:'LSX xong/đang/chưa',n:1,f:p=>`${p.lsx_st['Đã cắt xong']||0} / ${p.lsx_st['Đang cắt']||0} / ${p.lsx_st['Chưa cắt']||0}`,s:p=>p.n_lsx},
+    {h:'Phôi chờ cắt (t)',n:1,f:p=>p.kho?T(p.kho.need):'–',s:p=>p.kho?p.kho.need:-1},
+    {h:'Thiếu thép (t)',n:1,f:p=>{const v=buyOf(p);return v==null?'<span style="color:var(--muted)">chưa map kho</span>':v>0.05?`<b style="color:var(--bad)">${T(v)}</b>`:'0,0'},s:p=>buyOf(p)??-1},
+    {h:'Cắt gần nhất',f:p=>p.last_cut||'–',s:p=>p.last_cut||''},
+    {h:'Cảnh báo',n:1,f:p=>p.alerts.length||'–',s:p=>p.alerts.length},
+  ],P.map(p=>({...p,_id:p.id})),{click:1,foot:['<b>Tổng</b>','',T(D.tot.kl),PC(D.tot.cut/D.tot.req),T(D.tot.req-D.tot.cut),PC(D.tot.bg/D.tot.kl),D.tot.n_lsx,T(D.bal.need),T(D.bal.buy),'','']});
+}
+
+V.sx={name:'Tiến độ sản xuất',title:'Tiến độ cắt, gia công và bàn giao',ico:'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',render(){
+  const st={cut:'Cắt',khoan:'Khoan',chan:'Chấn / lốc',vat:'Vát mép'};
+  const tot=Object.fromEntries(Object.keys(st).map(s=>[s,{req:sum(P,p=>p.stages[s].req),done:sum(P,p=>p.stages[s].done)}]));
+  const act=P.filter(p=>(p.pc??1)<0.999);
+  const mrows=D.months.map((m,i)=>({m:MLAB[i],c:D.m_cut[i],b:D.m_bg[i]}));
+  return `<section class="grid"><div class="card"><h3>Tiến độ theo công đoạn · toàn bộ</h3>
+    ${Object.entries(tot).map(([s,v])=>`<div class="stage"><span>${st[s]}</span><div class="track"><i class="c-cut" style="width:${v.req?v.done/v.req*100:0}%" data-tip="${st[s]}: ${T(v.done)} / ${T(v.req)} t"></i></div><span class="num" style="font-size:12px;text-align:right">${PC(v.req?v.done/v.req:null)} · ${T0(v.done)}/${T0(v.req)} t</span></div>`).join('')}
+    <div class="stage"><span>Bàn giao</span><div class="track"><i class="c-bg" style="width:${D.tot.bg/D.tot.kl*100}%"></i></div><span class="num" style="font-size:12px;text-align:right">${PC(D.tot.bg/D.tot.kl)} · ${T0(D.tot.bg)}/${T0(D.tot.kl)} t</span></div>
+    <h3 style="margin-top:16px">Sản lượng đã cắt theo máy (tấn)</h3>${hbars(D.mach.slice(0,10).map(m=>({label:m.k,segs:[{v:m.t,c:'c-cut',n:'Đã cắt'}],right:T(m.t)})),D.mach[0].t)}</div>
+   <div class="card"><h3>Theo tháng (tấn)</h3>${cols([{n:'Cắt',v:D.m_cut,col:'--d1'},{n:'Bàn giao',v:D.m_bg,col:'--d2'}],MLAB)}
+    ${table('t-m',[{h:'Tháng',f:r=>r.m,s:r=>r.m},{h:'Cắt (t)',n:1,f:r=>T(r.c),s:r=>r.c},{h:'Bàn giao (t)',n:1,f:r=>T(r.b),s:r=>r.b},{h:'Cắt − giao',n:1,f:r=>`<span style="color:${r.c-r.b>0?'var(--brand)':'var(--ink)'}">${T(r.c-r.b)}</span>`,s:r=>r.c-r.b}],mrows,{foot:['Tổng',T(sum(mrows,r=>r.c)),T(sum(mrows,r=>r.b)),T(sum(mrows,r=>r.c-r.b))]})}</div></section>
+  <section class="grid"><div class="card"><h3>Công đoạn theo dự án đang chạy (% hoàn thành)</h3>
+    ${table('t-stg',[{h:'Dự án',f:p=>`<b>${esc(p.name)}</b>`,s:p=>p.name},...Object.keys(st).map(s=>({h:st[s],n:1,f:p=>{const v=p.stages[s];return v.req>0.05?`${PC(v.done/v.req)}<span class="mini"><i style="width:${v.done/v.req*100}%"></i></span>`:'<span style="color:var(--muted)">–</span>'},s:p=>p.stages[s].req?p.stages[s].done/p.stages[s].req:-1})),{h:'Bàn giao',n:1,f:p=>PC(p.pb),s:p=>p.pb??-1}],act.map(p=>({...p,_id:p.id})),{click:1})}</div>
+   <div class="card"><h3>LSX chưa cắt xong theo tuổi</h3>${agingChart(openLsx)}</div></section>
+  <section>${secH('LSX chưa cắt xong, toàn bộ dự án',`${openLsx.length} lệnh · ${T(sum(openLsx,l=>l.rem))} t còn phải cắt · sắp theo tuổi`)}
+   ${table('t-open',[{h:'LSX',f:l=>`<b>${esc(l.lsx)}</b>`,s:l=>l.lsx},{h:'Dự án',f:l=>`<a data-go="${esc(l.p.id)}">${esc(l.p.name)}</a>`,s:l=>l.p.name},{h:'Hạng mục',w:1,f:l=>esc(l.hm||''),s:l=>l.hm||''},{h:'Ban hành',f:l=>l.bh||'–',s:l=>l.bh||''},{h:'Tuổi',n:1,f:l=>ageCell(l.age),s:l=>l.age??-1},{h:'KL (t)',n:1,f:l=>T(l.kl),s:l=>l.kl},{h:'% cắt',n:1,f:l=>`${PC(l.pc)}<span class="mini"><i style="width:${(l.pc||0)*100}%"></i></span>`,s:l=>l.pc??0},{h:'Còn cắt (t)',n:1,f:l=>`<b>${T(l.rem)}</b>`,s:l=>l.rem},{h:'Trạng thái',f:l=>stPill(l.st),s:l=>l.st},{h:'Máy',f:l=>esc(l.may||''),s:l=>l.may||''}],openLsx.slice().sort((a,b)=>(b.age??-1)-(a.age??-1)))}</section>`;}};
+
+V.th={name:'Thép & tồn kho',title:'Tồn kho và cân đối thép',ico:'<path d="M3 7l9-4 9 4-9 4-9-4zM3 12l9 4 9-4M3 17l9 4 9-4"/>',render(){
+  const k=D.kho,b=D.bal;
+  return `<section><div class="kpis">
+    ${kpi('Tổng nhập',T(k.nhap),'t','từ đầu kỳ, gồm tồn + xuất','dim')}${kpi('Đã xuất',T(k.xuat),'t',PC(k.xuat/k.nhap)+' tổng nhập','',k.xuat/k.nhap)}${kpi('Tồn hiện tại',T(k.ton),'t',`Kho chung ${T(k.common)} · BRAVO ${T(k.bravo)}`)}
+    ${kpi('Nhu cầu phôi chờ cắt',T(b.need),'t','','dim')}${kpi('Đáp ứng từ tồn dự án',T(b.own),'t',PC(b.own/b.need),'good',b.own/b.need)}${kpi('Phải mua',T(b.buy),'t',PC(b.buy/b.need)+' nhu cầu','bad',b.buy/b.need)}</div></section>
+  <section class="grid"><div class="card"><h3>Nhu cầu phôi được đáp ứng từ</h3>${seg100([{n:'Tồn dự án',v:b.own,c:'c-own'},{n:'Kho chung/BRAVO',v:b.common,c:'c-com'},{n:'Phải mua',v:b.buy,c:'c-buy'}])}
+    <h3 style="margin-top:16px">Thiếu thép theo quy cách, toàn công ty (tấn)</h3>
+    <div class="legend"><span><i class="c-own"></i>Tồn dự án</span><span><i class="c-com"></i>Kho chung/BRAVO</span><span><i class="c-buy"></i>Phải mua</span></div>
+    ${hbars(D.bykey.filter(r=>r.need>0.05).map(r=>({label:r.k,segs:[{v:r.own,c:'c-own',n:'Tồn dự án'},{v:r.fc,c:'c-com',n:'Kho chung/BRAVO'},{v:r.buy,c:'c-buy',n:'Phải mua'}],right:r.buy>0.05?`<span style="color:var(--bad)">mua ${T(r.buy)}</span>`:'đủ'})),Math.max(...D.bykey.map(r=>r.need)))}</div>
+   <div class="card"><h3>Nhập · xuất · tồn theo dự án kho (tấn)</h3>
+    <div class="legend"><span><i class="c-cut"></i>Đã xuất</span><span><i class="c-own"></i>Còn tồn</span></div>
+    ${hbars(kprojs.slice().sort((a,b)=>b.kho.nhap-a.kho.nhap).map(p=>({id:p.id,label:p.name,segs:[{v:p.kho.xuat,c:'c-cut',n:'Đã xuất'},{v:p.kho.ton,c:'c-own',n:'Còn tồn'}],right:`tồn ${T(p.kho.ton)}`})),Math.max(...kprojs.map(p=>p.kho.nhap)),{click:1})}
+    ${D.kho_only.length?`<h3 style="margin-top:16px">Tồn của dự án chưa có lệnh cắt</h3>${hbars(D.kho_only.map(r=>({label:r.k,segs:[{v:r.t,c:'c-own',n:'Tồn'}],right:T(r.t)+' t'})),Math.max(1,...D.kho_only.map(r=>r.t)))}`:''}</div></section>
+  <section>${secH('Cân đối theo dự án kho','Nhu cầu = nesting chưa cắt trong file Cutting, quy ra phôi nguyên khổ')}
+   ${table('t-kb',[{h:'Dự án kho',f:p=>`<b>${esc(p.kho.name)}</b>${p.kho.shared.length?`<br><span style="font-size:11.5px;color:var(--muted)">dùng chung: ${esc(p.name)}, ${p.kho.shared.map(esc).join(', ')}</span>`:''}`,s:p=>p.kho.name},
+     {h:'Nhập (t)',n:1,f:p=>T(p.kho.nhap),s:p=>p.kho.nhap},{h:'Xuất (t)',n:1,f:p=>T(p.kho.xuat),s:p=>p.kho.xuat},{h:'Tồn (t)',n:1,f:p=>T(p.kho.ton),s:p=>p.kho.ton},
+     {h:'Cần (t)',n:1,f:p=>T(p.kho.need),s:p=>p.kho.need},{h:'Từ tồn DA',n:1,f:p=>T(p.kho.own),s:p=>p.kho.own},{h:'Kho chung',n:1,f:p=>T(p.kho.common),s:p=>p.kho.common},
+     {h:'Phải mua',n:1,f:p=>p.kho.buy>0.05?`<b style="color:var(--bad)">${T(p.kho.buy)}</b>`:'0,0',s:p=>p.kho.buy},{h:'Tận dụng (t)',n:1,f:p=>T(p.kho.tandung),s:p=>p.kho.tandung},
+     {h:'',f:p=>p.kho.buy>0.05?pill('bad','Thiếu'):p.kho.common>0.05?pill('warn','Bù Kho chung'):p.kho.need>0.05?pill('good','Đủ'):pill('neu','Không cần'),s:p=>p.kho.buy}],
+     kprojs.map(p=>({...p,_id:p.id})).sort((a,b)=>b.kho.buy-a.kho.buy),{click:1,foot:['Tổng',T(D.kho.nhap),T(D.kho.xuat),T(D.kho.ton),T(b.need),T(b.own),T(b.common),T(b.buy),'','']})}
+   <p class="note">Tổng nhập/xuất/tồn ở dòng cuối gồm cả Kho chung, BRAVO và dự án không có lệnh cắt. Công trình chưa map kho: ${D.nomap.map(esc).join(', ')||'không'}.</p></section>`;}};
+
+V.ne={name:'Nesting',title:'Hiệu quả nesting và đối chiếu Cutting',ico:'<path d="M4 4h7v7H4zM13 4h7v4h-7zM13 10h7v10h-7zM4 13h7v7H4z"/>',render(){
+  const N=P.filter(p=>p.nes);
+  if(!N.length) return `<p class="empty">Chưa có file nesting nào trong thư mục du_lieu/3_NESTING.</p>`;
+  return `<section>${secH('So sánh các file nesting',`${N.length} dự án có file nesting`)}
+   ${table('t-nes',[{h:'Dự án',f:p=>`<b>${esc(p.name)}</b><br><span style="font-size:11.5px;color:var(--muted)">${esc(p.nes.file)}</span>`,s:p=>p.name},
+     {h:'Nesting',n:1,f:p=>T0(p.nes.n_nesting),s:p=>p.nes.n_nesting},{h:'Thép vào (t)',n:1,f:p=>T(p.nes.flow.new+p.nes.flow.rin),s:p=>p.nes.flow.new+p.nes.flow.rin},
+     {h:'Thành phẩm',n:1,f:p=>PC(p.nes.pct.tp),s:p=>p.nes.pct.tp},{h:'% Remain',n:1,f:p=>`<span style="color:${p.nes.pct.remain>0.3?'var(--warn)':'var(--ink)'}">${PC(p.nes.pct.remain)}</span>`,s:p=>p.nes.pct.remain},
+     {h:'% Phế',n:1,f:p=>PC(p.nes.pct.phe),s:p=>p.nes.pct.phe},{h:'Hao hụt',n:1,f:p=>`<b style="color:${p.nes.pct.hh>0.08?'var(--bad)':'var(--good)'}">${PC(p.nes.pct.hh)}</b>`,s:p=>p.nes.pct.hh},
+     {h:'Chưa nạp Cutting (t)',n:1,f:p=>{const x=p.nes.cut_st.find(c=>c.k==='Chưa nạp Cutting');return x?`<b style="color:var(--bad)">${T(x.t)}</b>`:'0,0'},s:p=>(p.nes.cut_st.find(c=>c.k==='Chưa nạp Cutting')||{t:0}).t},
+     {h:'Tấm phải mua (t)',n:1,f:p=>{const x=p.nes.alloc.find(c=>c.k==='Phải mua');return x?`<b style="color:var(--bad)">${T(x.t)}</b> · ${x.n} tấm`:'0,0'},s:p=>(p.nes.alloc.find(c=>c.k==='Phải mua')||{t:0}).t}],N.map(p=>({...p,_id:p.id})),{click:1})}</section>
+  <section class="grid3">${N.map(p=>{const f=p.nes.flow,tin=f.new+f.rin;return `<div class="card"><h3><a data-go="${esc(p.id)}">${esc(p.name)}</a></h3>
+    ${seg100([{n:'Thành phẩm',v:f.tp,c:'c-own'},{n:'Remain',v:f.rm,c:'c-bg'},{n:'Phế',v:f.pl,c:'c-com'},{n:'Tiêu hao',v:f.th,c:'c-buy'}])}
+    <h3 style="margin-top:12px">Tấm đã vào Cutting</h3>${seg100(['Đã cắt hết','Cắt dở','Chưa cắt','Chưa nạp Cutting'].map(s=>{const x=p.nes.cut_st.find(c=>c.k===s);return{n:s,v:x?x.t:0,c:{'Đã cắt hết':'c-own','Cắt dở':'c-com','Chưa cắt':'c-neu','Chưa nạp Cutting':'c-buy'}[s]}}))}
+    <p class="note">Thép vào ${T(tin)} t, trong đó tấm mới ${T(f.new)} t.</p></div>`}).join('')}</section>`;}};
+
+V.src={name:'Dữ liệu & làm sạch',title:'Dữ liệu nạp, làm sạch và cách tính',ico:'<path d="M12 3v12M7 10l5 5 5-5M4 21h16"/>',render(){
+  return `<section>${secH('File cần nạp mỗi lần cập nhật','Tải lên thư mục du_lieu/ trong repo GitHub, trang tự cập nhật sau khoảng 3 phút')}
+  <div class="src-list">
+   <div class="card"><h3>1 · File Cutting (bắt buộc)</h3><p><b>DDC_SHIPYARD - KHGC - SC.xlsx</b> → <code>du_lieu/1_CUTTING</code></p><p>Sheet dùng: <code>List Chi Tiết</code>, <code>2-List Chi Tiết</code>, <code>LỆNH SX</code>, <code>KẾ HOẠCH</code>.</p><p>Lần này: <b>${esc(D.files.cutting)}</b></p></div>
+   <div class="card"><h3>2 · File tồn kho (bắt buộc)</h3><p><b>TỒN KHO dd.mm.xlsx</b> → <code>du_lieu/2_TON_KHO</code>. Ngày trong tên file là ngày báo cáo.</p><p>Sheet: <code>TỔNG HỢP NHẬP</code>, <code>TỔNG THÉP XUẤT</code>, <code>TỔNG TỒN HIỆN TẠI</code>.</p><p>Lần này: <b>${esc(D.files.kho)}</b></p></div>
+   <div class="card"><h3>3 · File nesting (nên có)</h3><p><b>VT-xx-TT-nnn.xlsx</b> → <code>du_lieu/3_NESTING</code>, mỗi dự án bản mới nhất; tự nhận dự án theo mã LSX.</p><p>Lần này: <b>${D.files.nesting.map(esc).join(', ')||'không có'}</b></p></div>
+   <div class="card"><h3>4 · Cấu hình</h3><p><b>MAP_VA_QUY_TAC.xlsx</b> → <code>du_lieu/4_CAU_HINH</code>: map công trình Cutting sang dự án kho.</p><p>Chưa map: <b>${D.nomap.map(esc).join(', ')||'không'}</b></p></div>
+  </div></section>
+  <section>${secH('Cách tính chính')}<div class="card" style="font-size:13px">
+   <p><b>% cắt</b> = KL các dòng có ngày CUTTING / KL các dòng có đánh dấu “x” cắt. <b>% bàn giao</b> = KL có ngày bàn giao / tổng KL.</p>
+   <p><b>Tuổi LSX</b> = số ngày từ ngày ban hành đến ngày số liệu, chỉ tính LSX chưa cắt xong.</p>
+   <p><b>Phôi chờ cắt</b>: nesting chưa có ngày cắt nào; tấm quy theo quy cách vật tư (dày × rộng × dài × 7,85), thép hình theo chiều dài cây, còn lại KL chi tiết / 0,85.</p>
+   <p><b>Thứ tự đáp ứng</b>: tồn dự án → Kho chung + TỒN BRAVO → điều chuyển dự án khác → phải mua.</p>
+   <p><b>Nesting</b>: thép vào = thành phẩm + remain + phế + tiêu hao. % remain, % phế chia cho thép vào; hao hụt = phế / thành phẩm.</p>
+  </div></section>
+  ${fixSection(D.fix,'Công cụ làm sạch dữ liệu','Tự chạy mỗi lần cập nhật, trước khi tính báo cáo; không sửa file gốc',1)}`;}};
+
+function fixSection(list,title,sub,withFile){
+  if(!list||!list.length) return '';
+  const grp=['Cần xác nhận','Đã chuẩn hóa','Quy ước'];
+  const tot=sum(list,r=>r.n);
+  return `<section>${secH(title,sub)}
+  ${withFile?`<div class="card" style="display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;margin-bottom:12px;border-left:4px solid var(--brand)">
+    <div><div style="font:700 26px var(--f-disp);color:var(--brand)">${T0(tot)}</div><div style="font-size:12px;color:var(--muted)">ô dữ liệu đã kiểm tra và xử lý</div></div>
+    <div><div style="font:700 26px var(--f-disp);color:var(--good)">${T0(sum(list.filter(r=>r.g==='Đã chuẩn hóa'),r=>r.n))}</div><div style="font-size:12px;color:var(--muted)">tự chuẩn hóa</div></div>
+    <div><div style="font:700 26px var(--f-disp);color:var(--warn)">${T0(sum(list.filter(r=>r.g==='Cần xác nhận'),r=>r.n))}</div><div style="font-size:12px;color:var(--muted)">cần phòng phụ trách xác nhận</div></div>
+    <a class="b" href="${esc(D.fix_file||'nhat_ky_lam_sach.xlsx')}" style="margin-left:auto;background:var(--brand);color:var(--on-brand);padding:9px 14px;border-radius:6px;text-decoration:none;font-weight:600">Tải nhật ký làm sạch (Excel)</a></div>`:''}
+  ${table('t-fix'+(withFile?'':'p'),[{h:'Quy tắc',w:1,f:r=>esc(r.d),s:r=>r.d},{h:'File',f:r=>esc(r.f||'Cutting'),s:r=>r.f||''},{h:'Loại',f:r=>pill(r.g==='Cần xác nhận'?'warn':r.g==='Quy ước'?'neu':'good',r.g),s:r=>grp.indexOf(r.g)},{h:'Số ô',n:1,f:r=>T0(r.n),s:r=>r.n},{h:'KL (t)',n:1,f:r=>T(r.t),s:r=>r.t}],list.slice().sort((a,b)=>grp.indexOf(a.g)-grp.indexOf(b.g)))}
+  <p class="note">Đã chuẩn hóa: báo cáo đã tính theo quy tắc. Quy ước: giữ theo file. Cần xác nhận: giữ nguyên như file, nhờ phòng phụ trách kiểm tra. File nhật ký ghi từng ô (file, sheet, dòng, cột, giá trị cũ → mới) để sửa file gốc.</p></section>`;
+}
+
+/* ---------- project detail ---------- */
+function renderProject(p){
+  const k=p.kho,n=p.nes,nb=n&&n.alloc.find(a=>a.k==='Phải mua');
+  const ol=openLsx.filter(l=>l.p===p);
+  let h=`<section><div style="display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;color:var(--muted);font-size:12.5px">${pill(health(p).c,health(p).t)}<span>${esc(p.id)}</span>${k?`<span>Dự án kho: <b style="color:var(--ink)">${esc(k.name)}</b></span>`:'<span>Chưa map dự án kho</span>'}${n?`<span>Nesting: <b style="color:var(--ink)">${esc(n.file)}</b></span>`:''}</div></section>
+  <section><div class="kpis">
+   ${kpi('Tổng KL lệnh',T(p.kl),'t',`${p.n_lsx} LSX`,'dim')}
+   ${kpi('Đã cắt',PC(p.pc),'',`${T(p.cut)} / ${T(p.req)} t`,p.pc>=0.999?'good':'',p.pc)}
+   ${kpi('Đã bàn giao',PC(p.pb),'',`${T(p.bg)} t`,'',p.pb)}
+   ${kpi('Còn phải cắt',T(Math.max(0,p.req-p.cut)),'t',`${ol.length} LSX · cắt gần nhất ${p.last_cut||'–'}`)}
+   ${k?kpi('Phôi chờ cắt',T(k.need),'t',`tận dụng thêm ${T(k.tandung)} t`,'dim'):''}
+   ${n?kpi('Thiếu tấm (nesting)',T(nb?nb.t:0),'t',`${nb?nb.n:0} tấm không có trong kho`,nb&&nb.t>0?'bad':'good'):(k?kpi('Thiếu thép',T(k.buy),'t','so theo độ dày',k.buy>0.05?'bad':'good'):'')}
+  </div></section>`;
+  if(p.alerts.length) h+=`<section><ul class="alerts">${p.alerts.map(a=>`<li class="${a.s}">${pill(a.s==='bad'?'bad':'warn',a.s==='bad'?'Cao':'Theo dõi')}<span>${esc(a.m)}</span></li>`).join('')}</ul></section>`;
+  const stL={cut:'Cắt',khoan:'Khoan',chan:'Chấn / lốc',vat:'Vát mép'};
+  h+=`<section class="grid"><div class="card"><h3>Tiến độ theo công đoạn</h3>
+   ${Object.entries(p.stages).filter(([s,v])=>v.req>0).map(([s,v])=>`<div class="stage"><span>${stL[s]}</span><div class="track"><i class="c-cut" style="width:${Math.min(100,v.done/v.req*100)}%" data-tip="${stL[s]}: ${T(v.done)} / ${T(v.req)} t"></i></div><span class="num" style="font-size:12px;text-align:right">${PC(v.done/v.req)} · ${T(v.done)}/${T(v.req)}</span></div>`).join('')}
+   <div class="stage"><span>Bàn giao</span><div class="track"><i class="c-bg" style="width:${Math.min(100,(p.pb||0)*100)}%"></i></div><span class="num" style="font-size:12px;text-align:right">${PC(p.pb)} · ${T(p.bg)}/${T(p.kl)}</span></div>
+   <h3 style="margin-top:16px">Trạng thái LSX</h3>
+   ${seg100([{n:'Đã cắt xong',v:p.lsx_st['Đã cắt xong']||0,c:'c-own',fmt:T0},{n:'Đang cắt',v:p.lsx_st['Đang cắt']||0,c:'c-com',fmt:T0},{n:'Chưa cắt',v:p.lsx_st['Chưa cắt']||0,c:'c-br',fmt:T0}])}
+   ${ol.length?`<h3 style="margin-top:16px">LSX chưa cắt xong theo tuổi</h3>${agingChart(ol)}`:''}
+   ${p.mach.length?`<h3 style="margin-top:16px">Máy cắt (tấn đã cắt)</h3>${hbars(p.mach.map(m=>({label:m.k,segs:[{v:m.t,c:'c-cut',n:'Đã cắt'}],right:T(m.t)})),p.mach[0].t)}`:''}</div>
+  <div class="card"><h3>Cắt, bàn giao và kho xuất theo tháng (tấn)</h3>${cols([{n:'Cắt',v:p.m_cut,col:'--d1'},{n:'Bàn giao',v:p.m_bg,col:'--d2'}].concat(k?[{n:'Kho xuất thép',v:k.xuat_m,col:'--brand'}]:[]),MLAB)}
+   ${table('t-pm',[{h:'Tháng',f:r=>r.m,s:r=>r.i},{h:'Cắt',n:1,f:r=>T(r.c),s:r=>r.c},{h:'Bàn giao',n:1,f:r=>T(r.b),s:r=>r.b}].concat(k?[{h:'Kho xuất',n:1,f:r=>T(r.x),s:r=>r.x}]:[]),D.months.map((m,i)=>({i,m:MLAB[i],c:p.m_cut[i],b:p.m_bg[i],x:k?k.xuat_m[i]:0})).filter(r=>r.c||r.b||r.x))}</div></section>`;
+  if(k){
+    h+=`<section>${secH('Thép: kho so với nhu cầu',k.shared.length?`Dự án kho dùng chung với: ${k.shared.map(esc).join(', ')}`:'Nhu cầu = nesting chưa cắt, quy ra phôi nguyên khổ')}
+    <div class="grid"><div class="card"><h3>Nhập · xuất · tồn (tấn)</h3>${seg100([{n:'Đã xuất',v:k.xuat,c:'c-cut'},{n:'Còn tồn',v:k.ton,c:'c-own'}])}
+      <h3 style="margin-top:14px">Nhu cầu ${T(k.need)} t được đáp ứng từ</h3>${seg100([{n:'Tồn dự án',v:k.own,c:'c-own'},{n:'Kho chung/BRAVO',v:k.common,c:'c-com'},{n:'Phải mua',v:k.buy,c:'c-buy'}])}
+      <h3 style="margin-top:14px">Tồn lớn nhất theo quy cách (tấn)</h3>${hbars(k.ton_key.slice(0,10).map(r=>({label:r.k,segs:[{v:r.t,c:'c-own',n:'Tồn'}],right:T(r.t)})),k.ton_key.length?k.ton_key[0].t:1)}</div>
+     <div class="card"><h3>Cân đối theo quy cách</h3>
+      ${k.bal.length?table('t-bal',[{h:'Quy cách',f:r=>`<b>${esc(r.k)}</b>`,s:r=>r.k},{h:'Nesting',n:1,f:r=>r.n,s:r=>r.n},{h:'Cần (t)',n:1,f:r=>T(r.need),s:r=>r.need},{h:'Tồn DA',n:1,f:r=>T(r.own),s:r=>r.own},{h:'Kho chung',n:1,f:r=>T(r.fc),s:r=>r.fc},{h:'Phải mua',n:1,f:r=>r.buy>0.05?`<b style="color:var(--bad)">${T(r.buy)}</b>`:'0,0',s:r=>r.buy},{h:'',f:r=>r.buy>0.05?pill('bad','Thiếu'):r.fc>0.05?pill('warn','Bù Kho chung'):pill('good','Đủ'),s:r=>r.buy}],k.bal,{foot:['Tổng','',T(k.need),'',T(k.common),T(k.buy),'']}):'<p class="empty">Không còn nesting chờ cắt dùng thép nguyên khổ.</p>'}</div></div></section>`;
+  }
+  if(n){
+    const f=n.flow,tin=f.new+f.rin;
+    const blk=(lab,v,col)=>`<div class="blk" style="background:var(${col});flex:${Math.max(v,tin*0.035)} 0 0" data-tip="${lab}: ${T(v)} t (${PC(v/tin)})"><span>${lab}</span><span>${T(v)} t</span></div>`;
+    h+=`<section>${secH('Nesting '+esc(n.file),`${T0(n.n_nesting)} nesting · ${n.n_lsx} LSX · đối chiếu với Cutting theo số nesting`)}
+    <div class="kpis">${kpi('Thành phẩm / thép vào',PC(n.pct.tp),'',`${T(f.tp)} t thành phẩm`,'',n.pct.tp)}${kpi('% Remain sinh ra',PC(n.pct.remain),'',`${T(f.rm)} t thu hồi`,'dim')}${kpi('% Phế liệu',PC(n.pct.phe),'',`${T(f.pl)} t`,'dim')}${kpi('Hao hụt (phế / TP)',PC(n.pct.hh),'','',n.pct.hh>0.08?'bad':'good')}</div>
+    <div class="grid" style="margin-top:16px"><div class="card"><h3>Cân bằng vật tư (tấn)</h3>
+      <div class="flow" style="height:230px"><div class="col"><div style="font-size:12px;color:var(--muted)">VÀO ${T(tin)} t</div>${blk('Tấm mới',f.new,'--d1')}${blk('Remain / tận dụng',f.rin,'--d2')}</div>
+      <div class="col"><div style="font-size:12px;color:var(--muted)">RA ${T(f.tp+f.rm+f.pl+f.th)} t</div>${blk('Thành phẩm',f.tp,'--good')}${blk('Remain thu hồi',f.rm,'--d2')}${blk('Phế liệu',f.pl,'--warn')}${blk('Tiêu hao',f.th,'--bad')}</div></div>
+      <h3 style="margin-top:14px">Tấm nesting đã vào Cutting chưa?</h3>
+      ${seg100(['Đã cắt hết','Cắt dở','Chưa cắt','Chưa nạp Cutting'].map(s=>{const x=n.cut_st.find(c=>c.k===s);return{n:s,v:x?x.t:0,c:{'Đã cắt hết':'c-own','Cắt dở':'c-com','Chưa cắt':'c-neu','Chưa nạp Cutting':'c-buy'}[s]}}))}
+      <h3 style="margin-top:14px">Tấm mới chưa cắt: lấy phôi ở đâu?</h3>
+      ${n.alloc.length?seg100(['Tồn dự án','Kho chung/BRAVO','Điều chuyển dự án khác','Phải mua'].map(s=>{const x=n.alloc.find(c=>c.k===s);return{n:s+(x?` (${x.n} tấm)`:''),v:x?x.t:0,c:{'Tồn dự án':'c-own','Kho chung/BRAVO':'c-com','Điều chuyển dự án khác':'c-neu','Phải mua':'c-buy'}[s]}})):'<p class="empty">Không còn tấm mới chờ cắt.</p>'}
+      <p class="note">Ghép tấm: cùng độ dày, khổ lô ≥ khổ nesting, cùng nhóm mác (AS3678 chỉ nhận AS3678).</p></div>
+     <div class="card"><h3>Tấm phải mua (theo KL)</h3>
+      ${n.buy.length?table('t-buy',[{h:'Quy cách tấm',f:r=>`<b>${esc(r.qc)}</b>`,s:r=>r.qc},{h:'Mác',f:r=>esc(r.mac),s:r=>r.mac},{h:'SL',n:1,f:r=>r.n,s:r=>r.n},{h:'KL (t)',n:1,f:r=>T(r.t),s:r=>r.t}],n.buy,{foot:['Tổng','',sum(n.buy,r=>r.n),T(sum(n.buy,r=>r.t))]}):'<p class="empty">Kho đủ phôi cho mọi tấm mới chờ cắt.</p>'}
+      <h3 style="margin-top:14px">LSX có trong nesting nhưng chưa nạp Cutting</h3>
+      ${n.lsx_not_in_cut.length?table('t-miss',[{h:'LSX',f:r=>`<b>${esc(r.lsx)}</b>`,s:r=>r.lsx},{h:'KL tấm (t)',n:1,f:r=>T(r.t),s:r=>r.t}],n.lsx_not_in_cut):'<p class="empty">Không có.</p>'}
+      ${n.lsx_cut_not_in_nes.length?`<p class="note">LSX trong Cutting nhưng không có trong file nesting này: ${n.lsx_cut_not_in_nes.map(esc).join(', ')}.</p>`:''}</div></div>
+     <div class="card" style="margin-top:16px"><h3>Theo độ dày tấm (tấn)</h3>
+      <div class="legend"><span><i class="c-own"></i>Thành phẩm</span><span><i class="c-bg"></i>Remain</span><span><i class="c-com"></i>Phế liệu</span></div>
+      ${hbars(n.by_t.map(r=>({label:'PL'+String(r.t).replace('.',','),segs:[{v:r.tp,c:'c-own',n:'Thành phẩm'},{v:r.rm,c:'c-bg',n:'Remain'},{v:r.pl,c:'c-com',n:'Phế liệu'}],right:`${T(r.w)} t · ${r.n} nest. · phế ${PC(r.w?r.pl/r.w:0)}`})),Math.max(...n.by_t.map(r=>r.w)))}</div></section>`;
+  }
+  h+=`<section>${secH('Lệnh sản xuất','<span id="lsx-cnt"></span>')}
+   <div class="filters"><input type="search" id="lsx-q" placeholder="Tìm LSX, hạng mục, máy…" aria-label="Tìm LSX">
+   ${['Tất cả','Chưa cắt','Đang cắt','Đã cắt xong'].map((s,i)=>`<button class="chip" data-f="${s}" aria-pressed="${i===0}">${s}</button>`).join('')}</div><div id="lsx-box"></div></section>`;
+  h+=fixSection(p.fix,'Dữ liệu đã chuẩn hóa','Các quy tắc áp dụng cho dòng của dự án này');
+  $('view').innerHTML=h; sortable($('view'));
+  let flt='Tất cả';
+  const draw=()=>{const q=($('lsx-q').value||'').toLowerCase();
+    const rows=p.lsx.filter(r=>(flt==='Tất cả'||r.st===flt)&&(!q||(r.lsx+' '+(r.hm||'')+' '+(r.may||'')).toLowerCase().includes(q))).map(r=>({...r,age:(r.pc??0)<0.999?days(r.bh):null}));
+    $('lsx-cnt').textContent=`${rows.length} / ${p.lsx.length} LSX · ${T(sum(rows,r=>r.kl))} t`;
+    $('lsx-box').innerHTML=table('t-lsx',[{h:'LSX',f:r=>`<b>${esc(r.lsx)}</b>`,s:r=>r.lsx},{h:'Hạng mục',w:1,f:r=>esc(r.hm||''),s:r=>r.hm||''},{h:'Ban hành',f:r=>r.bh||'–',s:r=>r.bh||''},{h:'Tuổi',n:1,f:r=>ageCell(r.age),s:r=>r.age??-1},
+      {h:'KL (t)',n:1,f:r=>T(r.kl),s:r=>r.kl},{h:'% cắt',n:1,f:r=>`${PC(r.pc)}<span class="mini"><i style="width:${(r.pc||0)*100}%"></i></span>`,s:r=>r.pc??-1},{h:'% bàn giao',n:1,f:r=>PC(r.pb),s:r=>r.pb??-1},{h:'Trạng thái',f:r=>stPill(r.st),s:r=>r.st},{h:'Cắt gần nhất',f:r=>r.last||'–',s:r=>r.last||''},{h:'Máy',f:r=>esc(r.may||''),s:r=>r.may||''}],rows,{foot:['Tổng','','','',T(sum(rows,r=>r.kl)),'','','','','']});
+    sortable($('lsx-box'));};
+  $('lsx-q').addEventListener('input',draw);
+  $('view').querySelectorAll('.chip').forEach(c=>c.addEventListener('click',()=>{flt=c.dataset.f;$('view').querySelectorAll('.chip').forEach(x=>x.setAttribute('aria-pressed',x===c));draw()}));
+  draw();
+}
+
+/* ---------- navigation ---------- */
+const nav=$('nav'),plist=$('plist');
+const cnt={ov:'',sx:openLsx.length,th:D.bal.buy>0.05?'!':'',ne:P.filter(p=>p.nes).length,src:''};
+nav.innerHTML=Object.entries(V).map(([k,v])=>`<button data-v="${k}"><svg viewBox="0 0 24 24" aria-hidden="true">${v.ico}</svg>${v.name}${cnt[k]!==''?`<span class="cnt">${cnt[k]}</span>`:''}</button>`).join('');
+plist.innerHTML=P.map(p=>{const hs=health(p);return `<button data-p="${esc(p.id)}" title="${esc(p.name)} · ${hs.t}"><span class="dot dot-${hs.c}"></span><span class="nm">${esc(p.name)}</span><span class="pc">${p.pc==null?'–':Math.round(p.pc*100)+'%'}</span><span class="bar"><i style="width:${(p.pc||0)*100}%"></i></span></button>`}).join('');
+function show(kind,key){
+  nav.querySelectorAll('button').forEach(b=>b.setAttribute('aria-current',kind==='v'&&b.dataset.v===key));
+  plist.querySelectorAll('button').forEach(b=>b.setAttribute('aria-current',kind==='p'&&b.dataset.p===key));
+  if(kind==='p'){const p=P.find(x=>x.id===key)||P[0];$('crumb').textContent='Chi tiết dự án';$('title').textContent=p.name;renderProject(p)}
+  else{const v=V[key]||V.ov;$('crumb').textContent=v.name;$('title').textContent=v.title;$('view').innerHTML=v.render();sortable($('view'))}
+  try{localStorage.setItem('chuoi-view2',JSON.stringify({kind,key}))}catch(e){}
+  $('rail').classList.remove('open');$('menu').setAttribute('aria-expanded','false');
+  window.scrollTo({top:0});
+}
+nav.addEventListener('click',e=>{const b=e.target.closest('button');if(b)show('v',b.dataset.v)});
+plist.addEventListener('click',e=>{const b=e.target.closest('button');if(b)show('p',b.dataset.p)});
+document.addEventListener('click',e=>{const g=e.target.closest('[data-go]');if(g)show('p',g.dataset.go)});
+document.addEventListener('keydown',e=>{if(e.key==='Enter'){const g=e.target.closest('[data-go]');if(g)show('p',g.dataset.go)}});
+$('menu').onclick=()=>{const o=$('rail').classList.toggle('open');$('menu').setAttribute('aria-expanded',o)};
+const tip=$('tip');
+document.addEventListener('mousemove',e=>{const t=e.target.closest('[data-tip]');if(!t){tip.style.display='none';return}
+  tip.textContent=t.dataset.tip;tip.style.display='block';tip.style.left=Math.min(e.clientX+12,innerWidth-tip.offsetWidth-8)+'px';tip.style.top=(e.clientY+14)+'px'});
+const dd=D.date.split('-').reverse().join('/');
+$('asof').textContent=`Số liệu ngày ${dd}`;$('dchip').textContent=`Số liệu ${dd}`;
+let st=null;try{st=JSON.parse(localStorage.getItem('chuoi-view2')||'null')}catch(e){}
+if(st&&st.kind==='p'&&P.some(p=>p.id===st.key))show('p',st.key);else if(st&&st.kind==='v'&&V[st.key])show('v',st.key);else show('v','ov');
+</script>
