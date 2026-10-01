@@ -17,6 +17,16 @@ def commit_time(p):
     except Exception:
         return os.path.getmtime(p)
 
+def name_date(p):
+    # ngày trong tên file: '... 01.10.2026', 'TỒN KHO 28.09', '30-09-26'
+    now = datetime.datetime.utcnow() + datetime.timedelta(hours=7)
+    for m in re.finditer(r'(?<!\d)(\d{1,2})[._-](\d{1,2})(?:[._-](\d{2,4}))?(?!\d)', os.path.basename(p)):
+        y = int(m.group(3)) if m.group(3) else now.year
+        y = y + 2000 if y < 100 else y
+        try: return datetime.date(y, int(m.group(2)), int(m.group(1)))
+        except ValueError: continue
+    return None
+
 def files_in(folder):
     fs = [f for f in glob.glob(os.path.join(DL, folder, '*')) if f.lower().endswith(EXT) and not os.path.basename(f).startswith('~$')]
     # cùng tên nhưng khác đuôi (.xlsx và .xlsb) → ưu tiên .xlsx
@@ -26,7 +36,8 @@ def files_in(folder):
         if stem not in best or rank < best[stem][0]: best[stem] = (rank, f)
     skipped = sorted(set(fs) - {v[1] for v in best.values()})
     for f in skipped: log('Bỏ qua (trùng tên, đã có bản .xlsx):', os.path.basename(f))
-    return sorted([v[1] for v in best.values()], key=commit_time)
+    # file mới nhất xếp cuối: theo ngày trong tên file, rồi theo thời điểm tải lên
+    return sorted([v[1] for v in best.values()], key=lambda f: (name_date(f) or datetime.date(1900, 1, 1), commit_time(f)))
 
 def _cell(v):
     if v is None: return 'NaN'
@@ -60,16 +71,13 @@ def main():
     if not kho: sys.exit('THIẾU file tồn kho trong du_lieu/2_TON_KHO')
     f_cut, f_kho = cut[-1], kho[-1]
     log('File Cutting:', os.path.basename(f_cut)); log('File tồn kho:', os.path.basename(f_kho))
-    # Ngày báo cáo: lấy từ tên file tồn kho (vd "TỒN KHO 28.09"), không có thì lấy hôm nay (giờ VN)
+    # Ngày báo cáo = ngày mới nhất trong tên file Cutting / tồn kho; không có ngày trong tên thì lấy hôm nay (giờ VN)
     now = datetime.datetime.utcnow() + datetime.timedelta(hours=7)
-    m = re.search(r'(\d{1,2})[._-](\d{1,2})(?:[._-](\d{2,4}))?', os.path.basename(f_kho))
-    if m:
-        y = int(m.group(3)) if m.group(3) else now.year
-        y = y + 2000 if y < 100 else y
-        try: ngay = datetime.date(y, int(m.group(2)), int(m.group(1)))
-        except ValueError: ngay = now.date()
-    else:
-        ngay = now.date()
+    d_cut, d_kho = name_date(f_cut), name_date(f_kho)
+    ds = [d for d in (d_cut, d_kho) if d and d <= now.date()]
+    ngay = max(ds) if ds else now.date()
+    os.environ.update(NGAY_CUTTING=str(d_cut or ''), NGAY_KHO=str(d_kho or ''))
+    if d_cut and d_kho and d_cut != d_kho: log(f'Lưu ý: file Cutting ngày {d_cut:%d/%m}, file tồn kho ngày {d_kho:%d/%m} – phần kho tính theo ngày {d_kho:%d/%m}')
     log('Ngày báo cáo:', ngay)
     to_sheets(f_cut, os.path.join(CC, 'sheets.pkl'))
     to_sheets(f_kho, os.path.join(CC, 'kho', 'sheets.pkl'))

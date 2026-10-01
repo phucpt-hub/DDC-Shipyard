@@ -244,7 +244,7 @@ OUT=dict(date=REPORT_DATE,months=months,projects=PR,tot=tot,bal=bal,
   bykey=[dict(k=k,need=t_(r.need),own=t_(r.from_own),fc=t_(r.from_common),buy=t_(r.buy)) for k,r in bykey.head(14).iterrows()],
   kho_only=[dict(k=k,t=t_(v)) for k,v in kho_only.items()],nomap=nomap,
   fix=[dict(c=r.ma,d=r.quy_tac,g=r.nhom,n=int(r.n),t=t_(r.kl)) for r in errs.itertuples()],
-  files=dict(cutting=os.environ.get('FILE_CUTTING','DDC_SHIPYARD - KHGC - SC'),kho=os.environ.get('FILE_KHO','TỒN KHO'),nesting=[f for v in NES.values() for _,f in v],nes_skip=NES_SKIP))
+  files=dict(d_cut=os.environ.get('NGAY_CUTTING',''),d_kho=os.environ.get('NGAY_KHO',''),cutting=os.environ.get('FILE_CUTTING','DDC_SHIPYARD - KHGC - SC'),kho=os.environ.get('FILE_KHO','TỒN KHO'),nesting=[f for v in NES.values() for _,f in v],nes_skip=NES_SKIP))
 _CL=pd.DataFrame(CLEAN_LOG)
 if len(_CL):
     _g=_CL.groupby(['ma','quy_tac','nhom','file'],sort=False).agg(n=('row','size'),kl=('kl','sum')).reset_index()

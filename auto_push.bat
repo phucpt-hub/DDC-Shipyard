@@ -1,6 +1,3 @@
 @echo off
-cd /d "D:\DDC SHIPYARD\DDC-Shipyard_tu_dong"
-git add -A
-git diff --cached --quiet || git commit -m "Auto update %date% %time%"
-git pull --rebase --autostash origin main
-git push origin main
+cd /d "%~dp0"
+powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0cap_nhat.ps1"
