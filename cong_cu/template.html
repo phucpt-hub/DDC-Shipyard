@@ -10,6 +10,7 @@
   --d1:#3b4a54; --d2:#9fb0ba; --d3:#c9d3d9;
   --good:#2e7d4f; --warn:#c07a12; --bad:#d32f2f; --neutral:#a59c9b;
   --good-bg:#e6f3ea; --warn-bg:#fbf0dc; --bad-bg:#fde4e1;
+  --s0:#c62828; --s1:#e08a1e; --s2:#1f8a8a; --s3:#2e8b57; --s4:#3d5a80; --s5:#7b61b8; --s6:#8d8580;
   --f-disp:"IBM Plex Sans Condensed","Arial Narrow",Arial,sans-serif;
   --f-body:"IBM Plex Sans",Arial,sans-serif;
   --f-mono:"IBM Plex Mono",Consolas,monospace;
@@ -19,13 +20,13 @@
   --brand:#e5534b; --brand-d:#5c1511; --brand-dd:#420e0b; --brand-soft:#3a1a18; --on-brand:#ffffff; --rail-ink:#f2cfcb;
   --d1:#a9bcc8; --d2:#5d707c; --d3:#3b4850;
   --good:#5fb783; --warn:#e0a84a; --bad:#ff6b5e; --neutral:#6e6363;
-  --good-bg:#1c3226; --warn-bg:#3a2e17; --bad-bg:#40201d; color-scheme:dark}}
+  --good-bg:#1c3226; --warn-bg:#3a2e17; --bad-bg:#40201d; --s0:#ef5350; --s1:#f0a33c; --s2:#3fb3b3; --s3:#56b87e; --s4:#7ea3cf; --s5:#a08ae0; --s6:#a49b96; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#151112; --panel:#1f1a1b; --ink:#efe8e7; --muted:#a89b9a; --line:#352d2e; --soft:#29221f;
   --brand:#e5534b; --brand-d:#5c1511; --brand-dd:#420e0b; --brand-soft:#3a1a18; --on-brand:#ffffff; --rail-ink:#f2cfcb;
   --d1:#a9bcc8; --d2:#5d707c; --d3:#3b4850;
   --good:#5fb783; --warn:#e0a84a; --bad:#ff6b5e; --neutral:#6e6363;
-  --good-bg:#1c3226; --warn-bg:#3a2e17; --bad-bg:#40201d; color-scheme:dark}
+  --good-bg:#1c3226; --warn-bg:#3a2e17; --bad-bg:#40201d; --s0:#ef5350; --s1:#f0a33c; --s2:#3fb3b3; --s3:#56b87e; --s4:#7ea3cf; --s5:#a08ae0; --s6:#a49b96; color-scheme:dark}
 *{box-sizing:border-box}
 html,body{height:100%}
 body{background:var(--bg);color:var(--ink);font:14px/1.5 var(--f-body);margin:0}
@@ -160,6 +161,49 @@ tfoot td{font-weight:600;background:var(--soft)}
 code{font-family:var(--f-mono);font-size:12px;background:var(--soft);padding:1px 5px;border-radius:3px}
 #tip{position:fixed;pointer-events:none;background:var(--ink);color:var(--bg);font-size:12px;padding:6px 9px;border-radius:5px;max-width:300px;z-index:50;display:none;white-space:pre-line}
 
+
+/* ---------- period report ---------- */
+.fbar{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px 12px;display:flex;flex-direction:column;gap:8px;margin-top:16px}
+.frow{display:flex;flex-wrap:wrap;gap:6px 8px;align-items:center}
+.flab{font:600 11px var(--f-disp);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-left:6px}
+.frow .flab:first-child{margin-left:0}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:7px;overflow:hidden}
+.seg button{all:unset;cursor:pointer;padding:4px 12px;font-size:12.5px;color:var(--ink);border-right:1px solid var(--line)}
+.seg button:last-child{border-right:0}
+.seg button[aria-pressed=true]{background:var(--brand);color:var(--on-brand);font-weight:600}
+input[type=date]{font:13px var(--f-mono);color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:4px 6px}
+.fsum{margin-left:auto;font-size:12px;color:var(--muted)}
+.chip.xoa{color:var(--brand);border-color:var(--brand)}
+.chip .sw{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+.chip[aria-pressed=true] .sw{box-shadow:0 0 0 1.5px var(--on-brand)}
+.attn{margin-top:10px;background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--brand);border-radius:6px;padding:8px 12px;font-size:13px}
+.attn b:first-child{color:var(--brand);margin-right:8px}
+.kpis.k6{grid-template-columns:repeat(auto-fit,minmax(165px,1fr))}
+.kpi.s0{border-top-color:var(--s0)}.kpi.s0 .v{color:var(--s0)}.kpi.s1{border-top-color:var(--s1)}.kpi.s1 .v{color:var(--s1)}.kpi.s2{border-top-color:var(--s2)}.kpi.s2 .v{color:var(--s2)}
+.kpi.s3{border-top-color:var(--s3)}.kpi.s3 .v{color:var(--s3)}.kpi.s4{border-top-color:var(--s4)}.kpi.s4 .v{color:var(--s4)}.kpi.s5{border-top-color:var(--s5)}.kpi.s5 .v{color:var(--s5)}.kpi.s6{border-top-color:var(--s6)}.kpi.s6 .v{color:var(--s6)}
+.kpi .s{display:flex;flex-wrap:wrap;gap:4px 8px;align-items:center}
+.dl{font:600 11.5px var(--f-mono)} .dl.up,.up{color:var(--good)} .dl.dn,.dn{color:var(--bad)}
+.badge{font-size:11px;font-weight:600;padding:1px 7px;border-radius:9px;margin-left:auto}
+.badge.ok{background:var(--good-bg);color:var(--good)} .badge.no{background:var(--bad-bg);color:var(--bad)}
+.muted{color:var(--muted)}
+.tgt{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px 14px}
+.tg-h{display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px 16px;font-size:13px}
+.tg-h a{cursor:pointer}
+.tg-bar{position:relative;height:8px;background:var(--soft);border-radius:4px;margin-top:8px}
+.tg-bar i{display:block;height:100%;border-radius:4px;background:var(--good)}
+.tg-bar em{position:absolute;top:-4px;width:2px;height:16px;background:var(--ink);opacity:.6}
+.ins ul{margin:6px 0 0;padding-left:18px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:4px 28px;font-size:13px}
+.ins li::marker{color:var(--brand)}
+.g21{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:16px}
+.tmark{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--ink);opacity:.7}
+.donut{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center}
+.dleg{display:flex;flex-direction:column;gap:3px;font-size:12px;min-width:0}
+.dleg span{display:flex;gap:6px;align-items:center}.dleg i{width:10px;height:10px;border-radius:2px;flex:none}
+.hdr-btn{all:unset;cursor:pointer;font-size:12.5px;border:1px solid var(--line);border-radius:6px;padding:4px 10px;color:var(--ink)}
+.hdr-btn:hover{border-color:var(--brand)}
+@media (max-width:1100px){.g21{grid-template-columns:1fr}}
+@media print{.rail,.fbar .frow:first-child,.hdr-btn{display:none!important}.app{display:block}.band{position:static}.card,.kpi{break-inside:avoid}}
+
 @media (max-width:900px){
   .app{grid-template-columns:1fr}
   .rail{position:relative;height:auto;padding:12px 16px;gap:10px}
@@ -186,7 +230,7 @@ code{font-family:var(--f-mono);font-size:12px;background:var(--soft);padding:1px
   <div class="main">
     <header class="band"><div class="in">
       <div><div class="crumb" id="crumb">Tổng quan</div><h1 id="title">Toàn bộ dự án</h1></div>
-      <div class="right"><span class="chip-date" id="dchip"></span></div>
+      <div class="right"><button class="hdr-btn" id="theme">Sáng / Tối</button><button class="hdr-btn" id="prn" hidden>Xuất PDF</button><span class="chip-date" id="dchip"></span></div>
     </div></header>
     <main class="content" id="view"></main>
   </div>
@@ -263,7 +307,7 @@ const secH=(t,p)=>`<div class="sec-h"><h2>${t}</h2>${p?`<p>${p}</p>`:''}</div>`;
 
 /* ---------- views ---------- */
 const V={};
-V.ov={name:'Tổng quan',title:'Toàn bộ dự án',ico:'<path d="M3 13h8V3H3zM13 21h8V11h-8zM3 21h8v-6H3zM13 3v6h8V3z"/>',render(){
+V.ov={name:'Dự án',title:'Toàn bộ dự án',ico:'<path d="M3 13h8V3H3zM13 21h8V11h-8zM3 21h8v-6H3zM13 3v6h8V3z"/>',render(){
   const t=D.tot,b=D.bal,k=D.kho,remain=t.req-t.cut;
   const alerts=P.flatMap(p=>p.alerts.map(a=>({...a,p}))).sort((a,b)=>(a.s==='bad'?0:1)-(b.s==='bad'?0:1));
   const act=P.filter(p=>(p.pc??1)<0.999);
@@ -332,7 +376,7 @@ function projTable(){
   ],P.map(p=>({...p,_id:p.id})),{click:1,foot:['<b>Tổng</b>','',T(D.tot.kl),PC(D.tot.cut/D.tot.req),T(D.tot.req-D.tot.cut),PC(D.tot.bg/D.tot.kl),D.tot.n_lsx,T(D.bal.need),T(D.bal.buy),'','']});
 }
 
-V.sx={name:'Tiến độ sản xuất',title:'Tiến độ cắt, gia công và bàn giao',ico:'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',render(){
+V.sx={name:'Tiến độ LSX',title:'Tiến độ cắt, gia công và bàn giao',ico:'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',render(){
   const st={cut:'Cắt',khoan:'Khoan',chan:'Chấn / lốc',vat:'Vát mép'};
   const tot=Object.fromEntries(Object.keys(st).map(s=>[s,{req:sum(P,p=>p.stages[s].req),done:sum(P,p=>p.stages[s].done)}]));
   const act=P.filter(p=>(p.pc??1)<0.999);
@@ -488,16 +532,223 @@ function renderProject(p){
   draw();
 }
 
+/* ================= BÁO CÁO THEO KỲ: ngày / tuần / tháng / quý / năm ================= */
+const DAY=864e5, D0=Date.parse(D.ev.d0+'T00:00:00Z'), DEND=Date.parse(D.date+'T00:00:00Z');
+const MACH=D.ev.mach;
+const STG=[{k:0,n:'Cắt',c:'--s0'},{k:1,n:'Khoan',c:'--s1'},{k:2,n:'Chấn / lốc',c:'--s2'},{k:3,n:'Vát mép',c:'--s3'},{k:4,n:'Bàn giao',c:'--s4'},{k:5,n:'KL lệnh ban hành',c:'--s5'},{k:6,n:'Kho xuất thép',c:'--s6'}];
+const isoD=t=>new Date(t).toISOString().slice(0,10);
+const dm=t=>{const d=new Date(t);return String(d.getUTCDate()).padStart(2,'0')+'/'+String(d.getUTCMonth()+1).padStart(2,'0')};
+const dmy=t=>dm(t)+'/'+new Date(t).getUTCFullYear();
+const parseD=s=>{const t=Date.parse(s+'T00:00:00Z');return isNaN(t)?null:t};
+function isoWeek(t){const wd=(new Date(t).getUTCDay()+6)%7;const th=t-wd*DAY+3*DAY;const y=new Date(th).getUTCFullYear();return {y,w:Math.floor((th-Date.UTC(y,0,1))/DAY/7)+1}}
+function pkey(t,g){const d=new Date(t),y=d.getUTCFullYear(),m=d.getUTCMonth();
+  if(g==='day')return isoD(t);
+  if(g==='week'){const wd=(d.getUTCDay()+6)%7;return isoD(t-wd*DAY)}
+  if(g==='month')return y+'-'+String(m+1).padStart(2,'0');
+  if(g==='quarter')return y+'-Q'+(Math.floor(m/3)+1);
+  return String(y)}
+function plabel(k,g){
+  if(g==='day')return dm(parseD(k));
+  if(g==='week'){const w=isoWeek(parseD(k));return 'W'+w.w+' · '+dm(parseD(k))}
+  if(g==='month'){const[y,m]=k.split('-');return 'T'+(+m)+'/'+y.slice(2)}
+  if(g==='quarter'){const[y,q]=k.split('-');return q+'/'+y.slice(2)}
+  return k}
+function periods(from,to,g){const ks=[];let last=null;for(let t=from;t<=to;t+=DAY){const k=pkey(t,g);if(k!==last){ks.push(k);last=k}}return ks}
+const workdays=(from,to)=>{let n=0;for(let t=from;t<=to;t+=DAY){if(new Date(t).getUTCDay()!==0)n++}return n};
+const GLAB={day:'Ngày',week:'Tuần',month:'Tháng',quarter:'Quý',year:'Năm'};
+const MONTH0=t=>{const d=new Date(t);return Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),1)};
+const QUICK={
+  d1:{n:'Ngày số liệu',f:()=>[DEND,DEND],g:'day'},
+  d7:{n:'7 ngày',f:()=>[DEND-6*DAY,DEND],g:'day'},
+  mtd:{n:'Tháng này',f:()=>[MONTH0(DEND),DEND],g:'day'},
+  m3:{n:'3 tháng',f:()=>{const d=new Date(DEND);return[Date.UTC(d.getUTCFullYear(),d.getUTCMonth()-2,1),DEND]},g:'week'},
+  qtd:{n:'Quý này',f:()=>{const d=new Date(DEND);return[Date.UTC(d.getUTCFullYear(),Math.floor(d.getUTCMonth()/3)*3,1),DEND]},g:'week'},
+  ytd:{n:'Năm nay',f:()=>[Date.UTC(new Date(DEND).getUTCFullYear(),0,1),DEND],g:'month'},
+  all:{n:'Tất cả',f:()=>[D0,DEND],g:'month'}};
+const FS={q:'mtd',g:'day',from:MONTH0(DEND),to:DEND,p:'',m:'',ser:[0,4],piv:0,by:'p'};
+try{const s=JSON.parse(localStorage.getItem('chuoi-fs')||'null');if(s&&s.from>=D0&&s.to<=DEND)Object.assign(FS,s)}catch(e){}
+const saveFS=()=>{try{localStorage.setItem('chuoi-fs',JSON.stringify(FS))}catch(e){}};
+function getTarget(monthKey){let v=null;try{v=JSON.parse(localStorage.getItem('chuoi-target')||'{}')[monthKey]}catch(e){}
+  const cfg=D.target.by_month[monthKey];return v!=null?{v:+v,src:'nhập tay'}:cfg&&cfg.cut?{v:cfg.cut,src:'file cấu hình'}:{v:D.target.base,src:'TB 3 tháng gần nhất'}}
+
+function agg(from,to,g,{p=FS.p,m=FS.m}={}){
+  const keys=periods(from,to,g),ix=new Map(keys.map((k,i)=>[k,i]));
+  const S=STG.map(()=>new Array(keys.length).fill(0)),tot=new Array(7).fill(0);
+  const byP={},byM={},days=new Map();
+  for(const r of D.ev.rows){const t=D0+r[0]*DAY;if(t<from||t>to)continue;
+    if(p!==''&&r[1]!==+p)continue;
+    if(m!==''&&(r[3]>4||r[2]!==+m))continue;
+    const i=ix.get(pkey(t,g));S[r[3]][i]+=r[4];tot[r[3]]+=r[4];
+    (byP[r[1]]=byP[r[1]]||new Array(7).fill(0))[r[3]]+=r[4];
+    if(r[2]>=0)(byM[r[2]]=byM[r[2]]||new Array(7).fill(0))[r[3]]+=r[4];
+    if(r[3]===0)days.set(t,(days.get(t)||0)+r[4]);}
+  return {keys,S,tot,byP,byM,days}}
+function backlog(to,p){let c=0,b=0;for(const r of D.ev.rows){if(D0+r[0]*DAY>to)continue;if(p!==''&&r[1]!==+p)continue;if(r[3]===0)c+=r[4];else if(r[3]===4)b+=r[4]}return c-b}
+const delta=(a,b)=>{if(!b)return '';const d=(a-b)/b;return `<span class="dl ${d>=0?'up':'dn'}">${d>=0?'▲':'▼'} ${nf1.format(Math.abs(d*100))}%</span>`};
+
+function filterBar(){
+  const pOpt=P.map((p,i)=>`<option value="${i}" ${FS.p===String(i)?'selected':''}>${esc(p.name)}</option>`).join('');
+  const mOpt=MACH.map((m,i)=>`<option value="${i}" ${FS.m===String(i)?'selected':''}>${esc(m)}</option>`).join('');
+  return `<div class="fbar">
+   <div class="frow"><span class="flab">Kỳ</span><div class="seg">${Object.entries(GLAB).map(([k,n])=>`<button data-g="${k}" aria-pressed="${FS.g===k}">${n}</button>`).join('')}</div>
+    <span class="flab">Nhanh</span>${Object.entries(QUICK).map(([k,q])=>`<button class="chip" data-q="${k}" aria-pressed="${FS.q===k}">${q.n}</button>`).join('')}
+</div>
+   <div class="frow"><span class="flab">Từ</span><input type="date" id="f-from" value="${isoD(FS.from)}" min="${D.ev.d0}" max="${D.date}"><span class="flab">đến</span><input type="date" id="f-to" value="${isoD(FS.to)}" min="${D.ev.d0}" max="${D.date}">
+    <span class="flab">Dự án</span><select id="f-p" style="max-width:240px"><option value="">Tất cả dự án</option>${pOpt}</select>
+    <span class="flab">Máy</span><select id="f-m" style="max-width:220px"><option value="">Tất cả máy</option>${mOpt}</select>
+    ${(FS.p!==''||FS.m!==''||FS.q!=='mtd')?`<button class="chip xoa" id="f-clear">✕ Xóa lọc</button>`:''}
+    <span class="fsum">${dmy(FS.from)} → ${dmy(FS.to)} · ${workdays(FS.from,FS.to)} ngày làm việc</span></div></div>`}
+function bindFilter(rerender){
+  const root=$('view');
+  root.querySelectorAll('[data-g]').forEach(b=>b.onclick=()=>{FS.g=b.dataset.g;saveFS();rerender()});
+  root.querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>{const q=QUICK[b.dataset.q];[FS.from,FS.to]=q.f();FS.from=Math.max(FS.from,D0);FS.g=q.g;FS.q=b.dataset.q;saveFS();rerender()});
+  const fd=()=>{const a=parseD($('f-from').value),b=parseD($('f-to').value);if(a!=null&&b!=null&&a<=b){FS.from=Math.max(a,D0);FS.to=Math.min(b,DEND);FS.q='';const n=(FS.to-FS.from)/DAY;FS.g=n<=45?'day':n<=150?'week':n<=500?'month':'quarter';saveFS();rerender()}};
+  $('f-from').onchange=fd;$('f-to').onchange=fd;
+  $('f-p').onchange=e=>{FS.p=e.target.value;saveFS();rerender()};
+  $('f-m').onchange=e=>{FS.m=e.target.value;saveFS();rerender()};
+  const c=$('f-clear');if(c)c.onclick=()=>{FS.p='';FS.m='';FS.q='mtd';FS.from=MONTH0(DEND);FS.to=DEND;FS.g='day';saveFS();rerender()};
+}
+
+/* ---- charts ---- */
+function barLine(keys,g,series,{h=280,ma=null,unit='t'}={}){
+  const W=900,L=50,R=12,Tp=14,B=34,n=keys.length,gw=(W-L-R)/Math.max(1,n),k=series.length,bw=Math.max(2,Math.min(26,(gw-4)/k));
+  const mx=Math.max(1e-9,...series.flatMap(s=>s.v),...(ma?ma.v:[0]));const[top,ticks]=nice(mx);const y=v=>Tp+(h-Tp-B)*(1-v/top);
+  const step=Math.ceil(n/(g==='day'?16:14));
+  let s=ticks.map(t=>`<line class="grid-l" x1="${L}" x2="${W-R}" y1="${y(t)}" y2="${y(t)}"/><text x="${L-6}" y="${y(t)+4}" text-anchor="end">${T0(t)}</text>`).join('');
+  keys.forEach((kk,i)=>{const x0=L+i*gw+(gw-bw*k)/2;const lb=plabel(kk,g);
+    series.forEach((se,j)=>{const v=se.v[i]||0,yy=y(v);if(v>0)s+=`<rect x="${x0+j*bw}" y="${yy}" width="${Math.max(1,bw-1.5)}" height="${h-B-yy}" rx="1.5" style="fill:var(${se.c})" data-tip="${lb}\n${se.n}: ${T(v)} ${unit}"></rect>`});
+    if(i%step===0)s+=`<text x="${L+i*gw+gw/2}" y="${h-14}" text-anchor="middle">${lb.split(' · ')[0]}</text>`});
+  if(ma){const pts=ma.v.map((v,i)=>v==null?null:`${L+i*gw+gw/2},${y(v)}`).filter(Boolean).join(' ');
+    s+=`<polyline points="${pts}" fill="none" style="stroke:var(--ink)" stroke-width="2" stroke-linejoin="round" opacity=".75"/>`;}
+  s+=`<line class="axis" x1="${L}" x2="${W-R}" y1="${h-B}" y2="${h-B}"/>`;
+  const leg=series.map(se=>`<span><i style="background:var(${se.c})"></i>${se.n}</span>`).join('')+(ma?`<span><i style="background:var(--ink);height:2px;opacity:.75"></i>${ma.n}</span>`:'');
+  return `<div class="legend">${leg}</div><svg viewBox="0 0 ${W} ${h}" width="100%" role="img" aria-label="Biểu đồ theo kỳ">${s}</svg>`}
+function pctLine(keys,g,v,{h=190,target=0.95}={}){
+  const W=900,L=50,R=12,Tp=22,B=30,n=keys.length,gw=(W-L-R)/Math.max(1,n);
+  const vals=v.map(x=>x==null?null:Math.min(x,1.5));const top=Math.max(1.2,...vals.filter(x=>x!=null));const y=q=>Tp+(h-Tp-B)*(1-q/top);
+  const step=Math.ceil(n/(g==='day'?16:14));
+  let s=[0,0.5,1].map(t=>`<line class="grid-l" x1="${L}" x2="${W-R}" y1="${y(t)}" y2="${y(t)}"/><text x="${L-6}" y="${y(t)+4}" text-anchor="end">${t*100}%</text>`).join('');
+  s+=`<line x1="${L}" x2="${W-R}" y1="${y(target)}" y2="${y(target)}" style="stroke:var(--good)" stroke-dasharray="5 4"/><text x="${W-R}" y="${y(target)-5}" text-anchor="end" style="fill:var(--good)">mục tiêu ${target*100}%</text>`;
+  const pts=vals.map((q,i)=>q==null?null:[L+i*gw+gw/2,y(q),q,i]).filter(Boolean);
+  s+=`<polyline points="${pts.map(p=>p[0]+','+p[1]).join(' ')}" fill="none" style="stroke:var(--brand)" stroke-width="2"/>`;
+  s+=pts.map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="3.2" style="fill:${p[2]<target?'var(--bad)':'var(--brand)'}" data-tip="${plabel(keys[p[3]],g)}\nBàn giao / cắt: ${PC(v[p[3]])}"/>`+(pts.length<=31?`<text x="${p[0]}" y="${p[1]-8}" text-anchor="middle" style="fill:${p[2]<target?'var(--bad)':'var(--muted)'};font-size:10px">${Math.round(v[p[3]]*100)}%</text>`:'')).join('');
+  keys.forEach((kk,i)=>{if(i%step===0)s+=`<text x="${L+i*gw+gw/2}" y="${h-10}" text-anchor="middle">${plabel(kk,g).split(' · ')[0]}</text>`});
+  return `<svg viewBox="0 0 ${W} ${h}" width="100%" role="img" aria-label="Tỷ lệ bàn giao trên cắt">${s}</svg>`}
+function donut(parts,center,sub){const tot=parts.reduce((a,b)=>a+b.v,0)||1;let a0=-Math.PI/2;const R=70,r=44,cx=90,cy=90;
+  const arcs=parts.filter(p=>p.v>0).map(p=>{const a1=a0+p.v/tot*2*Math.PI;const lg=a1-a0>Math.PI?1:0;
+    const pth=`M${cx+R*Math.cos(a0)},${cy+R*Math.sin(a0)} A${R},${R} 0 ${lg} 1 ${cx+R*Math.cos(a1)},${cy+R*Math.sin(a1)} L${cx+r*Math.cos(a1)},${cy+r*Math.sin(a1)} A${r},${r} 0 ${lg} 0 ${cx+r*Math.cos(a0)},${cy+r*Math.sin(a0)}Z`;
+    const mid=(a0+a1)/2;const lab=p.v/tot>0.06?`<text x="${cx+(R+r)/2*Math.cos(mid)}" y="${cy+(R+r)/2*Math.sin(mid)+3}" text-anchor="middle" style="fill:#fff;font-size:9.5px;font-weight:600">${Math.round(p.v/tot*100)}%</text>`:'';
+    a0=a1;return `<path d="${pth}" style="fill:${p.col}" data-tip="${esc(p.n)}: ${T(p.v)} t (${PC(p.v/tot)})"/>${lab}`}).join('');
+  return `<div class="donut"><svg viewBox="0 0 180 180" width="180" height="180" role="img" aria-label="Cơ cấu">${arcs}<text x="90" y="88" text-anchor="middle" style="font:700 17px var(--f-disp);fill:var(--ink)">${center}</text><text x="90" y="104" text-anchor="middle" style="font-size:10px">${sub}</text></svg>
+  <div class="dleg">${parts.filter(p=>p.v>0).map(p=>`<span><i style="background:${p.col}"></i>${esc(p.n)} <b class="num">${T(p.v)}</b></span>`).join('')}</div></div>`}
+const PAL=['var(--s0)','var(--s1)','var(--s2)','var(--s3)','var(--s5)','var(--s4)','var(--s6)','var(--neutral)'];
+
+/* ---- 01 Điều hành ---- */
+V.dh={name:'Điều hành',title:'Sản lượng cắt · gia công · bàn giao',ico:'<path d="M3 3v18h18M7 15l4-4 3 3 5-6"/>',render(){
+  const {from,to,g,p}=FS;const A=agg(from,to,g);const len=to-from+DAY;const hasPrev=from-len>=D0;const Bp=hasPrev?agg(from-len,from-DAY,g):{tot:new Array(7).fill(0),byP:{},byM:{}};
+  const cut=A.tot[0],bg=A.tot[4],wd=workdays(from,to),dcut=[...A.days.values()].length;
+  const bl=backlog(to,p);const ol=openLsx.filter(l=>p===''||l.p===P[+p]);const old=ol.filter(l=>l.age>30);
+  const buy=p===''?D.bal.buy:(buyOf(P[+p])||0);
+  const ratio=cut?bg/cut:null;
+  // mục tiêu tháng của ngày "đến"
+  const mk=pkey(to,'month'),m0=MONTH0(to),m1=Date.UTC(new Date(to).getUTCFullYear(),new Date(to).getUTCMonth()+1,0);
+  const TG=getTarget(mk);const Am=agg(m0,to,'month',{p:'',m:''});const done=Am.tot[0];
+  const wdE=workdays(m0,to),wdT=workdays(m0,m1),fc=wdE?done/wdE*wdT:0,need=Math.max(0,(TG.v-done)/Math.max(1,wdT-wdE));
+  // nhận định
+  const mrank=Object.entries(A.byM).map(([i,v])=>({n:MACH[i],v:v[0]})).filter(x=>x.v>0).sort((a,b)=>b.v-a.v);
+  const prank=Object.entries(A.byP).map(([i,v])=>({i:+i,n:P[i].name,c:v[0],b:v[4]})).sort((a,b)=>b.c-a.c);
+  const peak=[...A.days.entries()].sort((a,b)=>b[1]-a[1])[0];
+  const blP=p===''?P.map((q,i)=>({n:q.name,v:backlog(to,String(i))})).sort((a,b)=>b.v-a.v)[0]:null;
+  const ins=[
+    `Sản lượng cắt kỳ này <b>${T(cut)} t</b> ${Bp.tot[0]?`— ${cut>=Bp.tot[0]?'<b class="up">▲ tăng':'<b class="dn">▼ giảm'} ${nf1.format(Math.abs((cut-Bp.tot[0])/Bp.tot[0]*100))}%</b> so với ${Math.round(len/DAY)} ngày liền trước (${T(Bp.tot[0])} t)`:''}.`,
+    mrank.length?`Máy dẫn đầu: <b>${esc(mrank[0].n)}</b> (${T(mrank[0].v)} t · ${PC(mrank[0].v/cut)} sản lượng)${mrank.length>1?` · thấp nhất: ${esc(mrank[mrank.length-1].n)} (${T(mrank[mrank.length-1].v)} t)`:''}.`:'Không có sản lượng cắt trong kỳ.',
+    `Bàn giao <b>${T(bg)} t</b> = <b class="${ratio!=null&&ratio<0.95?'dn':'up'}">${PC(ratio)}</b> sản lượng cắt · tồn cắt chưa bàn giao đến ${dm(to)}: <b>${T(bl)} t</b>${blP&&blP.v>0.5?` — nhiều nhất tại ${esc(blP.n)} (${T(blP.v)} t)`:''}.`,
+    p===''&&prank.length?`Dự án cắt nhiều nhất: <b>${esc(prank[0].n)}</b> (${T(prank[0].c)} t)${peak?` · ngày cao nhất ${dm(peak[0])}: <b>${T(peak[1])} t</b>`:''}.`:(peak?`Ngày cao nhất ${dm(peak[0])}: <b>${T(peak[1])} t</b> · ${dcut} ngày có sản lượng / ${wd} ngày làm việc.`:''),
+    `${ol.length} LSX chưa cắt xong (${T(sum(ol,l=>l.rem))} t)${old.length?`, trong đó <b class="dn">${old.length} lệnh quá 30 ngày</b>`:''} · thiếu thép cho nesting chưa cắt: <b class="${buy>0.05?'dn':'up'}">${T(buy)} t</b>.`];
+  // series
+  const ser=FS.ser.map(k=>({n:STG[k].n,c:STG[k].c,v:A.S[k]}));
+  let ma=null;if(g==='day'&&FS.ser.includes(0)){const c=A.S[0];ma={n:'Cắt TB 7 ngày',v:c.map((_,i)=>i<3?null:sum(c.slice(Math.max(0,i-6),i+1),x=>x)/Math.min(7,i+1))}}
+  const rp=A.keys.map((_,i)=>A.S[0][i]>0.05?A.S[4][i]/A.S[0][i]:null);
+  const stTot=[0,1,2,3,4].map(k=>A.tot[k]);
+  const tgt=TG.v*(wd/Math.max(1,wdT));
+  const pieP=prank.filter(x=>x.c>0);const pie=pieP.slice(0,6).map((x,i)=>({n:x.n,v:x.c,col:PAL[i]}));if(pieP.length>6)pie.push({n:'Khác',v:sum(pieP.slice(6),x=>x.c),col:PAL[7]});
+  const pieM=mrank.slice(0,6).map((x,i)=>({n:x.n,v:x.v,col:PAL[i]}));if(mrank.length>6)pieM.push({n:'Khác',v:sum(mrank.slice(6),x=>x.v),col:PAL[7]});
+  const kc=(k,v,prev,sub,cls='')=>`<div class="kpi ${cls}"><div class="l">${k}</div><div class="v">${v}</div><div class="s">${sub||''} ${prev||''}</div></div>`;
+  return filterBar()+`
+  <div class="attn"><b>✕ CẦN CHÚ Ý</b> Bàn giao/cắt <b>${PC(ratio)}</b> · Tồn cắt chưa giao <b>${T(bl)} t</b> · LSX quá 30 ngày <b>${old.length}</b> · Thiếu thép <b>${T(buy)} t</b>${FS.m!==''?' · <i>Lọc theo máy: không tính KL lệnh ban hành và kho xuất</i>':''}</div>
+  <section style="margin-top:12px"><div class="kpis k6">
+   ${kc('CẮT (T)',`${T(cut)}`,delta(cut,Bp.tot[0]),`${dcut} ngày có sản lượng`,'s0')}
+   ${kc('KHOAN (T)',T(A.tot[1]),delta(A.tot[1],Bp.tot[1]),'','s1')}
+   ${kc('CHẤN / LỐC (T)',T(A.tot[2]),delta(A.tot[2],Bp.tot[2]),'','s2')}
+   ${kc('VÁT MÉP (T)',T(A.tot[3]),delta(A.tot[3],Bp.tot[3]),'','s3')}
+   ${kc('BÀN GIAO (T)',T(bg),delta(bg,Bp.tot[4]),'','s4')}
+   ${kc('KL LỆNH BAN HÀNH (T)',FS.m!==''?'–':T(A.tot[5]),FS.m!==''?'':delta(A.tot[5],Bp.tot[5]),'lệnh mới trong kỳ','s5')}
+  </div><div class="kpis k6" style="margin-top:10px">
+   ${kc('TỶ LỆ BÀN GIAO / CẮT',PC(ratio),`<span class="badge ${ratio!=null&&ratio>=0.95?'ok':'no'}">${ratio!=null&&ratio>=0.95?'✓ Đạt':'✕ Chưa đạt'}</span>`,'mục tiêu ≥ 95%',ratio!=null&&ratio<0.95?'bad':'good')}
+   ${kc('CẮT TB / NGÀY LÀM VIỆC',T(wd?cut/wd:0),'',`${wd} ngày làm việc (trừ CN)`)}
+   ${kc('TỒN CẮT CHƯA BÀN GIAO',T(bl),'',`lũy kế đến ${dm(to)}`,bl>200?'bad':'')}
+   ${kc('LSX CHƯA CẮT XONG',ol.length,`<span class="badge ${old.length?'no':'ok'}">${old.length?'! '+old.length+' quá 30 ngày':'✓ Không tồn'}</span>`,`${T(sum(ol,l=>l.rem))} t còn phải cắt`,old.length?'bad':'')}
+   ${kc('THIẾU THÉP (T)',T(buy),`<span class="badge ${buy>0.05?'no':'ok'}">${buy>0.05?'! Phải mua':'✓ Đủ'}</span>`,'nesting chưa cắt',buy>0.05?'bad':'good')}
+   ${kc('KHO XUẤT THÉP (T)',FS.m!==''?'–':T(A.tot[6]),FS.m!==''?'':delta(A.tot[6],Bp.tot[6]),'phiếu xuất kho trong kỳ','s6')}
+  </div></section>
+  <section class="tgt"><div class="tg-h"><span>Mục tiêu cắt ${plabel(mk,'month')}: <b>${T0(TG.v)} t</b> <span class="muted">(${TG.src} · <a id="tg-edit">sửa</a>)</span> · Đã cắt <b>${T(done)} t (${PC(done/TG.v)})</b> · đến ${dm(Math.min(to,m1))}</span>
+    <span>Dự báo cuối tháng: <b>${T(fc)} t</b> · ${PC(fc/TG.v)} · cần <b>${T(need)} t/ngày</b> cho ${wdT-wdE} ngày còn lại</span></div>
+    <div class="tg-bar"><i style="width:${Math.min(100,done/TG.v*100)}%"></i><em style="left:${Math.min(100,wdE/wdT*100)}%" data-tip="Tiến độ thời gian: ${wdE}/${wdT} ngày làm việc"></em></div>
+    ${p!==''||FS.m!==''?'<p class="note">Mục tiêu là của toàn xưởng; thanh tiến độ không áp dụng bộ lọc dự án/máy.</p>':''}</section>
+  <section class="card ins"><h3 style="color:var(--brand)">NHẬN ĐỊNH ĐIỀU HÀNH <span class="muted" style="text-transform:none;letter-spacing:0;font-weight:400">· tự tổng hợp theo bộ lọc</span></h3><ul>${ins.filter(Boolean).map(x=>`<li>${x}</li>`).join('')}</ul></section>
+  <section class="g21">
+   <div class="card"><h3>Sản lượng theo ${GLAB[g].toLowerCase()} · ${dm(from)}–${dm(to)}</h3>
+    <div class="filters">${STG.map(s=>`<button class="chip" data-ser="${s.k}" aria-pressed="${FS.ser.includes(s.k)}"><i class="sw" style="background:var(${s.c})"></i>${s.n}</button>`).join('')}</div>
+    ${barLine(A.keys,g,ser,{ma})}
+    <h3 style="margin-top:14px">Tỷ lệ bàn giao / cắt theo ${GLAB[g].toLowerCase()}</h3>${pctLine(A.keys,g,rp)}</div>
+   <div class="card"><h3>Sản lượng theo công đoạn <span class="muted" style="text-transform:none;letter-spacing:0;font-weight:400">· vạch = mục tiêu cắt theo số ngày của kỳ (${T0(tgt)} t)</span></h3>
+    <div class="hb" style="grid-template-columns:78px minmax(0,1fr) auto">${[0,1,2,3,4].map(k=>{const mxv=Math.max(tgt,...stTot)||1;return `<div class="lab">${STG[k].n}</div><div class="track" style="height:22px;position:relative"><i style="width:${stTot[k]/mxv*100}%;background:var(${STG[k].c})" data-tip="${STG[k].n}: ${T(stTot[k])} t"></i>${k===0?`<em class="tmark" style="left:${tgt/mxv*100}%"></em>`:''}</div><div class="val">${T(stTot[k])} t${k===0&&tgt?` · ${PC(stTot[0]/tgt)}`:''}</div>`}).join('')}</div>
+    <div class="seg" style="margin:16px 0 6px"><button data-by="p" aria-pressed="${FS.by==='p'}">Cơ cấu theo dự án</button><button data-by="m" aria-pressed="${FS.by==='m'}">Theo máy</button></div>
+    ${donut(FS.by==='m'?pieM:pie,T(cut),'tấn đã cắt')}</div></section>
+  <section class="grid">
+   <div class="card"><h3>Theo dự án trong kỳ</h3>${table('t-dhp',[{h:'Dự án',f:x=>`<a data-go="${esc(P[x.i].id)}">${esc(x.n)}</a>`,s:x=>x.n},{h:'Cắt (t)',n:1,f:x=>T(x.c),s:x=>x.c},{h:'% kỳ',n:1,f:x=>PC(cut?x.c/cut:0),s:x=>x.c},{h:'Bàn giao (t)',n:1,f:x=>T(x.b),s:x=>x.b},{h:'BG / cắt',n:1,f:x=>x.c>0.05?`<span style="color:${x.b/x.c<0.95?'var(--bad)':'var(--good)'}">${PC(x.b/x.c)}</span>`:'–',s:x=>x.c?x.b/x.c:-1},{h:'So kỳ trước',n:1,f:x=>delta(x.c,(Bp.byP[x.i]||[0])[0])||'–',s:x=>x.c-((Bp.byP[x.i]||[0])[0])}],prank.filter(x=>x.c>0||x.b>0),{foot:['Tổng',T(cut),'100%',T(bg),PC(ratio),delta(cut,Bp.tot[0])]})}</div>
+   <div class="card"><h3>Theo máy trong kỳ</h3>${table('t-dhm',[{h:'Máy',f:x=>esc(x.n),s:x=>x.n},{h:'Cắt (t)',n:1,f:x=>T(x.v),s:x=>x.v},{h:'% kỳ',n:1,f:x=>`${PC(cut?x.v/cut:0)}<span class="mini"><i style="width:${cut?x.v/cut*100:0}%"></i></span>`,s:x=>x.v},{h:'TB / ngày LV',n:1,f:x=>T(wd?x.v/wd:0),s:x=>x.v}],mrank)}</div></section>`;
+},after(){
+  const re=()=>show('v','dh');bindFilter(re);
+  $('view').querySelectorAll('[data-ser]').forEach(b=>b.onclick=()=>{const k=+b.dataset.ser;FS.ser=FS.ser.includes(k)?FS.ser.filter(x=>x!==k):[...FS.ser,k].sort();if(!FS.ser.length)FS.ser=[0];saveFS();re()});
+  $('view').querySelectorAll('[data-by]').forEach(b=>b.onclick=()=>{FS.by=b.dataset.by;saveFS();re()});
+  const te=$('tg-edit');if(te)te.onclick=()=>{const mk=pkey(FS.to,'month');const box=document.createElement('span');box.innerHTML=` <input id="tg-in" type="number" min="0" step="100" value="${getTarget(mk).v}" style="width:90px"> <button class="b" id="tg-ok">Lưu</button> <button class="b" id="tg-rs">Mặc định</button>`;te.replaceWith(box);
+    $('tg-ok').onclick=()=>{let o={};try{o=JSON.parse(localStorage.getItem('chuoi-target')||'{}')}catch(e){}o[mk]=+$('tg-in').value;try{localStorage.setItem('chuoi-target',JSON.stringify(o))}catch(e){}re()};
+    $('tg-rs').onclick=()=>{let o={};try{o=JSON.parse(localStorage.getItem('chuoi-target')||'{}')}catch(e){}delete o[mk];try{localStorage.setItem('chuoi-target',JSON.stringify(o))}catch(e){}re()}};
+}};
+
+/* ---- 02 Báo cáo kỳ ---- */
+V.bc={name:'Báo cáo kỳ',title:'Báo cáo ngày · tuần · tháng · quý · năm',ico:'<path d="M4 4h16v16H4zM4 9h16M9 9v11"/>',render(){
+  const {from,to,g}=FS;const A=agg(from,to,g);const keys=A.keys;
+  const rows=keys.map((k,i)=>({k,l:plabel(k,g),v:STG.map(s=>A.S[s.k][i])}));
+  const piv=FS.piv;
+  const pr=P.map((q,i)=>{const r=agg(from,to,g,{p:String(i)});return {i,n:q.name,v:r.S[piv],t:r.tot[piv]}}).filter(x=>x.t>0.0005).sort((a,b)=>b.t-a.t);
+  const tsv=[['Kỳ',...STG.map(s=>s.n+' (t)'),'Bàn giao / cắt'].join('\t'),...rows.map(r=>[r.l,...r.v.map(x=>x.toFixed(3).replace('.',',')),r.v[0]?(r.v[4]/r.v[0]*100).toFixed(1).replace('.',',')+'%':''].join('\t'))].join('\n');
+  window._tsv=tsv;
+  return filterBar()+`
+  <section>${secH(`Báo cáo theo ${GLAB[g].toLowerCase()}`,`${rows.length} kỳ · ${dmy(from)} → ${dmy(to)}${FS.p!==''?' · '+esc(P[+FS.p].name):''}${FS.m!==''?' · '+esc(MACH[+FS.m]):''}`)}
+   <div class="filters"><button class="b" id="bc-copy">Sao chép bảng (dán vào Excel)</button><span class="muted" id="bc-msg"></span></div>
+   ${table('t-bc',[{h:GLAB[g],f:r=>`<b>${r.l}</b>`,s:r=>r.k},...STG.map(s=>({h:s.n,n:1,f:r=>r.v[s.k]>0.0005?T(r.v[s.k]):'<span class="muted">–</span>',s:r=>r.v[s.k]})),{h:'BG / cắt',n:1,f:r=>r.v[0]>0.05?`<span style="color:${r.v[4]/r.v[0]<0.95?'var(--bad)':'var(--good)'}">${PC(r.v[4]/r.v[0])}</span>`:'–',s:r=>r.v[0]?r.v[4]/r.v[0]:-1}],rows,{foot:['Tổng',...STG.map(s=>T(A.tot[s.k])),PC(A.tot[0]?A.tot[4]/A.tot[0]:null)]})}</section>
+  <section>${secH('Dự án × kỳ',`chỉ tiêu: ${STG[piv].n} (tấn)`)}
+   <div class="filters">${STG.map(s=>`<button class="chip" data-piv="${s.k}" aria-pressed="${piv===s.k}"><i class="sw" style="background:var(${s.c})"></i>${s.n}</button>`).join('')}</div>
+   ${keys.length>40?'<p class="note">Nhiều kỳ quá để xem dạng bảng ngang; chọn kỳ Tuần/Tháng hoặc rút ngắn khoảng ngày.</p>':table('t-piv',[{h:'Dự án',f:x=>`<a data-go="${esc(P[x.i].id)}">${esc(x.n)}</a>`,s:x=>x.n},...keys.map((k,j)=>({h:plabel(k,g).split(' · ')[0],n:1,f:x=>x.v[j]>0.0005?T(x.v[j]):'<span class="muted">·</span>',s:x=>x.v[j]})),{h:'Tổng',n:1,f:x=>`<b>${T(x.t)}</b>`,s:x=>x.t}],pr,{foot:['Tổng',...keys.map((k,j)=>T(A.S[piv][j])),T(A.tot[piv])]})}</section>`;
+},after(){
+  const re=()=>show('v','bc');bindFilter(re);
+  $('view').querySelectorAll('[data-piv]').forEach(b=>b.onclick=()=>{FS.piv=+b.dataset.piv;saveFS();re()});
+  $('bc-copy').onclick=()=>{navigator.clipboard.writeText(window._tsv).then(()=>$('bc-msg').textContent='Đã sao chép, dán vào Excel.').catch(()=>{$('bc-msg').textContent='Trình duyệt chặn sao chép.'})};
+}};
+
 /* ---------- navigation ---------- */
 const nav=$('nav'),plist=$('plist');
 const cnt={ov:'',sx:openLsx.length,th:D.bal.buy>0.05?'!':'',ne:P.filter(p=>p.nes).length,src:''};
-nav.innerHTML=Object.entries(V).map(([k,v])=>`<button data-v="${k}"><svg viewBox="0 0 24 24" aria-hidden="true">${v.ico}</svg>${v.name}${cnt[k]!==''?`<span class="cnt">${cnt[k]}</span>`:''}</button>`).join('');
+const ORDER=['dh','bc','ov','sx','th','ne','src'];cnt.dh='';cnt.bc='';
+nav.innerHTML=ORDER.map((k,i)=>{const v=V[k];return `<button data-v="${k}"><svg viewBox="0 0 24 24" aria-hidden="true">${v.ico}</svg><span><small style="opacity:.6;font:600 10px var(--f-mono);margin-right:6px">${String(i+1).padStart(2,'0')}</small>${v.name}</span>${cnt[k]!==''&&cnt[k]!=null?`<span class="cnt">${cnt[k]}</span>`:''}</button>`}).join('');
 plist.innerHTML=P.map(p=>{const hs=health(p);return `<button data-p="${esc(p.id)}" title="${esc(p.name)} · ${hs.t}"><span class="dot dot-${hs.c}"></span><span class="nm">${esc(p.name)}</span><span class="pc">${p.pc==null?'–':Math.round(p.pc*100)+'%'}</span><span class="bar"><i style="width:${(p.pc||0)*100}%"></i></span></button>`}).join('');
 function show(kind,key){
   nav.querySelectorAll('button').forEach(b=>b.setAttribute('aria-current',kind==='v'&&b.dataset.v===key));
   plist.querySelectorAll('button').forEach(b=>b.setAttribute('aria-current',kind==='p'&&b.dataset.p===key));
   if(kind==='p'){const p=P.find(x=>x.id===key)||P[0];$('crumb').textContent='Chi tiết dự án';$('title').textContent=p.name;renderProject(p)}
-  else{const v=V[key]||V.ov;$('crumb').textContent=v.name;$('title').textContent=v.title;$('view').innerHTML=v.render();sortable($('view'))}
+  else{const v=V[key]||V.dh;$('crumb').textContent=v.name;$('title').textContent=v.title;$('view').innerHTML=v.render();sortable($('view'));if(v.after)v.after()}
   try{localStorage.setItem('chuoi-view2',JSON.stringify({kind,key}))}catch(e){}
   $('rail').classList.remove('open');$('menu').setAttribute('aria-expanded','false');
   window.scrollTo({top:0});
@@ -510,8 +761,11 @@ $('menu').onclick=()=>{const o=$('rail').classList.toggle('open');$('menu').setA
 const tip=$('tip');
 document.addEventListener('mousemove',e=>{const t=e.target.closest('[data-tip]');if(!t){tip.style.display='none';return}
   tip.textContent=t.dataset.tip;tip.style.display='block';tip.style.left=Math.min(e.clientX+12,innerWidth-tip.offsetWidth-8)+'px';tip.style.top=(e.clientY+14)+'px'});
+try{const th=localStorage.getItem('chuoi-theme');if(th)document.documentElement.dataset.theme=th}catch(e){}
+$('theme').onclick=()=>{const cur=document.documentElement.dataset.theme||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');const nx=cur==='dark'?'light':'dark';document.documentElement.dataset.theme=nx;try{localStorage.setItem('chuoi-theme',nx)}catch(e){}};
+if(/github\.io$/.test(location.hostname)){$('prn').hidden=false;$('prn').onclick=()=>window.print()}
 const dd=D.date.split('-').reverse().join('/');
 $('asof').textContent=`Số liệu ngày ${dd}`;$('dchip').textContent=`Số liệu ${dd}`;
 let st=null;try{st=JSON.parse(localStorage.getItem('chuoi-view2')||'null')}catch(e){}
-if(st&&st.kind==='p'&&P.some(p=>p.id===st.key))show('p',st.key);else if(st&&st.kind==='v'&&V[st.key])show('v',st.key);else show('v','ov');
+if(st&&st.kind==='p'&&P.some(p=>p.id===st.key))show('p',st.key);else if(st&&st.kind==='v'&&V[st.key])show('v',st.key);else show('v','dh');
 </script>

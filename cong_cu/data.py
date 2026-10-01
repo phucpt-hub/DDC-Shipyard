@@ -56,15 +56,31 @@ DT=DEM[DEM.nguon=='Tận dụng'].groupby('proj_kho').kl_phoi.sum()
 # ---------- nesting files ----------
 NES_FILES=json.loads(os.environ.get('NESTING_FILES','[]'))  # [[pkl, file_name], ...]
 NES={}
+_nrm=lambda x: pd.Series(x).astype(str).str.upper().str.replace(r'[^A-Z0-9]','',regex=True)
+_CN=C.assign(_k=_nrm(C.nesting).values)
+NES_SKIP=[]
 for pkl,fname in NES_FILES:
     try:
-        _L,_P,_t=load_nes(pkl); pre=_P.lsx.dropna().astype(str).str.extract(r'^([A-Z]+-[A-Z]+)')[0].mode()
-        if not len(pre): pre=_P.nesting.dropna().astype(str).str.extract(r'^([A-Z]+-[A-Z]+)')[0].mode()
-        pre=pre.iloc[0]
-        cc=C[C.lsx.astype(str).str.startswith(pre)].cong_trinh.mode()
-        if len(cc): NES.setdefault(cc.iloc[0],[]).append((pkl,fname)); print('Nesting',fname,'->',cc.iloc[0])
-        else: print('Nesting',fname,': không tìm thấy công trình có LSX',pre)
-    except Exception as e: print('Lỗi đọc nesting',fname,e)
+        _L,_P,_t=load_nes(pkl)
+        # 1) gán dự án theo số nesting trùng với file Cutting
+        ks=set(_nrm(_P.nesting.dropna()))
+        hit=_CN[_CN._k.isin(ks)].cong_trinh.value_counts()
+        ct=hit.index[0] if len(hit) else None; how='trùng số nesting'
+        # 2) không trùng: theo mã dự án trong LSX (VT-HV, VT-FD, VT-S2...)
+        if ct is None:
+            tok=pd.concat([_P.lsx.dropna().astype(str),_P.nesting.dropna().astype(str)]).str.extract(r'(VT-[A-Z0-9]+)')[0].dropna()
+            if len(tok):
+                tk=tok.mode().iloc[0]; cc=C[C.lsx.astype(str).str.contains(tk,regex=False)].cong_trinh.mode()
+                if len(cc): ct=cc.iloc[0]; how='mã '+tk
+        # 3) theo mã trong tên file (vd LSX-VT-BPI-TH-001 → 'BPI')
+        if ct is None:
+            m=re.search(r'VT-([A-Z0-9]+)-T[TH]',fname.upper())
+            if m:
+                cc=C[C.lsx.astype(str).str.upper().str.contains('-'+m.group(1)+'-',regex=False)].cong_trinh.mode()
+                if len(cc): ct=cc.iloc[0]; how='tên file '+m.group(1)
+        if ct: NES.setdefault(ct,[]).append((pkl,fname)); print('Nesting',fname,'->',ct,'(',how,')')
+        else: print('Nesting',fname,': chưa gán được dự án'); NES_SKIP.append(fname)
+    except Exception as e: print('Lỗi đọc nesting',fname,e); NES_SKIP.append(fname)
 norm=lambda s: pd.Series(s).astype(str).str.upper().str.replace(r'[^A-Z0-9]','',regex=True).values
 def gclass(m):
     s=str(m).upper().replace(' ','')
@@ -84,6 +100,7 @@ def allocate(pend,pk):
 def nesting_block(ct,files,pk):
     Pn=pd.concat([load_nes(p)[1].assign(srcfile=f) for p,f in files]); fname=', '.join(f for _,f in files)
     Pn=Pn[Pn.t.notna()].copy()
+    if not len(Pn): print('Nesting',fname,': không có tấm (thép hình) – bỏ qua phần cân đối tấm'); return None
     _d=Pn[Pn.duplicated('nesting',keep='last')]
     for r in _d.itertuples(): CLEAN_LOG.append(dict(file=r.srcfile,sheet='Phieu vat tu',row=int(r.xrow),obj=str(r.nesting),du_an=ct,cot='NESTING NO',cu=str(r.nesting),moi='(bỏ, dùng dòng sau)',ma='N01',quy_tac='Số nesting lặp lại trong Phiếu vật tư → giữ dòng ban hành sau cùng',nhom='Đã chuẩn hóa',kl=float(r.weight or 0)))
     Pn=Pn.drop_duplicates('nesting',keep='last')
@@ -183,18 +200,58 @@ bykey=D.groupby('key')[['need','from_own','from_common','buy']].sum().sort_value
 nomap=sorted(set(V.cong_trinh)-set(C2I))
 kho_only=T[~T.du_an.isin(set(C2I.values())|{'Kho Chung','TỒN BRAVO'})].groupby('du_an').kl.sum().sort_values(ascending=False)
 errs=FX.assign(kl=lambda x: V.kl_tong.values[x.row]).groupby(['ma','quy_tac','nhom'],sort=False).agg(n=('row','size'),kl=('kl','sum')).reset_index()
+
+# ---------------- CHUỖI NGÀY (cho báo cáo ngày/tuần/tháng/quý/năm) ----------------
+PIDX={p['id']:i for i,p in enumerate(PR)}
+MACH=sorted(V.may.fillna('(chưa ghi máy)').astype(str).unique().tolist())
+MIDX={m:i for i,m in enumerate(MACH)}
+_ev=[]
+def _add(df,dcol,stage,wcol='kl_tong'):
+    d=df[df[dcol].notna()&(df[dcol]<=pd.Timestamp(REPORT_DATE))]
+    if not len(d): return
+    g=d.assign(_d=d[dcol].dt.normalize(),_p=d.cong_trinh.map(PIDX),_m=d.may.fillna('(chưa ghi máy)').astype(str).map(MIDX)).groupby(['_d','_p','_m'],dropna=False)[wcol].sum()
+    for (dd,pp,mm),v in g.items():
+        if v and pd.notna(pp): _ev.append([dd,int(pp),-1 if pd.isna(mm) else int(mm),stage,round(v/1000,4)])
+_add(V[V.req_cut>0],'d_cut_dt',0)
+for i,st in enumerate(['khoan','chan','vat']): _add(V[V['x_'+st].notna()],'d_'+st+'_dt',i+1)
+_add(V,'d_bg_dt',4)
+_L=CUT_LSXT.drop_duplicates('lsx'); _L=_L[_L.ngay_bh.notna()]
+for r in _L.itertuples():
+    if pd.notna(r.kl) and r.cong_trinh in PIDX and r.ngay_bh<=pd.Timestamp(REPORT_DATE): _ev.append([r.ngay_bh.normalize(),PIDX[r.cong_trinh],-1,5,round(r.kl/1000,4)])
+_k2p={}
+for p in PR:
+    if p['kho'] and p['kho']['name'] not in _k2p: _k2p[p['kho']['name']]=PIDX[p['id']]
+_x=X[X.date_fix.notna()&X.du_an.isin(_k2p)]
+for (dd,da),v in _x.groupby([_x.date_fix.dt.normalize(),'du_an']).kl.sum().items():
+    if dd<=pd.Timestamp(REPORT_DATE): _ev.append([dd,_k2p[da],-1,6,round(v/1000,4)])
+_d0=min(e[0] for e in _ev) if _ev else pd.Timestamp(REPORT_DATE)
+EV=[[int((e[0]-_d0).days)]+e[1:] for e in _ev]
+# mục tiêu tháng: sheet MUC_TIEU trong file cấu hình, không có thì = TB 3 tháng đủ gần nhất
+_mt={}
+if os.environ.get('FILE_CAU_HINH'):
+    try:
+        _t=pd.read_excel(os.environ['FILE_CAU_HINH'],sheet_name='MUC_TIEU',header=None)
+        for r in _t.itertuples(index=False):
+            m=re.match(r'^(\d{4})-(\d{1,2})',str(r[0]))
+            if m and pd.notna(r[1]): _mt[f"{m.group(1)}-{int(m.group(2)):02d}"]=dict(cut=float(r[1]),bg=float(r[2]) if len(r)>2 and pd.notna(r[2]) else None)
+    except Exception as e: print('Không có sheet MUC_TIEU:',e)
+_full=[m for m in months if m<REPORT_DATE[:7]][-3:]
+_base=round(float(np.mean([m_all.get(m,0) for m in _full]))/1000/100)*100 if _full else 0
+
 OUT=dict(date=REPORT_DATE,months=months,projects=PR,tot=tot,bal=bal,
   kho=dict(nhap=t_(N.kl.sum()),xuat=t_(X.kl.sum()),ton=t_(T.kl.sum()),common=t_(T[T.du_an=='Kho Chung'].kl.sum()),bravo=t_(T[T.du_an=='TỒN BRAVO'].kl.sum())),
   m_cut=[t_(m_all.get(m,0)) for m in months],m_bg=[t_(b_all.get(m,0)) for m in months],mach=[dict(k=k,t=t_(v)) for k,v in mach_all.items()],
   bykey=[dict(k=k,need=t_(r.need),own=t_(r.from_own),fc=t_(r.from_common),buy=t_(r.buy)) for k,r in bykey.head(14).iterrows()],
   kho_only=[dict(k=k,t=t_(v)) for k,v in kho_only.items()],nomap=nomap,
   fix=[dict(c=r.ma,d=r.quy_tac,g=r.nhom,n=int(r.n),t=t_(r.kl)) for r in errs.itertuples()],
-  files=dict(cutting=os.environ.get('FILE_CUTTING','DDC_SHIPYARD - KHGC - SC'),kho=os.environ.get('FILE_KHO','TỒN KHO'),nesting=[f for v in NES.values() for _,f in v]))
+  files=dict(cutting=os.environ.get('FILE_CUTTING','DDC_SHIPYARD - KHGC - SC'),kho=os.environ.get('FILE_KHO','TỒN KHO'),nesting=[f for v in NES.values() for _,f in v],nes_skip=NES_SKIP))
 _CL=pd.DataFrame(CLEAN_LOG)
 if len(_CL):
     _g=_CL.groupby(['ma','quy_tac','nhom','file'],sort=False).agg(n=('row','size'),kl=('kl','sum')).reset_index()
     OUT['fix']=[dict(c=r.ma,d=r.quy_tac,g=r.nhom,f=r.file,n=int(r.n),t=t_(r.kl)) for r in _g.itertuples()]
 OUT['fix_file']='nhat_ky_lam_sach.xlsx'
+OUT['ev']=dict(d0=_d0.strftime('%Y-%m-%d'),mach=MACH,rows=EV)
+OUT['target']=dict(base=_base,by_month=_mt)
 pickle.dump(CLEAN_LOG,open(os.environ.get('OUT_LOG','clean_log.pkl'),'wb'))
 json.dump(OUT,open(os.environ.get('OUT_JSON','data.json'),'w'),ensure_ascii=False,default=str)
 print(json.dumps(tot,ensure_ascii=False),bal,len(json.dumps(OUT))//1024,'KB')

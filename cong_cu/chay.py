@@ -6,7 +6,7 @@ CC = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(CC)
 DL = os.path.join(ROOT, 'du_lieu')
 TMP = os.path.join(CC, '_tmp'); os.makedirs(TMP, exist_ok=True)
-EXT = ('.xlsx', '.xlsm', '.xls')
+EXT = ('.xlsx', '.xlsm', '.xls', '.xlsb')
 
 def log(*a): print('>>', *a, flush=True)
 
@@ -19,7 +19,14 @@ def commit_time(p):
 
 def files_in(folder):
     fs = [f for f in glob.glob(os.path.join(DL, folder, '*')) if f.lower().endswith(EXT) and not os.path.basename(f).startswith('~$')]
-    return sorted(fs, key=commit_time)
+    # cùng tên nhưng khác đuôi (.xlsx và .xlsb) → ưu tiên .xlsx
+    best = {}
+    for f in fs:
+        stem, ext = os.path.splitext(os.path.basename(f)); rank = EXT.index(ext.lower())
+        if stem not in best or rank < best[stem][0]: best[stem] = (rank, f)
+    skipped = sorted(set(fs) - {v[1] for v in best.values()})
+    for f in skipped: log('Bỏ qua (trùng tên, đã có bản .xlsx):', os.path.basename(f))
+    return sorted([v[1] for v in best.values()], key=commit_time)
 
 def _cell(v):
     if v is None: return 'NaN'
@@ -36,7 +43,7 @@ def _cell(v):
 
 def to_sheets(xlsx, out_pkl):
     """Excel -> bảng chuỗi theo từng sheet, cùng định dạng với bản .md đã dùng để phân tích."""
-    raw = pd.read_excel(xlsx, sheet_name=None, header=0, dtype=object)
+    raw = pd.read_excel(xlsx, sheet_name=None, header=0, dtype=object, engine='pyxlsb' if xlsx.lower().endswith('.xlsb') else None)
     out = {}
     for k, df in raw.items():
         hdr = [_cell(c) if not str(c).startswith('Unnamed') else str(c) for c in df.columns]
@@ -67,8 +74,15 @@ def main():
     to_sheets(f_cut, os.path.join(CC, 'sheets.pkl'))
     to_sheets(f_kho, os.path.join(CC, 'kho', 'sheets.pkl'))
     nfiles = []
+    NES_OK = []
     for i, f in enumerate(nes):
-        p = os.path.join(TMP, f'nes{i}.pkl'); to_sheets(f, p)
+        p = os.path.join(TMP, f'nes{i}.pkl')
+        try:
+            sh = to_sheets(f, p)
+        except Exception as e:
+            log('KHÔNG đọc được file nesting', os.path.basename(f), '-', e); continue
+        if not any(k.strip().lower() == 'phieu vat tu' for k in sh):
+            log('Bỏ qua', os.path.basename(f), '- không có sheet "Phieu vat tu" (không phải file nesting)'); continue
         nfiles.append([p, os.path.splitext(os.path.basename(f))[0]])
     os.environ.update(NGAY_BAO_CAO=str(ngay), NESTING_FILES=json.dumps(nfiles, ensure_ascii=False),
                       FILE_CUTTING=os.path.splitext(os.path.basename(f_cut))[0], FILE_KHO=os.path.splitext(os.path.basename(f_kho))[0],
