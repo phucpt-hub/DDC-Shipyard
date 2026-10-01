@@ -1,3 +1,1 @@
-Set sh = CreateObject("WScript.Shell")
-d = CreateObject("Scripting.FileSystemObject").GetParentFolderName(WScript.ScriptFullName)
-sh.Run """" & d & "\auto_push.bat""", 0, False
+CreateObject("WScript.Shell").Run """D:\DDC SHIPYARD\DDC-Shipyard_tu_dong\auto_push.bat""", 0, False
