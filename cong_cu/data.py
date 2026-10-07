@@ -252,6 +252,16 @@ if len(_CL):
 OUT['fix_file']='nhat_ky_lam_sach.xlsx'
 OUT['ev']=dict(d0=_d0.strftime('%Y-%m-%d'),mach=MACH,rows=EV)
 OUT['target']=dict(base=_base,by_month=_mt)
+# chi tiết kho để bấm xem: theo dự án kho -> vật tư (tên, quy cách, tấn, số lượng)
+def _drill(df):
+    g=df[df.kl.notna()].copy(); g['du_an']=g.du_an.fillna('(không ghi dự án)').astype(str).str.strip()
+    g['ten']=g.ten.fillna('').astype(str).str.strip(); g['qc']=g.qc.fillna('').astype(str).str.strip()
+    out={}
+    for da,s in g.groupby('du_an'):
+        a=s.groupby(['ten','qc']).agg(kl=('kl','sum'),sl=('sl','sum'),n=('kl','size')).reset_index().sort_values('kl',ascending=False)
+        out[da]=[[r.ten,r.qc,round(r.kl/1000,3),(None if pd.isna(r.sl) else round(float(r.sl),1)),int(r.n)] for r in a.itertuples() if abs(r.kl)>0.5]
+    return out
+OUT['kho_ct']=dict(nhap=_drill(N),xuat=_drill(X),ton=_drill(T),map={p['kho']['name']:p['id'] for p in PR if p.get('kho')})
 pickle.dump(CLEAN_LOG,open(os.environ.get('OUT_LOG','clean_log.pkl'),'wb'))
 json.dump(OUT,open(os.environ.get('OUT_JSON','data.json'),'w'),ensure_ascii=False,default=str)
 print(json.dumps(tot,ensure_ascii=False),bal,len(json.dumps(OUT))//1024,'KB')

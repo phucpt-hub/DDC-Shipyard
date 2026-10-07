@@ -292,6 +292,26 @@ td .cellbar{width:220px}
 table.viec tr.auto td{background:color-mix(in srgb,var(--soft) 45%,transparent)}
 table.viec tr.sep td{font-size:11.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);background:var(--soft);padding:6px 10px}
 @media (max-width:640px){.att li{grid-template-columns:26px minmax(0,1fr);padding:10px 12px}.ago{grid-column:2;justify-self:start;padding:0}.att .ah{font-size:14px}}
+/* xem chi tiết (ngăn kéo bên phải) */
+.kpi.drillable{cursor:pointer;position:relative;padding-bottom:28px}.kpi.drillable:hover{background:color-mix(in srgb,var(--brand) 5%,var(--panel))}
+.kpi.drillable::after{content:"Xem chi tiết ›";position:absolute;right:12px;bottom:8px;font-size:11px;font-weight:600;color:var(--brand);opacity:.8}
+.drk{cursor:pointer}.track.drk:hover{outline:2px solid color-mix(in srgb,var(--brand) 40%,transparent);outline-offset:1px}
+.drw{position:fixed;inset:0;z-index:50}.drw[hidden]{display:none}
+.drw-bg{position:absolute;inset:0;background:rgba(10,15,20,.38)}
+.drw-box{position:absolute;right:0;top:0;bottom:0;width:min(760px,100%);background:var(--bg,#f3f5f6);box-shadow:-8px 0 30px rgba(0,0,0,.25);display:flex;flex-direction:column}
+.drw-h{display:flex;align-items:center;gap:10px;padding:12px 16px;background:var(--panel);border-bottom:3px solid var(--brand)}
+.drw-t{flex:1;min-width:0;font-size:14.5px;line-height:1.35}
+.drw-b{all:unset;cursor:pointer;font-size:13px;font-weight:600;color:var(--brand);padding:4px 8px;border-radius:6px;white-space:nowrap}.drw-b:hover{background:var(--soft)}
+.drw-body{flex:1;overflow:auto;padding:14px 16px 30px}
+.drl{display:grid;gap:4px}
+.drr{all:unset;cursor:pointer;display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px 10px;border-radius:7px;background:var(--panel);border:1px solid var(--line);font-size:13px}
+.drr:hover{border-color:var(--brand)}
+.drn{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.drbar{height:12px;background:var(--soft);border-radius:3px;overflow:hidden}.drbar i{display:block;height:100%;background:var(--d1)}
+.drv{font:12.5px var(--f-mono);white-space:nowrap;text-align:right}
+.drsum{display:flex;flex-wrap:wrap;gap:6px 16px;align-items:center;font-size:13px;margin-bottom:10px}.drsum a{color:var(--brand);cursor:pointer;font-weight:600}
+.drq{width:100%;box-sizing:border-box;padding:7px 10px;border:1px solid var(--line);border-radius:7px;margin-bottom:10px;font:inherit;background:var(--panel);color:var(--ink)}
+body.noscroll{overflow:hidden}
+@media (max-width:640px){.logo{padding-right:78px}.drr{grid-template-columns:minmax(0,1fr) auto}.drbar{display:none}.kpi.drillable::after{content:"›";font-size:18px;bottom:6px}}
 .chart-x{overflow-x:auto;-webkit-overflow-scrolling:touch}
 @media (max-width:640px){
   .band h1{font-size:18px}
@@ -382,7 +402,7 @@ const kprojs=(()=>{const seen=new Set();return P.filter(p=>p.kho&&!seen.has(p.kh
 function hbars(rows,max,{click}={}){
   return `<div class="hb">${rows.map(r=>{
     const segs=r.segs.map(s=>{const w=max?Math.max(0,s.v)/max*100:0;const lb=s.fmt?s.fmt(s.v):T(s.v);const show=w>=3;return w>0?`<i class="${s.c}" style="width:${w}%" data-tip="${esc(r.label)}\n${esc(s.n)}: ${s.fmt?s.fmt(s.v):T(s.v)+' t'}">${show?`<b class="sv">${lb}</b>`:''}</i>`:''}).join('');
-    return `<div class="lab${click&&r.id?' click':''}" ${click&&r.id?`data-go="${esc(r.id)}" role="button" tabindex="0"`:''} title="${esc(r.label)}">${esc(r.label)}</div><div class="track">${segs}</div><div class="val">${r.right??''}</div>`}).join('')}</div>`;
+    const dr=r.drill?` data-drill="${esc(r.drill)}" role="button" tabindex="0" title="Bấm để xem chi tiết"`:'';return `<div class="lab${click&&r.id?' click':''}${r.drill&&!(click&&r.id)?' click':''}" ${click&&r.id?`data-go="${esc(r.id)}" role="button" tabindex="0"`:r.drill?dr:''} title="${esc(r.label)}">${esc(r.label)}</div><div class="track${r.drill?' drk':''}"${dr}>${segs}</div><div class="val${r.drill?' drk':''}"${dr}>${r.right??''}</div>`}).join('')}</div>`;
 }
 const MOB=matchMedia('(max-width:640px)').matches;
 const svgW=(W)=>MOB?`width="${W}" style="max-width:none;display:block"`:'width="100%"';
@@ -414,7 +434,7 @@ function seg100(parts){const tot=parts.reduce((a,b)=>a+b.v,0)||1;
 function kpi(l,v,u,s,cls='',bar=null){return `<div class="kpi ${cls}"><div class="l">${l}</div><div class="v">${v}${u?`<small>${u}</small>`:''}</div>${s?`<div class="s">${s}</div>`:''}${bar!=null?`<div class="m"><i style="width:${Math.min(100,bar*100)}%"></i></div>`:''}</div>`}
 function table(id,cols,rows,{click,foot}={}){
   return `<div class="tbl-wrap"><table id="${id}"><thead><tr>${cols.map((c,i)=>`<th class="${c.n?'n':''}" data-i="${i}" title="Bấm để sắp xếp">${c.h}</th>`).join('')}</tr></thead><tbody>${
-    rows.map(r=>`<tr ${click&&r._id?`class="click" data-go="${esc(r._id)}"`:''}>${cols.map(c=>`<td class="${c.n?'n':''} ${c.w?'wrapc':''}" data-s="${esc(c.s?c.s(r):'')}">${c.f(r)}</td>`).join('')}</tr>`).join('')}</tbody>${foot?`<tfoot><tr>${foot.map((f,i)=>`<td class="${cols[i]&&cols[i].n?'n':''}">${f}</td>`).join('')}</tr></tfoot>`:''}</table></div>`}
+    rows.map(r=>`<tr ${click&&r._id?`class="click" data-go="${esc(r._id)}"`:r._drill?`class="click" data-drill="${esc(r._drill)}"`:''}>${cols.map(c=>`<td class="${c.n?'n':''} ${c.w?'wrapc':''}" data-s="${esc(c.s?c.s(r):'')}">${c.f(r)}</td>`).join('')}</tr>`).join('')}</tbody>${foot?`<tfoot><tr>${foot.map((f,i)=>`<td class="${cols[i]&&cols[i].n?'n':''}">${f}</td>`).join('')}</tr></tfoot>`:''}</table></div>`}
 function sortable(root){root.querySelectorAll('th').forEach(th=>th.addEventListener('click',()=>{
   const tb=th.closest('table').tBodies[0],i=+th.dataset.i,asc=th.dataset.o!=='a';th.dataset.o=asc?'a':'d';
   [...tb.rows].sort((a,b)=>{const x=a.cells[i].dataset.s,y=b.cells[i].dataset.s;const nx=parseFloat(x),ny=parseFloat(y);
@@ -619,19 +639,75 @@ V.sx={name:'Tiến độ LSX',title:'Tiến độ lệnh sản xuất (LSX)',ico
   $('view').querySelectorAll('[data-sxp]').forEach(a=>a.onclick=()=>{F.p=a.dataset.sxp;$('sx-p').value=F.p;draw();$('sx-list').scrollIntoView({behavior:'smooth'})});
   draw();}};
 
+/* ================= XEM CHI TIẾT (bấm vào ô số / thanh) ================= */
+const KCT=D.kho_ct||{nhap:{},xuat:{},ton:{},map:{}};
+const KNAME={nhap:'Tổng nhập',xuat:'Đã xuất',ton:'Tồn hiện tại',need:'Nhu cầu phôi chờ cắt',own:'Đáp ứng từ tồn dự án',common:'Lấy từ Kho chung/BRAVO',buy:'Phải mua'};
+const daLabel=da=>{const id=KCT.map[da],p=id&&P.find(x=>x.id===id);return p?`<b>${esc(p.name)}</b> <span class="muted">· ${esc(da)}</span>`:`<b>${esc(da)}</b>`};
+const loaiOf=ten=>/^thép tấm/i.test(ten)?'Thép tấm':/^thép (hình|góc|ống|hộp|chữ|i|h|u|v)/i.test(ten)||/^thép/i.test(ten)?'Thép hình / khác':'Vật tư khác';
+let DRS=[];
+function drillOpen(spec,push=true){if(push)DRS.push(spec);else DRS=[spec];drillRender()}
+function drillBack(){DRS.pop();DRS.length?drillRender():drillClose()}
+function drillClose(){DRS=[];const d=$('drw');if(d)d.hidden=true;document.body.classList.remove('noscroll')}
+function drillRender(){
+  let d=$('drw');if(!d){d=document.createElement('div');d.id='drw';d.className='drw';d.innerHTML='<div class="drw-bg" data-drw-x></div><aside class="drw-box" role="dialog" aria-modal="true"><header class="drw-h"><button class="drw-b" data-drw-back>← Quay lại</button><div class="drw-t" id="drw-t"></div><button class="drw-b" data-drw-x aria-label="Đóng">✕</button></header><div class="drw-body" id="drw-body"></div></aside>';document.body.appendChild(d)}
+  d.hidden=false;document.body.classList.add('noscroll');
+  const spec=DRS[DRS.length-1];const [kind,arg]=spec.split('|');d.querySelector('[data-drw-back]').style.visibility=DRS.length>1?'visible':'hidden';
+  let t='',h='';
+  if(['nhap','xuat','ton'].includes(kind)&&!arg){                       /* cấp 1: các dự án kho */
+    const rows=Object.entries(KCT[kind]).map(([da,L])=>({da,t:sum(L,r=>r[2]),n:L.length})).filter(r=>Math.abs(r.t)>0.05).sort((a,b)=>b.t-a.t);const tot=sum(rows,r=>r.t),mx=Math.max(1e-9,...rows.map(r=>r.t));
+    t=`${KNAME[kind]} <b>${T(tot)} t</b> · ${rows.length} dự án kho`;
+    h=`<p class="note" style="margin:0 0 10px">Bấm một dự án để xem từng loại thép.</p><div class="drl">${rows.map(r=>`<button class="drr" data-drill="${kind}|${esc(r.da)}"><span class="drn">${daLabel(r.da)}</span><span class="drbar"><i style="width:${Math.max(0.5,r.t/mx*100)}%"></i></span><span class="drv"><b>${T(r.t)}</b> t <span class="muted">${PC(r.t/(tot||1))}</span></span></button>`).join('')}</div>`;
+  }else if(['nhap','xuat','ton'].includes(kind)){                         /* cấp 2: vật tư của 1 dự án kho */
+    const L=(KCT[kind][arg]||[]),tot=sum(L,r=>r[2]);
+    const tabs=['nhap','xuat','ton'].map(k=>`<button class="chip" aria-pressed="${k===kind}" data-drill-swap="${k}|${esc(arg)}">${KNAME[k]} ${T(sum(KCT[k][arg]||[],r=>r[2]))} t</button>`).join('');
+    const byL={};L.forEach(r=>{const l=loaiOf(r[0]);byL[l]=(byL[l]||0)+r[2]});
+    const id=KCT.map[arg];
+    t=`${daLabel(arg)}`;
+    h=`<div class="filters" style="margin-bottom:10px">${tabs}</div>
+      <div class="drsum">${Object.entries(byL).sort((a,b)=>b[1]-a[1]).map(([l,v])=>`<span><b>${T(v)} t</b> ${l}</span>`).join('')}<span class="muted">${L.length} loại vật tư</span>${id?`<a data-go="${esc(id)}" data-drw-x>Mở trang dự án →</a>`:''}</div>
+      <input type="search" class="drq" placeholder="Tìm tên vật tư, quy cách…" data-drq>
+      ${table('t-drill',[{h:'Tên vật tư',w:1,f:r=>esc(r[0]),s:r=>r[0]},{h:'Quy cách',f:r=>esc(r[1]),s:r=>r[1]},{h:'KL (t)',n:1,f:r=>`<b>${T(r[2])}</b>`,s:r=>r[2]},{h:'% ',n:1,f:r=>PC(r[2]/(tot||1)),s:r=>r[2]},{h:'SL',n:1,f:r=>r[3]==null?'–':T0(r[3]),s:r=>r[3]??0}].concat(L.some(r=>r[4]>1)?[{h:'Số lần',n:1,f:r=>r[4],s:r=>r[4]}]:[]),L,{foot:['<b>Tổng</b>','',`<b>${T(tot)}</b>`,'100%',T0(sum(L,r=>r[3]||0))].concat(L.some(r=>r[4]>1)?[sum(L,r=>r[4])]:[])})}`;
+  }else if(['need','own','common','buy'].includes(kind)&&!arg){            /* cân đối: các dự án */
+    const f={need:p=>p.kho.need,own:p=>p.kho.own,common:p=>p.kho.common,buy:p=>p.kho.buy}[kind];
+    const rows=kprojs.filter(p=>f(p)>0.05).sort((a,b)=>f(b)-f(a));const tot=sum(rows,f);
+    t=`${KNAME[kind]} <b>${T(tot)} t</b> · ${rows.length} dự án`;
+    h=`<p class="note" style="margin:0 0 10px">Bấm một dự án để xem theo quy cách thép.</p>${table('t-drill',[{h:'Dự án',f:p=>`<b>${esc(p.name)}</b>${p.kho.shared.length?`<br><span class="muted" style="font-size:11.5px">dùng chung kho: ${p.kho.shared.map(esc).join(', ')}</span>`:''}`,s:p=>p.name},{h:'Cần (t)',n:1,f:p=>T(p.kho.need),s:p=>p.kho.need},{h:'Tồn DA',n:1,f:p=>T(p.kho.own),s:p=>p.kho.own},{h:'Kho chung',n:1,f:p=>T(p.kho.common),s:p=>p.kho.common},{h:'Phải mua',n:1,f:p=>p.kho.buy>0.05?`<b style="color:var(--bad)">${T(p.kho.buy)}</b>`:'0,0',s:p=>p.kho.buy}],rows.map(p=>({...p,_drill:'bal|'+p.id})),{foot:['<b>Tổng</b>',T(sum(rows,p=>p.kho.need)),T(sum(rows,p=>p.kho.own)),T(sum(rows,p=>p.kho.common)),T(sum(rows,p=>p.kho.buy))]})}`;
+  }else if(kind==='bal'){                                                  /* cân đối 1 dự án theo quy cách */
+    const p=P.find(x=>x.id===arg),k=p.kho;
+    t=`<b>${esc(p.name)}</b> · cần ${T(k.need)} t · phải mua <b style="color:var(--bad)">${T(k.buy)} t</b>`;
+    h=`<div class="drsum"><span>Dự án kho: <b>${esc(k.name)}</b></span><a data-drill="ton|${esc(k.name)}">Xem tồn kho của dự án →</a><a data-go="${esc(p.id)}" data-drw-x>Mở trang dự án →</a></div>
+      ${k.bal.length?table('t-drill',[{h:'Quy cách',f:r=>`<b>${esc(r.k)}</b>`,s:r=>r.k},{h:'Nesting',n:1,f:r=>r.n,s:r=>r.n},{h:'Cần (t)',n:1,f:r=>T(r.need),s:r=>r.need},{h:'Tồn DA',n:1,f:r=>T(r.own),s:r=>r.own},{h:'Kho chung',n:1,f:r=>T(r.fc),s:r=>r.fc},{h:'Phải mua',n:1,f:r=>r.buy>0.05?`<b style="color:var(--bad)">${T(r.buy)}</b>`:'0,0',s:r=>r.buy}],k.bal.slice().sort((a,b)=>b.buy-a.buy||b.need-a.need),{foot:['Tổng','',T(k.need),T(k.own),T(k.common),T(k.buy)]}):'<p class="empty">Không còn nesting chờ cắt.</p>'}`;
+  }else if(kind==='key'){                                                  /* 1 quy cách thép: dự án nào cần */
+    const r0=D.bykey.find(r=>r.k===arg)||{need:0,own:0,fc:0,buy:0};
+    const rows=kprojs.map(p=>({p,r:p.kho.bal.find(b=>b.k===arg)})).filter(x=>x.r&&x.r.need>0.005).sort((a,b)=>b.r.buy-a.r.buy||b.r.need-a.r.need);
+    t=`Quy cách <b>${esc(arg)}</b> · cần ${T(r0.need)} t · phải mua <b style="color:var(--bad)">${T(r0.buy)} t</b>`;
+    h=`<p class="note" style="margin:0 0 10px">Các dự án cần quy cách này cho nesting chưa cắt. Bấm một dòng để xem cân đối của dự án.</p>${table('t-drill',[{h:'Dự án',f:x=>`<b>${esc(x.p.name)}</b>`,s:x=>x.p.name},{h:'Nesting',n:1,f:x=>x.r.n,s:x=>x.r.n},{h:'Cần (t)',n:1,f:x=>T(x.r.need),s:x=>x.r.need},{h:'Tồn DA',n:1,f:x=>T(x.r.own),s:x=>x.r.own},{h:'Kho chung',n:1,f:x=>T(x.r.fc),s:x=>x.r.fc},{h:'Phải mua',n:1,f:x=>x.r.buy>0.05?`<b style="color:var(--bad)">${T(x.r.buy)}</b>`:'0,0',s:x=>x.r.buy}],rows.map(x=>({...x,_drill:'bal|'+x.p.id})),{foot:['Tổng',sum(rows,x=>x.r.n),T(sum(rows,x=>x.r.need)),T(sum(rows,x=>x.r.own)),T(sum(rows,x=>x.r.fc)),T(sum(rows,x=>x.r.buy))]})}`;
+  }
+  $('drw-t').innerHTML=t;$('drw-body').innerHTML=h;$('drw-body').scrollTop=0;sortable($('drw-body'));
+  $('drw-body').querySelectorAll('tr[data-drill]').forEach(tr=>tr.classList.add('click'));
+  const q=$('drw-body').querySelector('[data-drq]');if(q)q.oninput=()=>{const s=q.value.toLowerCase();$('drw-body').querySelectorAll('#t-drill tbody tr').forEach(tr=>tr.hidden=s&&!tr.textContent.toLowerCase().includes(s))};
+}
+document.addEventListener('click',e=>{
+  if(e.target.closest('[data-drw-back]')){drillBack();return}
+  const sw=e.target.closest('[data-drill-swap]');if(sw){DRS[DRS.length-1]=sw.dataset.drillSwap;drillRender();return}
+  const dr=e.target.closest('[data-drill]');if(dr){e.stopPropagation();drillOpen(dr.dataset.drill,!!e.target.closest('#drw'));return}
+  if(e.target.closest('[data-drw-x]'))drillClose()},true);
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&DRS.length)drillClose();if(e.key==='Enter'){const dr=e.target.closest('[data-drill]');if(dr)drillOpen(dr.dataset.drill,!!e.target.closest('#drw'))}});
+const kpiD=(kind,...a)=>kpi(...a).replace('<div class="kpi ',`<div role="button" tabindex="0" data-drill="${kind}" title="Bấm để xem chi tiết" class="kpi drillable `);
+
 V.th={name:'Thép & tồn kho',title:'Tồn kho và cân đối thép',ico:'<path d="M3 7l9-4 9 4-9 4-9-4zM3 12l9 4 9-4M3 17l9 4 9-4"/>',render(){
   const k=D.kho,b=D.bal;
   return `<section><div class="kpis">
-    ${kpi('Tổng nhập',T(k.nhap),'t','từ đầu kỳ, gồm tồn + xuất','dim')}${kpi('Đã xuất',T(k.xuat),'t',PC(k.xuat/k.nhap)+' tổng nhập','',k.xuat/k.nhap)}${kpi('Tồn hiện tại',T(k.ton),'t',`Kho chung ${T(k.common)} · BRAVO ${T(k.bravo)}`)}
-    ${kpi('Nhu cầu phôi chờ cắt',T(b.need),'t','','dim')}${kpi('Đáp ứng từ tồn dự án',T(b.own),'t',PC(b.own/b.need),'good',b.own/b.need)}${kpi('Phải mua',T(b.buy),'t',PC(b.buy/b.need)+' nhu cầu','bad',b.buy/b.need)}</div></section>
+    ${kpiD('nhap','Tổng nhập',T(k.nhap),'t','từ đầu kỳ, gồm tồn + xuất','dim')}${kpiD('xuat','Đã xuất',T(k.xuat),'t',PC(k.xuat/k.nhap)+' tổng nhập','',k.xuat/k.nhap)}${kpiD('ton','Tồn hiện tại',T(k.ton),'t',`Kho chung ${T(k.common)} · BRAVO ${T(k.bravo)}`)}
+    ${kpiD('need','Nhu cầu phôi chờ cắt',T(b.need),'t','','dim')}${kpiD('own','Đáp ứng từ tồn dự án',T(b.own),'t',PC(b.own/b.need),'good',b.own/b.need)}${kpiD('buy','Phải mua',T(b.buy),'t',PC(b.buy/b.need)+' nhu cầu','bad',b.buy/b.need)}</div></section>
   <section class="grid"><div class="card"><h3>Nhu cầu phôi được đáp ứng từ</h3>${seg100([{n:'Tồn dự án',v:b.own,c:'c-own'},{n:'Kho chung/BRAVO',v:b.common,c:'c-com'},{n:'Phải mua',v:b.buy,c:'c-buy'}])}
     <h3 style="margin-top:16px">Thiếu thép theo quy cách, toàn công ty (tấn)</h3>
     <div class="legend"><span><i class="c-own"></i>Tồn dự án</span><span><i class="c-com"></i>Kho chung/BRAVO</span><span><i class="c-buy"></i>Phải mua</span></div>
-    ${hbars(D.bykey.filter(r=>r.need>0.05).map(r=>({label:r.k,segs:[{v:r.own,c:'c-own',n:'Tồn dự án'},{v:r.fc,c:'c-com',n:'Kho chung/BRAVO'},{v:r.buy,c:'c-buy',n:'Phải mua'}],right:r.buy>0.05?`<span style="color:var(--bad)">mua ${T(r.buy)}</span>`:'đủ'})),Math.max(...D.bykey.map(r=>r.need)))}</div>
+    ${hbars(D.bykey.filter(r=>r.need>0.05).map(r=>({drill:'key|'+r.k,label:r.k,segs:[{v:r.own,c:'c-own',n:'Tồn dự án'},{v:r.fc,c:'c-com',n:'Kho chung/BRAVO'},{v:r.buy,c:'c-buy',n:'Phải mua'}],right:r.buy>0.05?`<span style="color:var(--bad)">mua ${T(r.buy)}</span>`:'đủ'})),Math.max(...D.bykey.map(r=>r.need)))}</div>
    <div class="card"><h3>Nhập · xuất · tồn theo dự án kho (tấn)</h3>
     <div class="legend"><span><i class="c-cut"></i>Đã xuất</span><span><i class="c-own"></i>Còn tồn</span></div>
-    ${hbars(kprojs.slice().sort((a,b)=>b.kho.nhap-a.kho.nhap).map(p=>({id:p.id,label:p.name,segs:[{v:p.kho.xuat,c:'c-cut',n:'Đã xuất'},{v:p.kho.ton,c:'c-own',n:'Còn tồn'}],right:`<span class="nw">xuất ${T(p.kho.xuat)}</span> <span class="nw sep"><span style="color:var(--good)">tồn</span> <b style="color:var(--ink)">${T(p.kho.ton)}</b></span>`})),Math.max(...kprojs.map(p=>p.kho.nhap)),{click:1})}
-    ${D.kho_only.length?`<h3 style="margin-top:16px">Tồn của dự án chưa có lệnh cắt</h3>${hbars(D.kho_only.map(r=>({label:r.k,segs:[{v:r.t,c:'c-own',n:'Tồn'}],right:T(r.t)+' t'})),Math.max(1,...D.kho_only.map(r=>r.t)))}`:''}</div></section>
+    ${hbars(kprojs.slice().sort((a,b)=>b.kho.nhap-a.kho.nhap).map(p=>({id:p.id,drill:'nhap|'+p.kho.name,label:p.name,segs:[{v:p.kho.xuat,c:'c-cut',n:'Đã xuất'},{v:p.kho.ton,c:'c-own',n:'Còn tồn'}],right:`<span class="nw">xuất ${T(p.kho.xuat)}</span> <span class="nw sep"><span style="color:var(--good)">tồn</span> <b style="color:var(--ink)">${T(p.kho.ton)}</b></span>`})),Math.max(...kprojs.map(p=>p.kho.nhap)),{click:1})}
+    ${D.kho_only.length?`<h3 style="margin-top:16px">Tồn của dự án chưa có lệnh cắt</h3>${hbars(D.kho_only.map(r=>({drill:'ton|'+r.k,label:r.k,segs:[{v:r.t,c:'c-own',n:'Tồn'}],right:T(r.t)+' t'})),Math.max(1,...D.kho_only.map(r=>r.t)))}`:''}</div></section>
   <section>${secH('Cân đối theo dự án kho','Nhu cầu = nesting chưa cắt trong file Cutting, quy ra phôi nguyên khổ')}
    ${table('t-kb',[{h:'Dự án kho',f:p=>`<b>${esc(p.kho.name)}</b>${p.kho.shared.length?`<br><span style="font-size:11.5px;color:var(--muted)">dùng chung: ${esc(p.name)}, ${p.kho.shared.map(esc).join(', ')}</span>`:''}`,s:p=>p.kho.name},
      {h:'Nhập (t)',n:1,f:p=>T(p.kho.nhap),s:p=>p.kho.nhap},{h:'Xuất (t)',n:1,f:p=>T(p.kho.xuat),s:p=>p.kho.xuat},{h:'Tồn (t)',n:1,f:p=>T(p.kho.ton),s:p=>p.kho.ton},
