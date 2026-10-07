@@ -52,9 +52,24 @@ def _cell(v):
     s = ' '.join(str(v).split())            # gộp xuống dòng như bản markdown
     return s.replace('_', '\\_').replace('*', '\\*') if s else 'NaN'
 
-def to_sheets(xlsx, out_pkl):
-    """Excel -> bảng chuỗi theo từng sheet, cùng định dạng với bản .md đã dùng để phân tích."""
-    raw = pd.read_excel(xlsx, sheet_name=None, header=0, dtype=object, engine='pyxlsb' if xlsx.lower().endswith('.xlsb') else None)
+# Chỉ đọc các sheet cần cho báo cáo (bỏ BCSL, CHI PHÍ, danh sach NV, biểu đồ... cho nhanh)
+SHEETS_CUTTING = ['list chi tiết', '2-list chi tiết', 'lệnh sx', 'kế hoạch', 'máy móc']
+SHEETS_NESTING = ['list chi tiet', 'phieu vat tu', 'hao hut vat tu']
+
+def sheet_names(xlsx):
+    if xlsx.lower().endswith('.xlsb'):
+        from pyxlsb import open_workbook
+        with open_workbook(xlsx) as wb: return list(wb.sheets)
+    from openpyxl import load_workbook
+    wb = load_workbook(xlsx, read_only=True); n = wb.sheetnames; wb.close(); return n
+
+def to_sheets(xlsx, out_pkl, only=None):
+    """Excel -> bảng chuỗi theo từng sheet, cùng định dạng với bản .md đã dùng để phân tích.
+    only: danh sách tên sheet cần đọc (không phân biệt hoa thường, bỏ khoảng trắng đầu/cuối); None = đọc hết."""
+    names = sheet_names(xlsx)
+    pick = [n for n in names if only is None or n.strip().lower() in only]
+    if only is not None: log('  bỏ qua', len(names) - len(pick), 'sheet không dùng:', ', '.join(n for n in names if n not in pick)[:160])
+    raw = pd.read_excel(xlsx, sheet_name=pick, header=0, dtype=object, engine='pyxlsb' if xlsx.lower().endswith('.xlsb') else None)
     out = {}
     for k, df in raw.items():
         hdr = [_cell(c) if not str(c).startswith('Unnamed') else str(c) for c in df.columns]
@@ -79,14 +94,14 @@ def main():
     os.environ.update(NGAY_CUTTING=str(d_cut or ''), NGAY_KHO=str(d_kho or ''))
     if d_cut and d_kho and d_cut != d_kho: log(f'Lưu ý: file Cutting ngày {d_cut:%d/%m}, file tồn kho ngày {d_kho:%d/%m} – phần kho tính theo ngày {d_kho:%d/%m}')
     log('Ngày báo cáo:', ngay)
-    to_sheets(f_cut, os.path.join(CC, 'sheets.pkl'))
+    to_sheets(f_cut, os.path.join(CC, 'sheets.pkl'), SHEETS_CUTTING)
     to_sheets(f_kho, os.path.join(CC, 'kho', 'sheets.pkl'))
     nfiles = []
     NES_OK = []
     for i, f in enumerate(nes):
         p = os.path.join(TMP, f'nes{i}.pkl')
         try:
-            sh = to_sheets(f, p)
+            sh = to_sheets(f, p, SHEETS_NESTING)
         except Exception as e:
             log('KHÔNG đọc được file nesting', os.path.basename(f), '-', e); continue
         if not any(k.strip().lower() == 'phieu vat tu' for k in sh):

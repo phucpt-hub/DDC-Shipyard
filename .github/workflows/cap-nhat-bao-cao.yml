@@ -6,6 +6,9 @@ on:
       - 'du_lieu/**'
       - 'cong_cu/**'
   workflow_dispatch:        # nút "Run workflow" để chạy tay
+  schedule:                 # tự chạy lấy dữ liệu từ link: 06:52 và 15:52 giờ Việt Nam
+    - cron: '52 23 * * *'
+    - cron: '52 8 * * *'
 
 permissions:
   contents: write
@@ -32,6 +35,15 @@ jobs:
 
       - name: Cài thư viện
         run: pip install -r cong_cu/requirements.txt
+
+      - name: Tải dữ liệu mới nhất từ link
+        env:
+          TZ: Asia/Ho_Chi_Minh
+          NGUON_CUTTING: ${{ secrets.NGUON_CUTTING }}
+          NGUON_KHO: ${{ secrets.NGUON_KHO }}
+          NGUON_KHO_KHOA: ${{ secrets.NGUON_KHO_KHOA }}
+          NGUON_NESTING: ${{ secrets.NGUON_NESTING }}
+        run: python cong_cu/tai_du_lieu.py
 
       - name: Chạy phân tích và dựng báo cáo
         env:

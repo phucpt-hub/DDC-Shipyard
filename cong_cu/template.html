@@ -65,6 +65,7 @@ a{color:var(--brand)}
 .rail .foot{margin-top:auto;font-size:11.5px;opacity:.75;padding:0 8px}
 .rail .foot a{color:var(--on-brand)}
 .menu-btn{display:none}
+.collapse{display:flex;flex-direction:column;gap:14px}
 
 .main{min-width:0}
 .band{background:var(--panel);border-bottom:3px solid var(--brand);position:sticky;top:0;z-index:10}
@@ -210,7 +211,7 @@ input[type=date]{font:13px var(--f-mono);color:var(--ink);background:var(--panel
 .dleg span{display:flex;gap:6px;align-items:center}.dleg i{width:10px;height:10px;border-radius:2px;flex:none}
 .hdr-btn{all:unset;cursor:pointer;font-size:12.5px;border:1px solid var(--line);border-radius:6px;padding:4px 10px;color:var(--ink)}
 .hdr-btn:hover{border-color:var(--brand)}
-@media (max-width:1100px){.g21,.g12{grid-template-columns:1fr}}
+@media (max-width:1100px){.g21,.g12{grid-template-columns:minmax(0,1fr)}}
 @media print{.rail,.fbar .frow:first-child,.hdr-btn{display:none!important}.app{display:block}.band{position:static}.card,.kpi{break-inside:avoid}}
 
 
@@ -226,6 +227,66 @@ td .cellbar{width:220px}
 .nesrows .nlab small{display:block;font-weight:400;color:var(--muted);font-size:11px}
 .nesrows .num{text-align:right}
 .nesrows.hdr{margin-top:6px}
+
+/* thẻ số có sparkline, nút chuyển cách xem */
+.kpx .v{font-size:28px}
+.kpx .bdg{font:600 12.5px var(--f-mono);color:var(--ink);background:var(--soft);border-radius:10px;padding:2px 8px;vertical-align:middle;margin-left:4px}
+.kpx .spw{margin-top:6px}
+.kpx .spl{display:flex;justify-content:space-between;font-size:10.5px;color:var(--muted);margin-top:1px}
+.kpx .s{margin-top:4px}
+.spk{display:block}
+.tg{margin:0 0 10px}
+.card h3 .seg{float:right;font-family:var(--f-body,inherit)}
+.cardh{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;flex-wrap:wrap;margin-bottom:6px}
+.cardh h3{margin:0}
+.minis{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 20px}
+@media (max-width:640px){.minis{grid-template-columns:minmax(0,1fr)}}
+.tscroll .tbl-wrap{max-height:340px;overflow:auto}
+.grid>.card{display:flex;flex-direction:column}
+.card .grow{flex:1}
+.minis h4{margin:0 0 4px;font:600 13px var(--f-disp)}
+.big-pct{font:700 15px var(--f-mono)}
+/* thẻ nesting dạng thanh ngang (mẫu tiến độ dự án) */
+.ncd h3{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;text-transform:none;letter-spacing:0;font:700 15px/1.25 var(--f-disp);color:var(--ink)}
+.ncd h3 a{color:var(--ink);cursor:pointer}
+.ncd .pills{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;flex:none}
+.ncd .prog{position:relative;height:14px;border-radius:7px;background:repeating-linear-gradient(45deg,color-mix(in srgb,var(--brand) 18%,transparent) 0 6px,color-mix(in srgb,var(--brand) 8%,transparent) 6px 12px);overflow:hidden;margin:10px 0 6px;box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--brand) 35%,transparent)}
+.ncd .prog i{position:absolute;inset:0 auto 0 0;background:var(--brand)}
+.ncd .info{font-size:12px;color:var(--muted);line-height:1.5;margin-bottom:10px}
+.ncd .info b{color:var(--ink)}
+.ncd h4{margin:12px 0 6px;font:600 11.5px var(--f-disp);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.hr{display:grid;grid-template-columns:104px minmax(0,1fr);gap:7px 8px;align-items:center;font-size:12.5px}
+.hr .lb{text-align:right;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hr .tk{position:relative;height:20px;background:linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/var(--gs,25%) 100%}
+.hr .tot{position:absolute;inset:0 auto 0 0;background:color-mix(in srgb,var(--bc,var(--s1)) 22%,transparent);border-radius:2px}
+.hr .fill{position:absolute;inset:0 auto 0 0;background:var(--bc,var(--s1));border-radius:2px}
+.hr .vt{position:absolute;top:50%;transform:translateY(-50%);font:600 11.5px var(--f-mono);white-space:nowrap;padding-left:6px;color:var(--ink)}
+.hr .ax{position:relative;height:16px;font:10.5px var(--f-mono);color:var(--muted);border-top:1px solid var(--muted)}
+.hr .ax span{position:absolute;top:2px;transform:translateX(-50%)}
+.hr .ax span:first-child{transform:none}
+.hr .ax span:last-child{transform:translateX(-100%)}
+.chart-x{overflow-x:auto;-webkit-overflow-scrolling:touch}
+@media (max-width:640px){
+  .band h1{font-size:18px}
+  .band .in{padding-block:8px}
+  .hdr-btn{padding:3px 8px;font-size:12px}
+  .content{padding-inline:12px}
+  .card{padding:12px}
+  .kpi .v{font-size:22px}
+  .chart-x{margin-inline:-4px;padding-bottom:4px}
+  .chart-x.hint::after{content:"← vuốt ngang để xem hết →";display:block;text-align:center;font-size:11px;color:var(--muted);margin-top:2px}
+  .tbl-wrap{max-height:none}
+  .tbl-wrap td:first-child,.tbl-wrap th:first-child{position:sticky;left:0;z-index:2}
+  .tbl-wrap td:first-child{background:var(--panel);box-shadow:1px 0 0 var(--line)}
+  .tbl-wrap tfoot td:first-child{background:var(--soft)}
+  th,td{padding:6px 8px}
+  td.wrapc{min-width:160px}
+  .filters input[type=search]{min-width:0;flex:1 1 160px}
+  .fsum{margin-left:0;width:100%}
+  .sec-h h2{font-size:16px}
+  .content .stage{grid-template-columns:72px minmax(0,1fr);gap:2px 8px}.content .stage .num{grid-column:1/-1;text-align:right;margin-top:-2px;white-space:normal}
+  .nesrows{grid-template-columns:minmax(0,1fr) 70px 80px}.nesrows .cellbar{grid-column:1/-1;order:0}
+}
 @media (max-width:900px){
   .app{grid-template-columns:1fr}
   .rail{position:relative;height:auto;padding:12px 16px;gap:10px}
@@ -243,7 +304,7 @@ td .cellbar{width:220px}
   <aside class="rail" id="rail">
     <div class="logo"><b>CHUỖI THÉP · SC VŨNG TÀU</b><span>Kho → Nesting → Cutting → Bàn giao</span></div>
     <button class="menu-btn" id="menu" aria-expanded="false">Menu</button>
-    <div class="collapse" style="display:flex;flex-direction:column;gap:14px">
+    <div class="collapse">
       <div><h4>Chức năng</h4><nav class="nav" id="nav"></nav></div>
       <div><h4>Dự án</h4><div class="plist" id="plist"></div></div>
       <div class="foot"><span id="asof"></span><br><a href="lich_su/">Báo cáo các ngày trước</a><br><a href="#" id="lnk-src">Nguồn dữ liệu &amp; làm sạch</a></div>
@@ -293,11 +354,14 @@ function hbars(rows,max,{click}={}){
     const segs=r.segs.map(s=>{const w=max?Math.max(0,s.v)/max*100:0;return w>0?`<i class="${s.c}" style="width:${w}%" data-tip="${esc(r.label)}\n${esc(s.n)}: ${s.fmt?s.fmt(s.v):T(s.v)+' t'}"></i>`:''}).join('');
     return `<div class="lab${click&&r.id?' click':''}" ${click&&r.id?`data-go="${esc(r.id)}" role="button" tabindex="0"`:''} title="${esc(r.label)}">${esc(r.label)}</div><div class="track">${segs}</div><div class="val">${r.right??''}</div>`}).join('')}</div>`;
 }
+const MOB=matchMedia('(max-width:640px)').matches;
+const svgW=(W)=>MOB?`width="${W}" style="max-width:none;display:block"`:'width="100%"';
+const svgB=(W,h)=>MOB?svgW(W):`width="100%" height="${h}" preserveAspectRatio="xMidYMid meet" style="display:block"`;
 const vlab=v=>v>=100?T0(v):v>=10?nf1.format(Math.round(v*10)/10):nf1.format(v);
 const info=s=>`<span class="ii" tabindex="0" data-tip="${esc(s)}">i</span>`;
 function nice(max){if(max<=0)return[1,[0,1]];const p=Math.pow(10,Math.floor(Math.log10(max)));const st=[1,2,2.5,5,10].map(k=>k*p).find(s=>max/s<=5);const top=Math.ceil(max/st)*st;const t=[];for(let v=0;v<=top+1e-9;v+=st)t.push(v);return[top,t]}
-function cols(series,labels,{h=230,line=null}={}){
-  const W=680,L=48,R=line?52:8,Tp=12,B=26,n=labels.length,gw=(W-L-R)/n,k=series.length,bw=Math.min(22,(gw-8)/k);
+function cols(series,labels,{h=230,line=null,W:W0=680}={}){
+  const W=MOB?Math.max(380,labels.length*series.length*20+70):W0,L=48,R=line?52:8,Tp=12,B=26,n=labels.length,gw=(W-L-R)/n,k=series.length,bw=Math.min(22,(gw-8)/k);
   const mx=Math.max(0,...series.flatMap(s=>s.v))*1.12;const[top,ticks]=nice(mx);const y=v=>Tp+(h-Tp-B)*(1-v/top);const rot=bw<26;
   let g=ticks.map(t=>`<line class="grid-l" x1="${L}" x2="${W-R}" y1="${y(t)}" y2="${y(t)}"/><text x="${L-6}" y="${y(t)+4}" text-anchor="end">${T0(t)}</text>`).join('');
   labels.forEach((lb,i)=>{const x0=L+i*gw+(gw-bw*k)/2;
@@ -310,7 +374,7 @@ function cols(series,labels,{h=230,line=null}={}){
       +lticks.map(t=>`<text x="${W-R+6}" y="${yl(t)+4}">${T0(t)}</text>`).join('');}
   g+=`<line class="axis" x1="${L}" x2="${W-R}" y1="${h-B}" y2="${h-B}"/>`;
   const leg=series.map(s=>`<span><i style="background:var(${s.col})"></i>${s.n}</span>`).join('')+(line?`<span><i style="background:var(${line.col});height:3px"></i>${line.n} (trục phải)</span>`:'');
-  return `<div class="legend">${leg}</div><svg viewBox="0 0 ${W} ${h}" width="100%" role="img" aria-label="Biểu đồ theo tháng">${g}</svg>`;
+  return `<div class="legend">${leg}</div><div class="chart-x${MOB&&W>400?' hint':''}"><svg viewBox="0 0 ${W} ${h}" ${svgB(W,h)} role="img" aria-label="Biểu đồ theo tháng">${g}</svg></div>`;
 }
 function ring(v,size=58,col='--brand'){const r=size/2-6,c=2*Math.PI*r,f=Math.max(0,Math.min(1,v||0));
   return `<svg class="ring" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" role="img" aria-label="${PC(v)}"><circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" style="stroke:var(--soft)" stroke-width="7"/><circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" style="stroke:var(${col})" stroke-width="7" stroke-linecap="round" stroke-dasharray="${c*f} ${c}" transform="rotate(-90 ${size/2} ${size/2})"/><text x="50%" y="54%" text-anchor="middle" dominant-baseline="middle">${v==null?'–':Math.round(f*100)+'%'}</text></svg>`}
@@ -330,50 +394,136 @@ const stPill=s=>pill(s==='Đã cắt xong'||s==='Đã cắt hết'?'good':s==='�
 const ageCell=a=>a==null?'–':`<span style="color:${a>30?'var(--bad)':a>14?'var(--warn)':'var(--ink)'};font-weight:${a>30?600:400}">${a} ngày</span>`;
 const secH=(t,p)=>`<div class="sec-h"><h2>${t}</h2>${p?`<p>${p}</p>`:''}</div>`;
 
+/* ---------- biểu đồ dùng chung: Tổng quan + Chi tiết dự án ---------- */
+/* cột tổng quát: mode 'stack' (xếp chồng tấn), 'pct' (xếp chồng 100%), 'group' (cột cạnh nhau) */
+function colChart(cats,series,{mode='group',h=320,W=null,unit='t',fmt=null,ref=[],top=null,sub=null,go=null}={}){
+  const flat=cats.every(c=>c.length<=16)&&cats.length<=8;
+  const pc=Math.max(mode==='group'?series.length*26:58,flat?Math.max(...cats.map(c=>c.length))*7.6+10:0,sub&&mode!=='group'?Math.max(...cats.map((_,i)=>String(sub(i)).length))*6.8:0);
+  W=W||(MOB?Math.max(360,cats.length*pc+90):Math.max(560,Math.min(980,cats.length*(mode==='group'?series.length*34+24:70)+120)));
+  const L=50,R=flat?14:60,Tp=30,B=flat?(sub&&mode==='pct'?30:30):92,n=cats.length,gw=(W-L-R)/n,k=series.length;
+  const bw=mode==='group'?Math.min(30,(gw-10)/k):Math.min(56,gw*0.64);
+  const tot=cats.map((_,i)=>sum(series,s=>s.v[i]||0));
+  const vmax=mode==='pct'?1:mode==='stack'?Math.max(1e-9,...tot):Math.max(1e-9,...series.flatMap(s=>s.v),...ref.map(r=>r.v));
+  const pctAx=mode==='pct'||unit==='%';
+  const rotS=mode!=='group'&&cats.some((_,i)=>String(sub?sub(i):'').length*6.6>gw-2);const[tp,ticks]=pctAx?[top||1,[0,.25,.5,.75,1].filter(t=>t<=(top||1)+1e-9)]:nice((top||vmax)*(rotS?1.45:1.16));const Tq=rotS&&pctAx?Tp+60:Tp;const y=v=>Tq+(h-Tq-B)*(1-v/tp);
+  const f=fmt||(pctAx?(v=>Math.round(v*100)+'%'):vlab);
+  let s=ticks.map(t=>`<line class="grid-l" x1="${L}" x2="${W-R}" y1="${y(t)}" y2="${y(t)}"/><text x="${L-6}" y="${y(t)+4}" text-anchor="end">${pctAx?Math.round(t*100)+'%':T0(t)}</text>`).join('');
+  cats.forEach((c,i)=>{const cx=L+i*gw+gw/2;
+    if(mode==='group'){const x0=cx-bw*k/2;series.forEach((se,j)=>{const v=se.v[i]||0,yy=y(v);if(v<=0)return;
+        s+=`<rect x="${x0+j*bw}" y="${yy}" width="${bw-2}" height="${h-B-yy}" rx="1.5" style="fill:var(${se.c})" data-tip="${esc(c)}\n${se.n}: ${unit==='%'?PC(v):T(v)+' '+unit}"/>`;
+        s+=bw>=26?`<text class="vl" x="${x0+j*bw+bw/2-1}" y="${yy-5}" text-anchor="middle">${f(v)}</text>`:`<text class="vl" transform="translate(${x0+j*bw+bw/2+2.5},${yy-4}) rotate(-90)" text-anchor="start">${f(v)}</text>`})}
+    else{let acc=0;const T0t=tot[i]||1;series.forEach(se=>{const raw=se.v[i]||0;const v=mode==='pct'?raw/T0t:raw;if(v<=0)return;const y1=y(acc+v),y0=y(acc);acc+=v;
+        s+=`<rect x="${cx-bw/2}" y="${y1}" width="${bw}" height="${Math.max(0.5,y0-y1)}" style="fill:var(${se.c})" data-tip="${esc(c)}\n${se.n}: ${T(raw)} ${unit} (${PC(raw/T0t)})"/>`;
+        if(y0-y1>15&&bw>=26)s+=`<text x="${cx}" y="${(y0+y1)/2+4}" text-anchor="middle" style="fill:${se.dark?'var(--ink)':'#fff'};font:600 10.5px var(--f-mono)">${mode==='pct'?Math.round(v*100)+'%':vlab(v)}</text>`});
+      {const st=sub?sub(i):vlab(tot[i]),yt=y(mode==='pct'?1:tot[i]);s+=String(st).length*6.6>gw-2?`<text class="vl" transform="translate(${cx+4},${yt-5}) rotate(-90)" text-anchor="start" style="font-size:10.5px">${st}</text>`:`<text class="vl" x="${cx}" y="${yt-7}" text-anchor="middle" style="font-size:11px">${st}</text>`}}
+    const lab=c.length>22?c.slice(0,21)+'…':c,g=go?go(i):null,ga=g?` data-go="${esc(g)}" style="cursor:pointer;font-size:11px;fill:var(--ink)"`:' style="font-size:11px;fill:var(--ink)"';
+    s+=flat?`<text x="${cx}" y="${h-B+16}" text-anchor="middle"${ga}>${esc(lab)}</text>`:`<text transform="translate(${cx-4},${h-B+12}) rotate(32)"${ga}><title>${esc(c)}</title>${esc(lab)}</text>`});
+  ref.forEach(r=>{s+=`<line x1="${L}" x2="${W-R}" y1="${y(r.v)}" y2="${y(r.v)}" style="stroke:var(${r.c})" stroke-width="1.5" stroke-dasharray="6 4"/><text x="${W-R}" y="${y(r.v)-5}" text-anchor="end" style="fill:var(${r.c});font-size:10.5px">${esc(r.n)}</text>`});
+  s+=`<line class="axis" x1="${L}" x2="${W-R}" y1="${h-B}" y2="${h-B}"/>`;
+  return `<div class="legend">${series.map(se=>`<span><i style="background:var(${se.c})${se.dark?';box-shadow:inset 0 0 0 1px var(--line)':''}"></i>${se.n}</span>`).join('')}</div><div class="chart-x${MOB&&W>400?' hint':''}"><svg viewBox="0 0 ${W} ${h}" ${svgB(W,h)} role="img" aria-label="Biểu đồ cột">${s}</svg></div>`}
+/* cột nhỏ trong thẻ: items [{n, v, c, p?}] */
+function miniCols(items,{h=180,W=340,unit='t',fmt=vlab}={}){
+  W=Math.max(W,items.length*(Math.max(...items.map(x=>x.n.length))*6.4+12));
+  const L=6,R=6,Tp=22,B=items.some(x=>x.p!=null)?42:28,n=items.length,gw=(W-L-R)/n,bw=Math.min(46,gw*0.6);const mx=Math.max(1e-9,...items.map(x=>x.v));const y=v=>Tp+(h-Tp-B)*(1-v/(mx*1.04));
+  let s=`<line class="axis" x1="${L}" x2="${W-R}" y1="${h-B}" y2="${h-B}"/>`;
+  items.forEach((it,i)=>{const cx=L+i*gw+gw/2,yy=y(it.v);
+    if(it.v>0)s+=`<rect x="${cx-bw/2}" y="${yy}" width="${bw}" height="${Math.max(1,h-B-yy)}" rx="2" style="fill:var(${it.c})" data-tip="${esc(it.n)}: ${fmt(it.v)} ${unit}${it.p!=null?' ('+PC(it.p)+')':''}"/>`;
+    s+=`<text class="vl" x="${cx}" y="${(it.v>0?yy:h-B)-5}" text-anchor="middle" style="font-size:11.5px">${fmt(it.v)}</text>`;
+    s+=`<text x="${cx}" y="${h-B+14}" text-anchor="middle" style="font-size:10.5px;fill:var(--ink)">${esc(it.n)}</text>`;
+    if(it.p!=null)s+=`<text x="${cx}" y="${h-B+28}" text-anchor="middle" style="font-size:10.5px;font-weight:600">${PC(it.p)}</text>`});
+  return `<svg viewBox="0 0 ${W} ${h}" width="100%" height="${h}" preserveAspectRatio="xMidYMid meet" style="display:block" role="img" aria-label="Biểu đồ cột nhỏ">${s}</svg>`}
+/* thác nước: nhu cầu → trừ dần nguồn → còn thiếu */
+function waterfall(steps,{h=230}={}){
+  const W=MOB?340:560,L=46,R=8,Tp=26,B=40,n=steps.length,gw=(W-L-R)/n,bw=gw*0.56;const mx=Math.max(1e-9,...steps.map(s=>s.base+s.v));const[top,ticks]=nice(mx*1.12);const y=v=>Tp+(h-Tp-B)*(1-v/top);
+  let s=ticks.map(t=>`<line class="grid-l" x1="${L}" x2="${W-R}" y1="${y(t)}" y2="${y(t)}"/><text x="${L-6}" y="${y(t)+4}" text-anchor="end">${T0(t)}</text>`).join('');
+  steps.forEach((st,i)=>{const x=L+i*gw+(gw-bw)/2,y1=y(st.base+st.v),y0=y(st.base);
+    s+=`<rect x="${x}" y="${y1}" width="${bw}" height="${Math.max(1,y0-y1)}" rx="2" style="fill:var(${st.col})" data-tip="${esc(st.n)}: ${T(st.v)} t"/>`;
+    s+=`<text class="vl" x="${x+bw/2}" y="${y1-6}" text-anchor="middle" style="font-size:12px${st.col==='--bad'&&st.v>0.05?';fill:var(--bad)':''}">${st.sign||''}${T(st.v)}</text>`;
+    s+=`<text x="${x+bw/2}" y="${h-B+16}" text-anchor="middle" style="font-size:11px;fill:var(--ink)">${esc(st.n)}</text>`;
+    if(i<n-1){const nx=L+(i+1)*gw+(gw-bw)/2;const yy=y(st.base);s+=`<line x1="${x+bw}" x2="${nx}" y1="${yy}" y2="${yy}" style="stroke:var(--muted)" stroke-dasharray="3 3"/>`}});
+  s+=`<line class="axis" x1="${L}" x2="${W-R}" y1="${h-B}" y2="${h-B}"/>`;
+  return `<svg viewBox="0 0 ${W} ${h}" ${MOB?'width="100%"':svgB(W,h)} role="img" aria-label="Biểu đồ thác nước">${s}</svg>`}
+const steelSteps=(need,own,com,buy)=>[{n:'Cần phôi',base:0,v:need,col:'--d1'},{n:'Tồn dự án',base:Math.max(0,need-own),v:own,col:'--s3',sign:'−'},{n:'Kho chung',base:Math.max(0,need-own-com),v:com,col:'--s2',sign:'−'},{n:'Phải mua',base:0,v:buy,col:'--bad'}];
+/* sparkline: cột theo ngày hoặc đường */
+function spark(v,{col='--brand',type='col',h=36}={}){
+  const W=160,n=v.length;if(!n)return '';const mx=Math.max(1e-9,...v.map(Math.abs)),mn=type==='line'?Math.min(...v):0,rg=Math.max(1e-9,mx-mn);const y=q=>h-2-(h-6)*(q-mn)/rg;
+  if(type==='col'){const bw=W/n;return `<svg class="spk" viewBox="0 0 ${W} ${h}" width="100%" height="${h}" preserveAspectRatio="none" aria-hidden="true">${v.map((q,i)=>q>0?`<rect x="${i*bw+0.6}" y="${y(q)}" width="${Math.max(0.8,bw-1.2)}" height="${h-2-y(q)}" style="fill:var(${col});opacity:${i===n-1?1:.55}"/>`:'').join('')}<line x1="0" x2="${W}" y1="${h-1.5}" y2="${h-1.5}" style="stroke:var(--line)"/></svg>`}
+  const x=i=>n<2?W/2:i*(W-4)/(n-1)+2,pts=v.map((q,i)=>x(i).toFixed(1)+','+y(q).toFixed(1)).join(' ');
+  return `<svg class="spk" viewBox="0 0 ${W} ${h}" width="100%" height="${h}" preserveAspectRatio="none" aria-hidden="true"><polygon points="2,${h-1} ${pts} ${W-2},${h-1}" style="fill:var(${col});opacity:.13"/><polyline points="${pts}" fill="none" style="stroke:var(${col})" stroke-width="1.8" vector-effect="non-scaling-stroke"/></svg>`}
+/* thẻ số lớn có sparkline */
+function kpiS(l,v,u,{badge='',s='',sp='',cls='',sl=''}={}){return `<div class="kpi kpx ${cls}"><div class="l">${l}</div><div class="v">${v}${u?`<small>${u}</small>`:''}${badge?` <span class="bdg">${badge}</span>`:''}</div>${sp?`<div class="spw">${sp}${sl?`<div class="spl">${sl}</div>`:''}</div>`:''}${s?`<div class="s">${s}</div>`:''}</div>`}
+/* nút chuyển 2–3 cách xem trong một thẻ */
+function tabs(name,items){return `<div class="seg tg">${items.map((it,i)=>`<button data-tg="${name}" data-i="${i}" aria-pressed="${i===0}">${it.n}</button>`).join('')}</div>${items.map((it,i)=>`<div data-tgp="${name}"${i?' hidden':''}>${it.h}</div>`).join('')}`}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-tg]');if(!b)return;const n=b.dataset.tg;document.querySelectorAll(`[data-tg="${n}"]`).forEach(x=>x.setAttribute('aria-pressed',x===b));document.querySelectorAll(`[data-tgp="${n}"]`).forEach((p,i)=>p.hidden=i!==+b.dataset.i)});
+/* chuỗi số theo ngày / tuần cho một dự án (pi='' = tất cả) */
+function trend(pi){
+  const pk=pi===''?'':String(pi);
+  const a=agg(DEND-29*DAY,DEND,'day',{p:pk,m:''}),b=agg(DEND-59*DAY,DEND-30*DAY,'day',{p:pk,m:''});
+  const cum=(stg,to)=>{let c=0;for(const r of D.ev.rows){if(D0+r[0]*DAY>to)continue;if(pk!==''&&r[1]!==+pk)continue;if(r[3]===stg)c+=r[4]}return c};
+  const dts=a.keys.map(k=>parseD(k));
+  const cutC=dts.map(t=>cum(0,t)),bgC=dts.map(t=>cum(4,t));
+  const wk0=(()=>{const wd=(new Date(DEND).getUTCDay()+6)%7;return DEND-wd*DAY-11*7*DAY})();
+  const w=agg(Math.max(D0,wk0),DEND,'week',{p:pk,m:''});
+  const wEnd=w.keys.map(k=>Math.min(DEND,parseD(k)+6*DAY));
+  return {a,b,cutC,bgC,w,wEnd,blog:dts.map((t,i)=>cutC[i]-bgC[i]),wBlog:wEnd.map(t=>cum(0,t)-cum(4,t)),cutNow:cutC[cutC.length-1],bgNow:bgC[bgC.length-1]}}
+const wlab=k=>'W'+isoWeek(parseD(k)).w;
+
 /* ---------- views ---------- */
 const V={};
-V.ov={name:'Dự án',title:'Toàn bộ dự án',ico:'<path d="M3 13h8V3H3zM13 21h8V11h-8zM3 21h8v-6H3zM13 3v6h8V3z"/>',render(){
-  const t=D.tot,b=D.bal,k=D.kho,remain=t.req-t.cut;
+V.ov={name:'Tổng quan dự án',title:'Tổng quan toàn bộ dự án',ico:'<path d="M3 13h8V3H3zM13 21h8V11h-8zM3 21h8v-6H3zM13 3v6h8V3z"/>',render(){
+  const t=D.tot,b=D.bal,k=D.kho,remain=Math.max(0,t.req-t.cut),wait=Math.max(0,t.cut-t.bg);
   const alerts=P.flatMap(p=>p.alerts.map(a=>({...a,p}))).sort((a,b)=>(a.s==='bad'?0:1)-(b.s==='bad'?0:1));
   const act=P.filter(p=>(p.pc??1)<0.999);
   const nesBuy=sum(P,p=>p.nes?(p.nes.alloc.find(x=>x.k==='Phải mua')||{t:0}).t:0);
   const open=openLsx.length, old=openLsx.filter(l=>l.age>30).length;
-  return `<section><div class="kpis">
-   ${kpi('Tổng KL lệnh sản xuất',T(t.kl),'t',`${t.n_lsx} LSX · ${t.n_proj} dự án`,'dim')}
-   ${kpi('Đã cắt',PC(t.cut/t.req),'',`${T(t.cut)} t · còn ${T(remain)} t`,'',t.cut/t.req)}
-   ${kpi('Đã bàn giao',PC(t.bg/t.kl),'',`${T(t.bg)} t`,'',t.bg/t.kl)}
-   ${kpi('LSX chưa cắt xong',open,'',`${old} lệnh ban hành quá 30 ngày`,old?'bad':'')}
-   ${kpi('Phôi chờ cắt',T(b.need),'t','nesting chưa cắt, nguyên khổ','dim')}
-   ${kpi('Thiếu thép phải mua',T(b.buy),'t',`sau tồn dự án + Kho chung · nesting chi tiết: ${T(nesBuy)} t`,'bad')}
-  </div></section>
-  <section>${secH('Dòng chảy vật tư','Kho → Nesting → Cutting → Bàn giao')}
-  <div class="chain">
-   <div class="step"><div class="t">Kho thép</div><div class="v">${T(k.ton)} t</div><div class="d">tồn · Kho chung <b>${T(k.common)}</b> · BRAVO <b>${T(k.bravo)}</b> · đã xuất <b>${T(k.xuat)}</b></div></div>
-   <div class="step"><div class="t">Nesting chờ cắt</div><div class="v">${T(b.need)} t</div><div class="d">tồn dự án <b>${T(b.own)}</b> · Kho chung <b>${T(b.common)}</b> · thiếu <b style="color:var(--bad)">${T(b.buy)}</b></div></div>
-   <div class="step"><div class="t">Cutting</div><div class="v">${T(t.cut)} t</div><div class="d">${PC(t.cut/t.req)} yêu cầu cắt · còn <b>${T(remain)}</b> t</div></div>
-   <div class="step"><div class="t">Bàn giao</div><div class="v">${T(t.bg)} t</div><div class="d">${PC(t.bg/t.kl)} tổng KL · chờ bàn giao <b>${T(Math.max(0,t.cut-t.bg))}</b> t</div></div>
-  </div></section>
-  <section>${secH('Dự án đang chạy',`${act.length} dự án chưa cắt xong · bấm thẻ để xem chi tiết`)}
-   <div class="pcards">${act.sort((a,b)=>b.req-b.cut-(a.req-a.cut)).map(pcard).join('')}</div></section>
+  const tr=trend('');const c30=tr.a.tot[0],b30=tr.a.tot[4],c30p=tr.b.tot[0],b30p=tr.b.tot[4],k30=tr.a.tot[5];
+  const off=wait-(tr.cutNow-tr.bgNow);const d0=dm(DEND-29*DAY),d1=dm(DEND);
+  const sl=`<span>${d0}</span><span>${d1}</span>`;
+  /* KPI */
+  let h=`<section><div class="kpis">
+   ${kpiS('Tổng KL lệnh sản xuất',T(t.kl),'t',{s:`${t.n_lsx} LSX · ${t.n_proj} dự án · 30 ngày ban hành thêm <b>${T(k30)}</b> t`,sp:spark(tr.a.S[5],{col:'--s5'}),sl,cls:'dim'})}
+   ${kpiS('Đã cắt',T(t.cut),'t',{badge:PC(t.cut/t.req),s:`30 ngày: <b>${T(c30)}</b> t ${delta(c30,c30p)} so với 30 ngày trước`,sp:spark(tr.a.S[0],{col:'--s0'}),sl})}
+   ${kpiS('Đã bàn giao',T(t.bg),'t',{badge:PC(t.bg/t.kl),s:`30 ngày: <b>${T(b30)}</b> t ${delta(b30,b30p)} so với 30 ngày trước`,sp:spark(tr.a.S[4],{col:'--s4'}),sl})}
+   ${kpiS('Còn phải cắt',T(remain),'t',{badge:PC(remain/t.req),s:`${open} LSX chưa xong · <b style="color:${old?'var(--bad)':'inherit'}">${old}</b> lệnh quá 30 ngày`,sp:spark(tr.cutC.map(x=>remain+tr.cutNow-x),{type:'line',col:'--brand'}),sl,cls:old?'bad':''})}
+   ${kpiS('Đã cắt, chưa bàn giao',T(wait),'t',{s:'hàng cắt xong còn nằm ở xưởng',sp:spark(tr.blog.map(x=>x+off),{type:'line',col:'--d1'}),sl,cls:'dim'})}
+   ${kpiS('Thiếu thép phải mua',T(b.buy),'t',{s:`cần ${T(b.need)} t phôi · tồn DA ${T(b.own)} · Kho chung ${T(b.common)}`,sp:miniStack([{v:b.own,c:'--s3'},{v:b.common,c:'--s2'},{v:b.buy,c:'--bad'}]),sl:'<span>tồn DA · kho chung · mua</span>',cls:b.buy>0.05?'bad':'good'})}
+  </div></section>`;
+  /* tiến độ khối lượng theo dự án */
+  const PR=P.filter(p=>p.req>0.5).sort((a,b)=>{const fa=(a.pc??0)>=0.999,fb=(b.pc??0)>=0.999;return fa!==fb?(fa?1:-1):fa?b.kl-a.kl:(a.pc??0)-(b.pc??0)});
+  const ser=[{n:'Đã bàn giao',c:'--d1',v:PR.map(p=>Math.min(p.bg,p.req))},{n:'Đã cắt, chờ bàn giao',c:'--d2',v:PR.map(p=>Math.max(0,Math.min(p.cut,p.req)-Math.min(p.bg,p.req)))},{n:'Còn phải cắt',c:'--brand',v:PR.map(p=>Math.max(0,p.req-p.cut))}];
+  const cats=PR.map(p=>p.name),go=i=>PR[i].id;
+  h+=`<section>${secH('Tiến độ khối lượng từng dự án',`${act.length} dự án chưa cắt xong xếp trước, % cắt thấp nhất bên trái · bấm tên dự án để xem chi tiết`)}
+   <div class="card">${tabs('ovp',[
+     {n:'Tỷ lệ %',h:colChart(cats,ser,{mode:'pct',sub:i=>PC(PR[i].pc),go})+'<p class="note">Mỗi cột = 100% khối lượng yêu cầu cắt của dự án. Số trên đỉnh cột = % đã cắt. Số trong cột = tỷ lệ từng phần.</p>'},
+     {n:'Tấn',h:colChart(cats,ser,{mode:'stack',sub:i=>T0(PR[i].req)+' t',go})+'<p class="note">Chiều cao cột = tấn yêu cầu cắt. Số trong cột = tấn từng phần.</p>'},
+     {n:'Còn phải cắt',h:(()=>{const R=PR.filter(p=>p.req-p.cut>0.05).sort((a,b)=>(b.req-b.cut)-(a.req-a.cut));return colChart(R.map(p=>p.name),[{n:'Còn phải cắt (t)',c:'--brand',v:R.map(p=>p.req-p.cut)}],{go:i=>R[i].id})})()+'<p class="note">Dự án xếp theo tấn còn phải cắt, nhiều nhất bên trái.</p>'}])}</div></section>`;
+  /* sản lượng theo tuần / tháng */
+  const wl=tr.w.keys.map(wlab),wb=tr.wBlog.map(x=>Math.max(0,x+off));
+  h+=`<section class="grid">
+   <div class="card"><h3>Sản lượng cắt và bàn giao <span class="sub">· tấn</span></h3>${tabs('ovw',[
+     {n:'12 tuần',h:cols([{n:'Cắt',v:tr.w.S[0],col:'--s0'},{n:'Bàn giao',v:tr.w.S[4],col:'--s4'}],wl,{line:{n:'Đã cắt chưa giao (cuối tuần)',v:wb,col:'--d1'},h:270,W:560})+`<p class="note">Tuần ${wl[wl.length-1]} tính đến ${dm(DEND)}. Đường xám: lượng hàng cắt xong còn ở xưởng cuối mỗi tuần (trục phải).</p>`},
+     {n:'12 tháng',h:cols([{n:'Cắt',v:D.m_cut,col:'--s0'},{n:'Bàn giao',v:D.m_bg,col:'--s4'}],MLAB,{line:{n:'Cắt − bàn giao cộng dồn',v:D.m_cut.map((_,i)=>Math.max(0,sum(D.m_cut.slice(0,i+1),x=>x)-sum(D.m_bg.slice(0,i+1),x=>x))),col:'--d1'},h:270,W:560})+'<p class="note">Đường xám: cộng dồn (cắt − bàn giao) trong 12 tháng.</p>'}])}</div>
+   <div class="card"><h3>LSX chưa cắt xong theo tuổi <span class="sub">· tấn còn phải cắt</span>${info('Tuổi = số ngày từ ngày ban hành LSX đến ngày số liệu.')}</h3><div style="height:44px"></div>${agingCols(openLsx,{h:270,W:560})}
+    <p class="note">Trong ngoặc: số LSX. ${open} LSX, còn ${T(sum(openLsx,l=>l.rem))} t. Danh sách chi tiết ở mục Tiến độ LSX.</p></div>
+  </section>`;
+  /* thép */
+  const kr=kprojs.filter(p=>p.kho.need>0.05).sort((a,b)=>b.kho.buy-a.kho.buy||b.kho.need-a.kho.need);
+  h+=`<section>${secH('Thép cho phần chưa cắt','Nhu cầu = phôi nguyên khổ của các nesting chưa cắt · lấy lần lượt tồn dự án → Kho chung/BRAVO → còn lại phải mua')}
+   <div class="grid"><div class="card"><h3>Toàn bộ dự án <span class="sub">· tấn</span></h3>${waterfall(steelSteps(b.need,b.own,b.common,b.buy),{h:300})}
+     <p class="note">Kho: tồn ${T(k.ton)} t (Kho chung ${T(k.common)} · BRAVO ${T(k.bravo)}) · đã xuất ${T(k.xuat)} t.${nesBuy>0.05?` Đối chiếu đến từng tấm nesting: phải mua ${T(nesBuy)} t.`:''}</p></div>
+   <div class="card"><h3>Theo dự án <span class="sub">· tấn phôi cần</span></h3>${kr.length?colChart(kr.map(p=>p.kho.shared.length?p.name+' (+'+p.kho.shared.length+')':p.name),[{n:'Tồn dự án',c:'--s3',v:kr.map(p=>p.kho.own)},{n:'Kho chung/BRAVO',c:'--s2',v:kr.map(p=>p.kho.common)},{n:'Phải mua',c:'--bad',v:kr.map(p=>p.kho.buy)}],{mode:'stack',h:300,W:560,sub:i=>kr[i].kho.buy>0.05?'thiếu '+T(kr[i].kho.buy):'đủ',go:i=>kr[i].id}):'<p class="empty">Không còn nesting chờ cắt.</p>'}
+     <p class="note">So theo độ dày / quy cách hình. Số trên đỉnh cột = tấn phải mua.</p></div></div></section>`;
+  h+=`<section>${secH('Dự án đang chạy',`${act.length} dự án chưa cắt xong · bấm thẻ để xem chi tiết`)}
+   <div class="pcards">${act.sort((a,b)=>(a.pc??0)-(b.pc??0)).map(pcard).join('')}</div></section>
   <section>${secH('Cảnh báo cần xử lý',`${alerts.filter(a=>a.s==='bad').length} mức cao · ${alerts.filter(a=>a.s!=='bad').length} cần theo dõi`)}
   <ul class="alerts">${alerts.slice(0,12).map(a=>`<li class="${a.s}">${pill(a.s==='bad'?'bad':'warn',a.s==='bad'?'Cao':'Theo dõi')}<span><a data-go="${esc(a.p.id)}">${esc(a.p.name)}</a> — ${esc(a.m)}</span></li>`).join('')}</ul></section>
-  <section class="grid">
-   <div class="card"><h3>Tiến độ cắt theo dự án <span class="sub">· tấn đã cắt / tấn yêu cầu</span></h3>
-    <div class="legend"><span><i class="c-cut"></i>Đã cắt</span><span><i class="c-rem"></i>Còn phải cắt</span></div>
-    ${hbars(P.filter(p=>p.kl>=1).map(p=>({id:p.id,label:p.name,segs:[{v:p.cut,c:'c-cut',n:'Đã cắt'},{v:p.req-p.cut,c:'c-rem',n:'Còn phải cắt'}],right:`${T0(p.kl)} t · ${PC(p.pc)}`})),Math.max(...P.map(p=>p.req)),{click:1})}</div>
-   <div class="card"><h3>Nguồn thép cho phần chưa cắt <span class="sub">· tấn, theo dự án</span>${info('Nhu cầu = phôi của các nesting chưa cắt. Lấy lần lượt: tồn của chính dự án → Kho chung/BRAVO → phần còn lại phải mua.')}</h3>
-    <div class="legend"><span><i class="c-own"></i>Tồn dự án</span><span><i class="c-com"></i>Kho chung/BRAVO</span><span><i class="c-buy"></i>Phải mua</span></div>
-    ${(()=>{const rows=kprojs.filter(p=>p.kho.need>0.05).sort((a,b)=>b.kho.need-a.kho.need);
-      return hbars(rows.map(p=>({id:p.id,label:p.kho.shared.length?p.name+' (+'+p.kho.shared.length+')':p.name,segs:[{v:p.kho.own,c:'c-own',n:'Tồn dự án'},{v:p.kho.common,c:'c-com',n:'Kho chung/BRAVO'},{v:p.kho.buy,c:'c-buy',n:'Phải mua'}],right:p.kho.buy>0.05?`<span style="color:var(--bad);font-weight:600">thiếu ${T(p.kho.buy)}</span>`:'đủ'})),Math.max(...rows.map(p=>p.kho.need)),{click:1})})()}
-    <p class="note">So theo độ dày/quy cách hình. Hùng Vương, RMG, Shiplift đối chiếu thêm đến từng tấm trong trang dự án.</p></div>
-  </section>
-  <section class="grid">
-   <div class="card"><h3>Sản lượng cắt và bàn giao theo tháng (tấn)</h3>${cols([{n:'Cắt',v:D.m_cut,col:'--d1'},{n:'Bàn giao',v:D.m_bg,col:'--d2'}],MLAB,{line:{n:'Tồn cắt chưa giao lũy kế',v:D.m_cut.map((_,i)=>Math.max(0,sum(D.m_cut.slice(0,i+1),x=>x)-sum(D.m_bg.slice(0,i+1),x=>x))),col:'--brand'}})}
-    <p class="note">Đường đỏ: cộng dồn (cắt − bàn giao) trong 12 tháng, cho thấy lượng hàng cắt xong còn nằm ở xưởng.</p></div>
-   <div class="card"><h3>LSX chưa cắt xong theo tuổi (tấn còn phải cắt)</h3>${agingChart(openLsx)}
-    <p class="note">Tuổi = số ngày từ ngày ban hành LSX đến ngày số liệu. Xem danh sách chi tiết ở mục Tiến độ sản xuất.</p></div>
-  </section>
-  <section>${secH('Bảng tổng hợp dự án','Bấm một dòng để xem chi tiết · bấm tiêu đề cột để sắp xếp')}${projTable()}</section>`;}};
+  <section>${secH('Bảng tổng hợp dự án','Bấm một dòng để xem chi tiết · bấm tiêu đề cột để sắp xếp')}${projTable()}</section>`;
+  return h;}};
+/* thanh xếp chồng mỏng dùng trong thẻ số */
+function miniStack(parts){const tot=parts.reduce((a,b)=>a+b.v,0)||1;return `<div class="track" style="height:14px;margin:12px 0 10px">${parts.map(p=>p.v>0?`<i style="width:${p.v/tot*100}%;background:var(${p.c})"></i>`:'').join('')}</div>`}
+function agingCols(list,{h=260,W=null}={}){
+  const rows=BUCK.map((b,i)=>{const L=list.filter(l=>bucketOf(l.age)===i);return{n:L.length,chua:sum(L.filter(l=>!l.pc),l=>l.rem),dang:sum(L.filter(l=>l.pc>0),l=>l.rem)}});
+  return colChart(BUCK.map((b,i)=>b[0]+(rows[i].n?` (${rows[i].n})`:'')),[{n:'Chưa cắt',c:'--brand',v:rows.map(r=>r.chua)},{n:'Đang cắt dở',c:'--s1',v:rows.map(r=>r.dang)}],{mode:'stack',h,W,sub:i=>rows[i].n?vlab(rows[i].chua+rows[i].dang)+' t':'0'})}
 
 function pcard(p){const hs=health(p),bu=buyOf(p);
   return `<button class="pcard" data-go="${esc(p.id)}">${ring(p.pc,58,hs.c==='bad'?'--bad':'--brand')}
@@ -475,6 +625,23 @@ V.th={name:'Thép & tồn kho',title:'Tồn kho và cân đối thép',ico:'<pat
      kprojs.map(p=>({...p,_id:p.id})).sort((a,b)=>b.kho.buy-a.kho.buy),{click:1,foot:['Tổng',T(D.kho.nhap),T(D.kho.xuat),T(D.kho.ton),T(b.need),T(b.own),T(b.common),T(b.buy),'','']})}
    <p class="note">Tổng nhập/xuất/tồn ở dòng cuối gồm cả Kho chung, BRAVO và dự án không có lệnh cắt. Công trình chưa map kho: ${D.nomap.map(esc).join(', ')||'không'}.</p></section>`;}};
 
+/* thanh ngang có trục: rows [{n, v, tot?, c?}] — tot = phần nền nhạt (100%) */
+function hrows(rows,{base=null,unit='t'}={}){
+  const mx=Math.max(1e-9,...rows.map(r=>Math.max(r.v,r.tot||0)));const[top,ticks]=nice(mx*1.6);const w=v=>Math.max(0,v)/top*100;
+  const gs=ticks.length>1?(ticks[1]/top*100)+'%':'25%';
+  return `<div class="hr">${rows.map(r=>{const pc=base?r.v/base:null,end=Math.max(w(r.v),r.tot?w(r.tot):0);
+    return `<div class="lb" title="${esc(r.n)}">${esc(r.n)}</div><div class="tk" style="--gs:${gs}${r.c?`;--bc:var(${r.c})`:''}" data-tip="${esc(r.n)}: ${T(r.v)} ${unit}${pc!=null?' ('+PC(pc)+')':''}">${r.tot?`<span class="tot" style="width:${w(r.tot)}%"></span>`:''}<span class="fill" style="width:${w(r.v)}%"></span><span class="vt" style="left:${end}%">${T(r.v)}${pc!=null?` (${Math.round(pc*100)}%)`:''}</span></div>`}).join('')}
+   <div></div><div class="ax">${ticks.filter(x=>x/top<=0.95||x===top).map(x=>`<span style="left:${x/top*100}%">${T0(x)}</span>`).join('')}</div></div>`}
+function nesCard(p){const n=p.nes,f=n.flow,tin=f.new+f.rin;const cs=k=>(n.cut_st.find(c=>c.k===k)||{t:0}).t;
+  const ctot=sum(n.cut_st,c=>c.t),done=cs('Đã cắt hết'),pd=ctot?done/ctot:0,miss=cs('Chưa nạp Cutting'),buy=(n.alloc.find(a=>a.k==='Phải mua')||{t:0,n:0});
+  const hh=n.pct.hh;
+  return `<div class="card ncd"><h3><a data-go="${esc(p.id)}">${esc(p.name)}</a><span class="pills">${pill(hh>0.08?'bad':'good','Hao hụt '+PC(hh))}${pill(pd>=0.999?'good':pd>=0.9?'warn':'bad','Đã cắt '+Math.round(pd*100)+'%')}</span></h3>
+   <div class="prog" data-tip="Tấm nesting đã cắt hết: ${T(done)} / ${T(ctot)} t (${PC(pd)})"><i style="width:${pd*100}%"></i></div>
+   <div class="info"><b>${esc(n.file)}</b> · ${T0(n.n_nesting)} nesting · ${n.n_lsx} LSX<br>Thép vào <b>${T(tin)} t</b> (tấm mới ${T(f.new)} · remain ${T(f.rin)}) · TP/thép vào <b>${PC(n.pct.tp)}</b>${miss>0.05?` · <b style="color:var(--bad)">chưa nạp Cutting ${T(miss)} t</b>`:''}${buy.t>0.05?` · <b style="color:var(--bad)">phải mua ${T(buy.t)} t</b>`:''}</div>
+   <h4>Thép vào → thành phẩm · tấn</h4>
+   ${hrows([{n:'Thép vào',v:tin,c:'--d1'},{n:'Thành phẩm',v:f.tp,tot:tin},{n:'Remain thu hồi',v:f.rm,tot:tin},{n:'Phế liệu',v:f.pl,tot:tin},{n:'Tiêu hao',v:f.th,tot:tin}],{base:tin||null})}
+   <h4>Tấm nesting vào Cutting · tấn</h4>
+   ${hrows([{n:'Đã cắt hết',v:done,tot:ctot},{n:'Cắt dở',v:cs('Cắt dở'),tot:ctot},{n:'Chưa cắt',v:cs('Chưa cắt'),tot:ctot},{n:'Chưa nạp Cutting',v:miss,tot:ctot,c:miss>0.05?'--bad':null}],{base:ctot||null})}</div>`}
 V.ne={name:'Nesting',title:'Hiệu quả nesting và đối chiếu Cutting',ico:'<path d="M4 4h7v7H4zM13 4h7v4h-7zM13 10h7v10h-7zM4 13h7v7H4z"/>',render(){
   const N=P.filter(p=>p.nes);
   if(!N.length) return `<p class="empty">Chưa có file nesting nào trong thư mục du_lieu/3_NESTING.</p>`;
@@ -485,10 +652,7 @@ V.ne={name:'Nesting',title:'Hiệu quả nesting và đối chiếu Cutting',ico
      {h:'% Phế',n:1,f:p=>PC(p.nes.pct.phe),s:p=>p.nes.pct.phe},{h:'Hao hụt',n:1,f:p=>`<b style="color:${p.nes.pct.hh>0.08?'var(--bad)':'var(--good)'}">${PC(p.nes.pct.hh)}</b>`,s:p=>p.nes.pct.hh},
      {h:'Chưa nạp Cutting (t)',n:1,f:p=>{const x=p.nes.cut_st.find(c=>c.k==='Chưa nạp Cutting');return x?`<b style="color:var(--bad)">${T(x.t)}</b>`:'0,0'},s:p=>(p.nes.cut_st.find(c=>c.k==='Chưa nạp Cutting')||{t:0}).t},
      {h:'Tấm phải mua (t)',n:1,f:p=>{const x=p.nes.alloc.find(c=>c.k==='Phải mua');return x?`<b style="color:var(--bad)">${T(x.t)}</b> · ${x.n} tấm`:'0,0'},s:p=>(p.nes.alloc.find(c=>c.k==='Phải mua')||{t:0}).t}],N.map(p=>({...p,_id:p.id})),{click:1})}</section>
-  <section class="grid3">${N.map(p=>{const f=p.nes.flow,tin=f.new+f.rin;return `<div class="card"><h3><a data-go="${esc(p.id)}">${esc(p.name)}</a></h3>
-    ${seg100([{n:'Thành phẩm',v:f.tp,c:'c-own'},{n:'Remain',v:f.rm,c:'c-bg'},{n:'Phế',v:f.pl,c:'c-com'},{n:'Tiêu hao',v:f.th,c:'c-buy'}])}
-    <h3 style="margin-top:12px">Tấm đã vào Cutting</h3>${seg100(['Đã cắt hết','Cắt dở','Chưa cắt','Chưa nạp Cutting'].map(s=>{const x=p.nes.cut_st.find(c=>c.k===s);return{n:s,v:x?x.t:0,c:{'Đã cắt hết':'c-own','Cắt dở':'c-com','Chưa cắt':'c-neu','Chưa nạp Cutting':'c-buy'}[s]}}))}
-    <p class="note">Thép vào ${T(tin)} t, trong đó tấm mới ${T(f.new)} t.</p></div>`}).join('')}</section>`;}};
+  <section>${secH('Từng dự án','Thanh đậm = khối lượng, nền nhạt = tổng (100%) · % tính trên tổng của nhóm · bấm tên để xem chi tiết')}<div class="grid3">${N.slice().sort((a,b)=>{const q=p=>{const c=sum(p.nes.cut_st,x=>x.t);return c?(p.nes.cut_st.find(x=>x.k==='Đã cắt hết')||{t:0}).t/c:1};return q(a)-q(b)}).map(nesCard).join('')}</div></section>`;}};
 
 V.src={name:'Dữ liệu & làm sạch',title:'Dữ liệu nạp, làm sạch và cách tính',ico:'<path d="M12 3v12M7 10l5 5 5-5M4 21h16"/>',render(){
   return `<section>${secH('File cần nạp mỗi lần cập nhật','Tải lên thư mục du_lieu/ trong repo GitHub, trang tự cập nhật sau khoảng 3 phút')}
@@ -524,56 +688,67 @@ function fixSection(list,title,sub,withFile){
 /* ---------- project detail ---------- */
 function renderProject(p){
   const k=p.kho,n=p.nes,nb=n&&n.alloc.find(a=>a.k==='Phải mua');
-  const ol=openLsx.filter(l=>l.p===p);
-  let h=`<section><div style="display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;color:var(--muted);font-size:12.5px">${pill(health(p).c,health(p).t)}<span>${esc(p.id)}</span>${k?`<span>Dự án kho: <b style="color:var(--ink)">${esc(k.name)}</b></span>`:'<span>Chưa map dự án kho</span>'}${n?`<span>Nesting: <b style="color:var(--ink)">${esc(n.file)}</b></span>`:''}</div></section>
+  const ol=openLsx.filter(l=>l.p===p),pi=P.indexOf(p);
+  const tr=trend(pi),remain=Math.max(0,p.req-p.cut),wait=Math.max(0,p.cut-p.bg),off=wait-(tr.cutNow-tr.bgNow);
+  const c30=tr.a.tot[0],b30=tr.a.tot[4],sl=`<span>${dm(DEND-29*DAY)}</span><span>${dm(DEND)}</span>`;
+  const old=ol.filter(l=>l.age>30).length;
+  let h=`<section><div style="display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;color:var(--muted);font-size:12.5px">${pill(health(p).c,health(p).t)}<span>${esc(p.id)}</span>${k?`<span>Dự án kho: <b style="color:var(--ink)">${esc(k.name)}</b></span>`:'<span>Chưa map dự án kho</span>'}${n?`<span>Nesting: <b style="color:var(--ink)">${esc(n.file)}</b></span>`:''}<span>Cắt gần nhất: <b style="color:var(--ink)">${p.last_cut||'–'}</b></span></div></section>
   <section><div class="kpis">
-   ${kpi('Tổng KL lệnh',T(p.kl),'t',`${p.n_lsx} LSX`,'dim')}
-   ${kpi('Đã cắt',PC(p.pc),'',`${T(p.cut)} / ${T(p.req)} t`,p.pc>=0.999?'good':'',p.pc)}
-   ${kpi('Đã bàn giao',PC(p.pb),'',`${T(p.bg)} t`,'',p.pb)}
-   ${kpi('Còn phải cắt',T(Math.max(0,p.req-p.cut)),'t',`${ol.length} LSX · cắt gần nhất ${p.last_cut||'–'}`)}
-   ${k?kpi('Phôi chờ cắt',T(k.need),'t',`tận dụng thêm ${T(k.tandung)} t`,'dim'):''}
-   ${n?kpi('Thiếu tấm (nesting)',T(nb?nb.t:0),'t',`${nb?nb.n:0} tấm không có trong kho`,nb&&nb.t>0?'bad':'good'):(k?kpi('Thiếu thép',T(k.buy),'t','so theo độ dày',k.buy>0.05?'bad':'good'):'')}
+   ${kpiS('Tổng KL lệnh',T(p.kl),'t',{s:`${p.n_lsx} LSX · 30 ngày ban hành thêm <b>${T(tr.a.tot[5])}</b> t`,sp:spark(tr.a.S[5],{col:'--s5'}),sl,cls:'dim'})}
+   ${kpiS('Đã cắt',T(p.cut),'t',{badge:PC(p.pc),s:`30 ngày: <b>${T(c30)}</b> t ${delta(c30,tr.b.tot[0])}`,sp:spark(tr.a.S[0],{col:'--s0'}),sl,cls:p.pc>=0.999?'good':''})}
+   ${kpiS('Đã bàn giao',T(p.bg),'t',{badge:PC(p.pb),s:`30 ngày: <b>${T(b30)}</b> t ${delta(b30,tr.b.tot[4])}`,sp:spark(tr.a.S[4],{col:'--s4'}),sl})}
+   ${kpiS('Còn phải cắt',T(remain),'t',{badge:p.req?PC(remain/p.req):'',s:`${ol.length} LSX chưa xong${old?` · <b style="color:var(--bad)">${old}</b> lệnh quá 30 ngày`:''}`,sp:spark(tr.cutC.map(x=>remain+tr.cutNow-x),{type:'line',col:'--brand'}),sl,cls:old?'bad':''})}
+   ${kpiS('Đã cắt, chưa bàn giao',T(wait),'t',{s:'hàng cắt xong còn ở xưởng',sp:spark(tr.blog.map(x=>Math.max(0,x+off)),{type:'line',col:'--d1'}),sl,cls:'dim'})}
+   ${n?kpiS('Thiếu tấm (nesting)',T(nb?nb.t:0),'t',{s:`${nb?nb.n:0} tấm không có trong kho`,cls:nb&&nb.t>0?'bad':'good'}):(k?kpiS('Thiếu thép',T(k.buy),'t',{s:`cần ${T(k.need)} t phôi · so theo độ dày`,sp:k.need>0.05?miniStack([{v:k.own,c:'--s3'},{v:k.common,c:'--s2'},{v:k.buy,c:'--bad'}]):'',cls:k.buy>0.05?'bad':'good'}):'')}
   </div></section>`;
   if(p.alerts.length) h+=`<section><ul class="alerts">${p.alerts.map(a=>`<li class="${a.s}">${pill(a.s==='bad'?'bad':'warn',a.s==='bad'?'Cao':'Theo dõi')}<span>${esc(a.m)}</span></li>`).join('')}</ul></section>`;
+  /* công đoạn */
   const stL={cut:'Cắt',khoan:'Khoan',chan:'Chấn / lốc',vat:'Vát mép'};
-  h+=`<section class="grid"><div class="card"><h3>Tiến độ theo công đoạn</h3>
-   ${Object.entries(p.stages).filter(([s,v])=>v.req>0).map(([s,v])=>`<div class="stage"><span>${stL[s]}</span><div class="track"><i class="c-cut" style="width:${Math.min(100,v.done/v.req*100)}%" data-tip="${stL[s]}: ${T(v.done)} / ${T(v.req)} t"></i></div><span class="num" style="font-size:12px;text-align:right">${PC(v.done/v.req)} · ${T(v.done)}/${T(v.req)}</span></div>`).join('')}
-   <div class="stage"><span>Bàn giao</span><div class="track"><i class="c-bg" style="width:${Math.min(100,(p.pb||0)*100)}%"></i></div><span class="num" style="font-size:12px;text-align:right">${PC(p.pb)} · ${T(p.bg)}/${T(p.kl)}</span></div>
-   <h3 style="margin-top:16px">Trạng thái LSX</h3>
-   ${seg100([{n:'Đã cắt xong',v:p.lsx_st['Đã cắt xong']||0,c:'c-own',fmt:T0},{n:'Đang cắt',v:p.lsx_st['Đang cắt']||0,c:'c-com',fmt:T0},{n:'Chưa cắt',v:p.lsx_st['Chưa cắt']||0,c:'c-br',fmt:T0}])}
-   ${ol.length?`<h3 style="margin-top:16px">LSX chưa cắt xong theo tuổi</h3>${agingChart(ol)}`:''}
-   ${p.mach.length?`<h3 style="margin-top:16px">Máy cắt (tấn đã cắt)</h3>${hbars(p.mach.map(m=>({label:m.k,segs:[{v:m.t,c:'c-cut',n:'Đã cắt'}],right:T(m.t)})),p.mach[0].t)}`:''}</div>
-  <div class="card"><h3>Cắt, bàn giao và kho xuất theo tháng (tấn)</h3>${cols([{n:'Cắt',v:p.m_cut,col:'--d1'},{n:'Bàn giao',v:p.m_bg,col:'--d2'}].concat(k?[{n:'Kho xuất thép',v:k.xuat_m,col:'--brand'}]:[]),MLAB)}
-   ${table('t-pm',[{h:'Tháng',f:r=>r.m,s:r=>r.i},{h:'Cắt',n:1,f:r=>T(r.c),s:r=>r.c},{h:'Bàn giao',n:1,f:r=>T(r.b),s:r=>r.b}].concat(k?[{h:'Kho xuất',n:1,f:r=>T(r.x),s:r=>r.x}]:[]),D.months.map((m,i)=>({i,m:MLAB[i],c:p.m_cut[i],b:p.m_bg[i],x:k?k.xuat_m[i]:0})).filter(r=>r.c||r.b||r.x))}</div></section>`;
+  const SG=Object.entries(p.stages).filter(([s,v])=>v.req>0.05).map(([s,v])=>({n:stL[s],done:Math.min(v.done,v.req),req:v.req})).concat(p.kl>0?[{n:'Bàn giao',done:Math.min(p.bg,p.kl),req:p.kl}]:[]);
+  const lst=['Đã cắt xong','Đang cắt','Chưa cắt'].map(s=>({s,n:p.lsx_st[s]||0,t:sum(p.lsx.filter(l=>l.st===s),l=>l.kl)}));
+  const HC=250;
+  h+=`<section>${secH('Tiến độ theo công đoạn và LSX','Số trên đỉnh cột = % hoàn thành · số trong cột = tỷ lệ từng phần')}
+   <div class="grid"><div class="card"><h3>% hoàn thành theo công đoạn</h3>${SG.length?colChart(SG.map(x=>x.n),[{n:'Đã làm',c:'--s3',v:SG.map(x=>x.done)},{n:'Còn lại',c:'--soft',dark:1,v:SG.map(x=>x.req-x.done)}],{mode:'pct',h:HC,W:520,sub:i=>PC(SG[i].done/SG[i].req)}):'<p class="empty">Không có khối lượng.</p>'}
+     <div class="grow"></div>${table('t-stg1',[{h:'Công đoạn',f:r=>`<b>${r.n}</b>`,s:r=>r.n},{h:'Phải làm (t)',n:1,f:r=>T(r.req),s:r=>r.req},{h:'Đã làm (t)',n:1,f:r=>T(r.done),s:r=>r.done},{h:'Còn lại (t)',n:1,f:r=>`<b>${T(r.req-r.done)}</b>`,s:r=>r.req-r.done},{h:'%',n:1,f:r=>`<span class="big-pct">${PC(r.done/r.req)}</span>`,s:r=>r.done/r.req}],SG)}</div>
+   <div class="card"><h3>Trạng thái LSX</h3><div class="minis">
+     <div><h4>Số lệnh</h4>${miniCols(lst.map((x,i)=>({n:x.s,v:x.n,c:['--s3','--s1','--brand'][i],p:p.n_lsx?x.n/p.n_lsx:null})),{unit:'LSX',fmt:T0,h:170,W:250})}</div>
+     <div><h4>Tấn</h4>${miniCols(lst.map((x,i)=>({n:x.s,v:x.t,c:['--s3','--s1','--brand'][i],p:p.kl?x.t/p.kl:null})),{h:170,W:250})}</div></div>
+    <h3 style="margin-top:14px">LSX chưa cắt xong theo tuổi <span class="sub">· tấn còn phải cắt</span></h3>${ol.length?agingCols(ol,{h:220,W:520}):'<p class="empty">Không còn LSX chưa cắt xong.</p>'}</div></div></section>`;
+  /* sản lượng + máy */
+  const wl=tr.w.keys.map(wlab),wb=tr.wBlog.map(x=>Math.max(0,x+off));
+  const mrows=D.months.map((m,i)=>({i,m:MLAB[i],c:p.m_cut[i],b:p.m_bg[i],x:k?k.xuat_m[i]:0})).filter(r=>r.c||r.b||r.x);
+  h+=`<section class="grid"><div class="card"><h3>Sản lượng cắt và bàn giao <span class="sub">· tấn</span></h3>${tabs('pjw',[
+     {n:'12 tuần',h:cols([{n:'Cắt',v:tr.w.S[0],col:'--s0'},{n:'Bàn giao',v:tr.w.S[4],col:'--s4'}],wl,{line:{n:'Đã cắt chưa giao (cuối tuần)',v:wb,col:'--d1'},h:HC+20,W:560})+`<p class="note">Tuần ${wl[wl.length-1]} tính đến ${dm(DEND)}.</p>`},
+     {n:'12 tháng',h:cols([{n:'Cắt',v:p.m_cut,col:'--s0'},{n:'Bàn giao',v:p.m_bg,col:'--s4'}].concat(k?[{n:'Kho xuất thép',v:k.xuat_m,col:'--s6'}]:[]),MLAB,{h:HC+20,W:560})},
+     {n:'Bảng tháng',h:`<div class="tscroll">${table('t-pm',[{h:'Tháng',f:r=>r.m,s:r=>r.i},{h:'Cắt',n:1,f:r=>T(r.c),s:r=>r.c},{h:'Bàn giao',n:1,f:r=>T(r.b),s:r=>r.b}].concat(k?[{h:'Kho xuất',n:1,f:r=>T(r.x),s:r=>r.x}]:[]),mrows,{foot:['Tổng',T(sum(p.m_cut,x=>x)),T(sum(p.m_bg,x=>x))].concat(k?[T(sum(k.xuat_m,x=>x))]:[])})}</div>`}])}</div>
+   <div class="card"><h3>Máy cắt <span class="sub">· tấn đã cắt</span></h3>${p.mach.length?colChart(p.mach.map(m=>m.k),[{n:'Đã cắt',c:'--d1',v:p.mach.map(m=>m.t)}],{h:HC+70,W:560}):'<p class="empty">Chưa có dữ liệu máy.</p>'}</div></section>`;
   if(k){
     h+=`<section>${secH('Thép: kho so với nhu cầu',k.shared.length?`Dự án kho dùng chung với: ${k.shared.map(esc).join(', ')}`:'Nhu cầu = nesting chưa cắt, quy ra phôi nguyên khổ')}
-    <div class="grid"><div class="card"><h3>Nhập · xuất · tồn (tấn)</h3>${seg100([{n:'Đã xuất',v:k.xuat,c:'c-cut'},{n:'Còn tồn',v:k.ton,c:'c-own'}])}
-      <h3 style="margin-top:14px">Nhu cầu ${T(k.need)} t được đáp ứng từ</h3>${seg100([{n:'Tồn dự án',v:k.own,c:'c-own'},{n:'Kho chung/BRAVO',v:k.common,c:'c-com'},{n:'Phải mua',v:k.buy,c:'c-buy'}])}
-      <h3 style="margin-top:14px">Tồn lớn nhất theo quy cách (tấn)</h3>${hbars(k.ton_key.slice(0,10).map(r=>({label:r.k,segs:[{v:r.t,c:'c-own',n:'Tồn'}],right:T(r.t)})),k.ton_key.length?k.ton_key[0].t:1)}</div>
-     <div class="card"><h3>Cân đối theo quy cách</h3>
-      ${k.bal.length?table('t-bal',[{h:'Quy cách',f:r=>`<b>${esc(r.k)}</b>`,s:r=>r.k},{h:'Nesting',n:1,f:r=>r.n,s:r=>r.n},{h:'Cần (t)',n:1,f:r=>T(r.need),s:r=>r.need},{h:'Tồn DA',n:1,f:r=>T(r.own),s:r=>r.own},{h:'Kho chung',n:1,f:r=>T(r.fc),s:r=>r.fc},{h:'Phải mua',n:1,f:r=>r.buy>0.05?`<b style="color:var(--bad)">${T(r.buy)}</b>`:'0,0',s:r=>r.buy},{h:'',f:r=>r.buy>0.05?pill('bad','Thiếu'):r.fc>0.05?pill('warn','Bù Kho chung'):pill('good','Đủ'),s:r=>r.buy}],k.bal,{foot:['Tổng','',T(k.need),'',T(k.common),T(k.buy),'']}):'<p class="empty">Không còn nesting chờ cắt dùng thép nguyên khổ.</p>'}</div></div></section>`;
+    <div class="grid"><div class="card"><h3>Nhu cầu ${T(k.need)} t lấy từ đâu <span class="sub">· tấn</span></h3>${k.need>0.05?waterfall(steelSteps(k.need,k.own,k.common,k.buy),{h:HC}):'<p class="empty">Không còn nesting chờ cắt.</p>'}
+      <h3 style="margin-top:14px">Thép của dự án <span class="sub">· tấn</span></h3>${miniCols([{n:'Đã xuất',v:k.xuat,c:'--s6',p:(k.xuat+k.ton)?k.xuat/(k.xuat+k.ton):null},{n:'Còn tồn',v:k.ton,c:'--s3',p:(k.xuat+k.ton)?k.ton/(k.xuat+k.ton):null},{n:'Cần thêm',v:k.need,c:'--d1'},{n:'Phải mua',v:k.buy,c:'--bad'}],{h:HC,W:520})}</div>
+     <div class="card"><h3>Tồn lớn nhất theo quy cách <span class="sub">· tấn</span></h3>${k.ton_key.length?colChart(k.ton_key.slice(0,10).map(r=>r.k),[{n:'Tồn',c:'--s3',v:k.ton_key.slice(0,10).map(r=>r.t)}],{h:HC,W:560}):'<p class="empty">Không còn tồn.</p>'}
+      <h3 style="margin-top:14px">Cân đối theo quy cách</h3>
+      <div class="tscroll">${k.bal.length?table('t-bal',[{h:'Quy cách',f:r=>`<b>${esc(r.k)}</b>`,s:r=>r.k},{h:'Nesting',n:1,f:r=>r.n,s:r=>r.n},{h:'Cần (t)',n:1,f:r=>T(r.need),s:r=>r.need},{h:'Tồn DA',n:1,f:r=>T(r.own),s:r=>r.own},{h:'Kho chung',n:1,f:r=>T(r.fc),s:r=>r.fc},{h:'Phải mua',n:1,f:r=>r.buy>0.05?`<b style="color:var(--bad)">${T(r.buy)}</b>`:'0,0',s:r=>r.buy},{h:'',f:r=>r.buy>0.05?pill('bad','Thiếu'):r.fc>0.05?pill('warn','Bù Kho chung'):pill('good','Đủ'),s:r=>r.buy}],k.bal,{foot:['Tổng','',T(k.need),'',T(k.common),T(k.buy),'']}):'<p class="empty">Không còn nesting chờ cắt dùng thép nguyên khổ.</p>'}</div></div></div></section>`;
   }
   if(n){
     const f=n.flow,tin=f.new+f.rin;
-    const blk=(lab,v,col)=>`<div class="blk" style="background:var(${col});flex:${Math.max(v,tin*0.035)} 0 0" data-tip="${lab}: ${T(v)} t (${PC(v/tin)})"><span>${lab}</span><span>${T(v)} t</span></div>`;
+    const cs=['Đã cắt hết','Cắt dở','Chưa cắt','Chưa nạp Cutting'].map(s=>{const x=n.cut_st.find(c=>c.k===s),tt=sum(n.cut_st,c=>c.t)||1;return{n:s==='Chưa nạp Cutting'?'Chưa nạp':s,v:x?x.t:0,p:(x?x.t:0)/tt,c:{'Đã cắt hết':'--s3','Cắt dở':'--s1','Chưa cắt':'--neutral','Chưa nạp Cutting':'--bad'}[s]}});
+    const al=['Tồn dự án','Kho chung/BRAVO','Điều chuyển dự án khác','Phải mua'].map(s=>{const x=n.alloc.find(c=>c.k===s),tt=sum(n.alloc,c=>c.t)||1;return{n:{'Tồn dự án':'Tồn DA','Kho chung/BRAVO':'Kho chung','Điều chuyển dự án khác':'Điều chuyển','Phải mua':'Phải mua'}[s]+(x?` (${x.n})`:''),v:x?x.t:0,p:(x?x.t:0)/tt,c:{'Tồn dự án':'--s3','Kho chung/BRAVO':'--s2','Điều chuyển dự án khác':'--s5','Phải mua':'--bad'}[s]}});
     h+=`<section>${secH('Nesting '+esc(n.file),`${T0(n.n_nesting)} nesting · ${n.n_lsx} LSX · đối chiếu với Cutting theo số nesting`)}
     <div class="kpis">${kpi('Thành phẩm / thép vào',PC(n.pct.tp),'',`${T(f.tp)} t thành phẩm`,'',n.pct.tp)}${kpi('% Remain sinh ra',PC(n.pct.remain),'',`${T(f.rm)} t thu hồi`,'dim')}${kpi('% Phế liệu',PC(n.pct.phe),'',`${T(f.pl)} t`,'dim')}${kpi('Hao hụt (phế / TP)',PC(n.pct.hh),'','',n.pct.hh>0.08?'bad':'good')}</div>
-    <div class="grid" style="margin-top:16px"><div class="card"><h3>Cân bằng vật tư (tấn)</h3>
-      <div class="flow" style="height:230px"><div class="col"><div style="font-size:12px;color:var(--muted)">VÀO ${T(tin)} t</div>${blk('Tấm mới',f.new,'--d1')}${blk('Remain / tận dụng',f.rin,'--d2')}</div>
-      <div class="col"><div style="font-size:12px;color:var(--muted)">RA ${T(f.tp+f.rm+f.pl+f.th)} t</div>${blk('Thành phẩm',f.tp,'--good')}${blk('Remain thu hồi',f.rm,'--d2')}${blk('Phế liệu',f.pl,'--warn')}${blk('Tiêu hao',f.th,'--bad')}</div></div>
-      <h3 style="margin-top:14px">Tấm nesting đã vào Cutting chưa?</h3>
-      ${seg100(['Đã cắt hết','Cắt dở','Chưa cắt','Chưa nạp Cutting'].map(s=>{const x=n.cut_st.find(c=>c.k===s);return{n:s,v:x?x.t:0,c:{'Đã cắt hết':'c-own','Cắt dở':'c-com','Chưa cắt':'c-neu','Chưa nạp Cutting':'c-buy'}[s]}}))}
-      <h3 style="margin-top:14px">Tấm mới chưa cắt: lấy phôi ở đâu?</h3>
-      ${n.alloc.length?seg100(['Tồn dự án','Kho chung/BRAVO','Điều chuyển dự án khác','Phải mua'].map(s=>{const x=n.alloc.find(c=>c.k===s);return{n:s+(x?` (${x.n} tấm)`:''),v:x?x.t:0,c:{'Tồn dự án':'c-own','Kho chung/BRAVO':'c-com','Điều chuyển dự án khác':'c-neu','Phải mua':'c-buy'}[s]}})):'<p class="empty">Không còn tấm mới chờ cắt.</p>'}
-      <p class="note">Ghép tấm: cùng độ dày, khổ lô ≥ khổ nesting, cùng nhóm mác (AS3678 chỉ nhận AS3678).</p></div>
-     <div class="card"><h3>Tấm phải mua (theo KL)</h3>
-      ${n.buy.length?table('t-buy',[{h:'Quy cách tấm',f:r=>`<b>${esc(r.qc)}</b>`,s:r=>r.qc},{h:'Mác',f:r=>esc(r.mac),s:r=>r.mac},{h:'SL',n:1,f:r=>r.n,s:r=>r.n},{h:'KL (t)',n:1,f:r=>T(r.t),s:r=>r.t}],n.buy,{foot:['Tổng','',sum(n.buy,r=>r.n),T(sum(n.buy,r=>r.t))]}):'<p class="empty">Kho đủ phôi cho mọi tấm mới chờ cắt.</p>'}
-      <h3 style="margin-top:14px">LSX có trong nesting nhưng chưa nạp Cutting</h3>
-      ${n.lsx_not_in_cut.length?table('t-miss',[{h:'LSX',f:r=>`<b>${esc(r.lsx)}</b>`,s:r=>r.lsx},{h:'KL tấm (t)',n:1,f:r=>T(r.t),s:r=>r.t}],n.lsx_not_in_cut):'<p class="empty">Không có.</p>'}
+    <div class="grid" style="margin-top:16px"><div class="card"><h3>Cân bằng vật tư <span class="sub">· tấn, % trên thép vào</span></h3>
+      ${miniCols([{n:'Tấm mới',v:f.new,c:'--d1',p:f.new/(tin||1)},{n:'Remain vào',v:f.rin,c:'--d2',p:f.rin/(tin||1)},{n:'Thành phẩm',v:f.tp,c:'--good',p:f.tp/(tin||1)},{n:'Remain ra',v:f.rm,c:'--s2',p:f.rm/(tin||1)},{n:'Phế liệu',v:f.pl,c:'--warn',p:f.pl/(tin||1)},{n:'Tiêu hao',v:f.th,c:'--bad',p:f.th/(tin||1)}],{h:330,W:540})}
+      <p class="note">Vào ${T(tin)} t = tấm mới + remain tận dụng. Ra = thành phẩm + remain thu hồi + phế liệu + tiêu hao.</p></div>
+     <div class="card"><h3>Tấm nesting đã vào Cutting? <span class="sub">· tấn</span></h3>${miniCols(cs,{h:150,W:500})}
+      <h3 style="margin-top:12px">Tấm mới chưa cắt lấy phôi ở đâu? <span class="sub">· tấn (số tấm)</span></h3>${n.alloc.length?miniCols(al,{h:150,W:500}):'<p class="empty">Không còn tấm mới chờ cắt.</p>'}
+      <p class="note">Ghép tấm: cùng độ dày, khổ lô ≥ khổ nesting, cùng nhóm mác (AS3678 chỉ nhận AS3678).</p></div></div>
+     <div class="grid" style="margin-top:16px"><div class="card"><h3>Tấm phải mua (theo KL)</h3><div class="tscroll">
+      ${n.buy.length?table('t-buy',[{h:'Quy cách tấm',f:r=>`<b>${esc(r.qc)}</b>`,s:r=>r.qc},{h:'Mác',f:r=>esc(r.mac),s:r=>r.mac},{h:'SL',n:1,f:r=>r.n,s:r=>r.n},{h:'KL (t)',n:1,f:r=>T(r.t),s:r=>r.t}],n.buy,{foot:['Tổng','',sum(n.buy,r=>r.n),T(sum(n.buy,r=>r.t))]}):'<p class="empty">Kho đủ phôi cho mọi tấm mới chờ cắt.</p>'}</div></div>
+     <div class="card"><h3>LSX có trong nesting nhưng chưa nạp Cutting</h3><div class="tscroll">
+      ${n.lsx_not_in_cut.length?table('t-miss',[{h:'LSX',f:r=>`<b>${esc(r.lsx)}</b>`,s:r=>r.lsx},{h:'KL tấm (t)',n:1,f:r=>T(r.t),s:r=>r.t}],n.lsx_not_in_cut):'<p class="empty">Không có.</p>'}</div>
       ${n.lsx_cut_not_in_nes.length?`<p class="note">LSX trong Cutting nhưng không có trong file nesting này: ${n.lsx_cut_not_in_nes.map(esc).join(', ')}.</p>`:''}</div></div>
-     <div class="card" style="margin-top:16px"><h3>Theo độ dày tấm (tấn)</h3>
-      <div class="legend"><span><i class="c-own"></i>Thành phẩm</span><span><i class="c-bg"></i>Remain</span><span><i class="c-com"></i>Phế liệu</span></div>
-      ${hbars(n.by_t.map(r=>({label:'PL'+String(r.t).replace('.',','),segs:[{v:r.tp,c:'c-own',n:'Thành phẩm'},{v:r.rm,c:'c-bg',n:'Remain'},{v:r.pl,c:'c-com',n:'Phế liệu'}],right:`${T(r.w)} t · ${r.n} nest. · phế ${PC(r.w?r.pl/r.w:0)}`})),Math.max(...n.by_t.map(r=>r.w)))}</div></section>`;
+     <div class="card" style="margin-top:16px"><h3>Theo độ dày tấm <span class="sub">· tấn</span></h3>
+      ${colChart(n.by_t.map(r=>'PL'+String(r.t).replace('.',',')),[{n:'Thành phẩm',c:'--good',v:n.by_t.map(r=>r.tp)},{n:'Remain',c:'--s2',v:n.by_t.map(r=>r.rm)},{n:'Phế liệu',c:'--warn',v:n.by_t.map(r=>r.pl)}],{mode:'stack',h:320,W:1080,sub:i=>{const r=n.by_t[i];return vlab(r.w)+' t · phế '+Math.round((r.w?r.pl/r.w:0)*100)+'%'}})}</div></section>`;
   }
   h+=`<section>${secH('Lệnh sản xuất','<span id="lsx-cnt"></span>')}
    <div class="filters"><input type="search" id="lsx-q" placeholder="Tìm LSX, hạng mục, máy…" aria-label="Tìm LSX">
@@ -620,12 +795,14 @@ const MONTH0=t=>{const d=new Date(t);return Date.UTC(d.getUTCFullYear(),d.getUTC
 const QUICK={
   d1:{n:'Ngày số liệu',f:()=>[DEND,DEND],g:'day'},
   d7:{n:'7 ngày',f:()=>[DEND-6*DAY,DEND],g:'day'},
+  d30:{n:'30 ngày',f:()=>[DEND-29*DAY,DEND],g:'day'},
   mtd:{n:'Tháng này',f:()=>[MONTH0(DEND),DEND],g:'day'},
   m3:{n:'3 tháng',f:()=>{const d=new Date(DEND);return[Date.UTC(d.getUTCFullYear(),d.getUTCMonth()-2,1),DEND]},g:'week'},
   qtd:{n:'Quý này',f:()=>{const d=new Date(DEND);return[Date.UTC(d.getUTCFullYear(),Math.floor(d.getUTCMonth()/3)*3,1),DEND]},g:'week'},
   ytd:{n:'Năm nay',f:()=>[Date.UTC(new Date(DEND).getUTCFullYear(),0,1),DEND],g:'month'},
   all:{n:'Tất cả',f:()=>[D0,DEND],g:'month'}};
-const FS={q:'mtd',g:'day',from:MONTH0(DEND),to:DEND,p:'',m:'',ser:[0,4],piv:0,by:'p'};
+const _early=new Date(DEND).getUTCDate()<8;
+const FS={q:_early?'d30':'mtd',g:'day',from:_early?DEND-29*DAY:MONTH0(DEND),to:DEND,p:'',m:'',ser:[0,4],piv:0,by:'p'};
 try{const s=JSON.parse(localStorage.getItem('chuoi-fs')||'null');if(s&&s.from>=D0&&s.to<=DEND)Object.assign(FS,s)}catch(e){}
 const saveFS=()=>{try{localStorage.setItem('chuoi-fs',JSON.stringify(FS))}catch(e){}};
 function getTarget(monthKey){let v=null;try{v=JSON.parse(localStorage.getItem('chuoi-target')||'{}')[monthKey]}catch(e){}
@@ -671,9 +848,9 @@ function bindFilter(rerender){
 
 /* ---- charts ---- */
 function barLine(keys,g,series,{h=280,ma=null,unit='t'}={}){
-  const W=900,L=50,R=12,Tp=14,B=34,n=keys.length,gw=(W-L-R)/Math.max(1,n),k=series.length,bw=Math.max(2,Math.min(26,(gw-4)/k));
+  const W=MOB?Math.max(380,keys.length*series.length*(keys.length*series.length<=80?17:9)+70):900,L=50,R=12,Tp=14,B=34,n=keys.length,gw=(W-L-R)/Math.max(1,n),k=series.length,bw=Math.max(2,Math.min(26,(gw-4)/k));
   const mx0=Math.max(1e-9,...series.flatMap(s=>s.v),...(ma?ma.v:[0]));const showL=n*k<=80,rot=bw<22;const mx=showL?mx0*(rot?1.22:1.1):mx0;const[top,ticks]=nice(mx);const y=v=>Tp+(h-Tp-B)*(1-v/top);
-  const minL=mx0*0.015;const step=Math.ceil(n/(g==='day'?16:14));
+  const minL=mx0*0.015;const step=MOB?Math.max(1,Math.ceil(n/Math.max(1,Math.floor((W-60)/52)))):Math.ceil(n/(g==='day'?16:14));
   let s=ticks.map(t=>`<line class="grid-l" x1="${L}" x2="${W-R}" y1="${y(t)}" y2="${y(t)}"/><text x="${L-6}" y="${y(t)+4}" text-anchor="end">${T0(t)}</text>`).join('');
   keys.forEach((kk,i)=>{const x0=L+i*gw+(gw-bw*k)/2;const lb=plabel(kk,g);
     series.forEach((se,j)=>{const v=se.v[i]||0,yy=y(v);if(v>0){s+=`<rect x="${x0+j*bw}" y="${yy}" width="${Math.max(1,bw-1.5)}" height="${h-B-yy}" rx="1.5" style="fill:var(${se.c})" data-tip="${lb}\n${se.n}: ${T(v)} ${unit}"></rect>`;
@@ -683,18 +860,18 @@ function barLine(keys,g,series,{h=280,ma=null,unit='t'}={}){
     s+=`<polyline points="${pts}" fill="none" style="stroke:var(--ink)" stroke-width="2" stroke-linejoin="round" opacity=".75"/>`;}
   s+=`<line class="axis" x1="${L}" x2="${W-R}" y1="${h-B}" y2="${h-B}"/>`;
   const leg=series.map(se=>`<span><i style="background:var(${se.c})"></i>${se.n}</span>`).join('')+(ma?`<span><i style="background:var(--ink);height:2px;opacity:.75"></i>${ma.n}</span>`:'');
-  return `<div class="legend">${leg}</div><svg viewBox="0 0 ${W} ${h}" width="100%" role="img" aria-label="Biểu đồ theo kỳ">${s}</svg>`}
+  return `<div class="legend">${leg}</div><div class="chart-x${MOB&&W>400?' hint':''}"><svg viewBox="0 0 ${W} ${h}" ${svgW(W)} role="img" aria-label="Biểu đồ theo kỳ">${s}</svg></div>`}
 function pctLine(keys,g,v,{h=190,target=0.95}={}){
-  const W=900,L=50,R=12,Tp=22,B=30,n=keys.length,gw=(W-L-R)/Math.max(1,n);
+  const W=MOB?Math.max(380,keys.length*26+70):900,L=50,R=12,Tp=22,B=30,n=keys.length,gw=(W-L-R)/Math.max(1,n);
   const vals=v.map(x=>x==null?null:Math.min(x,1.5));const top=Math.max(1.2,...vals.filter(x=>x!=null));const y=q=>Tp+(h-Tp-B)*(1-q/top);
-  const step=Math.ceil(n/(g==='day'?16:14));
+  const step=MOB?Math.max(1,Math.ceil(n/Math.max(1,Math.floor((W-60)/52)))):Math.ceil(n/(g==='day'?16:14));
   let s=[0,0.5,1].map(t=>`<line class="grid-l" x1="${L}" x2="${W-R}" y1="${y(t)}" y2="${y(t)}"/><text x="${L-6}" y="${y(t)+4}" text-anchor="end">${t*100}%</text>`).join('');
   s+=`<line x1="${L}" x2="${W-R}" y1="${y(target)}" y2="${y(target)}" style="stroke:var(--good)" stroke-dasharray="5 4"/><text x="${W-R}" y="${y(target)-5}" text-anchor="end" style="fill:var(--good)">mục tiêu ${target*100}%</text>`;
   const pts=vals.map((q,i)=>q==null?null:[L+i*gw+gw/2,y(q),q,i]).filter(Boolean);
   s+=`<polyline points="${pts.map(p=>p[0]+','+p[1]).join(' ')}" fill="none" style="stroke:var(--brand)" stroke-width="2"/>`;
   s+=pts.map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="3.2" style="fill:${p[2]<target?'var(--bad)':'var(--brand)'}" data-tip="${plabel(keys[p[3]],g)}\nBàn giao / cắt: ${PC(v[p[3]])}"/>`+(pts.length<=31?`<text x="${p[0]}" y="${p[1]-8}" text-anchor="middle" style="fill:${p[2]<target?'var(--bad)':'var(--muted)'};font-size:10px">${Math.round(v[p[3]]*100)}%</text>`:'')).join('');
   keys.forEach((kk,i)=>{if(i%step===0)s+=`<text x="${L+i*gw+gw/2}" y="${h-10}" text-anchor="middle">${plabel(kk,g).split(' · ')[0]}</text>`});
-  return `<svg viewBox="0 0 ${W} ${h}" width="100%" role="img" aria-label="Tỷ lệ bàn giao trên cắt">${s}</svg>`}
+  return `<div class="chart-x${MOB&&W>400?' hint':''}"><svg viewBox="0 0 ${W} ${h}" ${svgW(W)} role="img" aria-label="Tỷ lệ bàn giao trên cắt">${s}</svg></div>`}
 function donut(parts,center,sub){const tot=parts.reduce((a,b)=>a+b.v,0)||1;let a0=-Math.PI/2;const R=70,r=44,cx=90,cy=90;
   const arcs=parts.filter(p=>p.v>0).map(p=>{const a1=a0+p.v/tot*2*Math.PI;const lg=a1-a0>Math.PI?1:0;
     const pth=`M${cx+R*Math.cos(a0)},${cy+R*Math.sin(a0)} A${R},${R} 0 ${lg} 1 ${cx+R*Math.cos(a1)},${cy+R*Math.sin(a1)} L${cx+r*Math.cos(a1)},${cy+r*Math.sin(a1)} A${r},${r} 0 ${lg} 0 ${cx+r*Math.cos(a0)},${cy+r*Math.sin(a0)}Z`;

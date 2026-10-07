@@ -35,7 +35,7 @@ def short(ct):
     s=re.sub(r'^[\w.]+-?\d+\s+','',ct) if re.match(r'^\d',ct) or ct.startswith('TCTN') else ct
     s=s.replace('\\_','').replace('DGRP ','').replace('DG XK ','').replace('DG TN ','').replace('DG ','').strip(' _')
     return s.title() if s.isupper() else s
-NAMES={'10626-051':'SVĐ Hùng Vương','10725-006':'Mombasa Port','10626-010':'Facade Sân bay Phú Quốc','10626-048':'APEC S2','10625-036':'APEC S3','10625-030':'Ga T2 Phú Quốc','10625-031':'Cầu đi bộ sông Sài Gòn','10726-141':'Shiplift Úc','10626-130':'Quảng trường TTTP & TTHC','10726-075':'RMG Crane','10626-022':'Núi Chứa Chan','TCTN.DNS.26.004':'Cao tốc VIN','10726-040':'BPI HO Redev','10726-049':'HSC Mockup Casing','10626-125':'Cầu Cỏ May'}
+NAMES={'10626-051':'SVĐ Hùng Vương','10725-006':'Mombasa Port','10626-010':'Facade Sân bay Phú Quốc','10626-048':'APEC S2','10625-036':'APEC S3','10625-030':'Ga T2 Phú Quốc','10625-031':'Cầu đi bộ sông Sài Gòn','10726-141':'Shiplift Úc','10626-130':'Quảng trường TTTP & TTHC','10726-075':'RMG Crane','10626-022':'Núi Chứa Chan','TCTN.DNS.26.004':'Cao tốc VIN','10726-040':'BPI HO Redev','10726-049':'HSC Mockup Casing','TCTN.DVT.26.001':'ADAMAS','TCTN.DVT.26.002':'Tàu dầu H1033','10626-125':'Cầu Cỏ May'}
 def short(ct):
     c=ct.split(' ')[0]
     return NAMES.get(c,ct.replace('\\_','').strip())
