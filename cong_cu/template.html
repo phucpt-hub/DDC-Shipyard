@@ -110,8 +110,10 @@ button.b{cursor:pointer}
 .hb .lab{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .hb .lab.click{cursor:pointer;color:var(--brand);font-weight:500}
 .hb .lab.click:hover{text-decoration:underline}
-.track{height:16px;background:var(--soft);border-radius:3px;display:flex;overflow:hidden;min-width:0}
-.track i{display:block;height:100%}
+.track{height:18px;background:var(--soft);border-radius:3px;display:flex;overflow:hidden;min-width:0}
+.track i{display:flex;align-items:center;justify-content:center;height:100%;overflow:hidden;min-width:0}
+.track i .sv{font:600 10.5px var(--f-mono);color:#fff;white-space:nowrap;padding:0 3px;text-shadow:0 0 2px rgba(0,0,0,.35);pointer-events:none}
+.track i.c-rem .sv,.track i.c-bg .sv,.track i.c-neu .sv{color:var(--ink);text-shadow:none}
 .hb .val{font:12px var(--f-mono);font-variant-numeric:tabular-nums;color:var(--muted);text-align:right;white-space:nowrap}
 .legend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:12px;color:var(--muted);margin-bottom:8px}
 .legend span{display:inline-flex;align-items:center;gap:5px}
@@ -351,7 +353,7 @@ const kprojs=(()=>{const seen=new Set();return P.filter(p=>p.kho&&!seen.has(p.kh
 /* ---------- chart helpers ---------- */
 function hbars(rows,max,{click}={}){
   return `<div class="hb">${rows.map(r=>{
-    const segs=r.segs.map(s=>{const w=max?Math.max(0,s.v)/max*100:0;return w>0?`<i class="${s.c}" style="width:${w}%" data-tip="${esc(r.label)}\n${esc(s.n)}: ${s.fmt?s.fmt(s.v):T(s.v)+' t'}"></i>`:''}).join('');
+    const segs=r.segs.map(s=>{const w=max?Math.max(0,s.v)/max*100:0;const lb=s.fmt?s.fmt(s.v):vlab(s.v);const show=w>=(MOB?16:Math.max(6,String(lb).length*1.25));return w>0?`<i class="${s.c}" style="width:${w}%" data-tip="${esc(r.label)}\n${esc(s.n)}: ${s.fmt?s.fmt(s.v):T(s.v)+' t'}">${show?`<b class="sv">${lb}</b>`:''}</i>`:''}).join('');
     return `<div class="lab${click&&r.id?' click':''}" ${click&&r.id?`data-go="${esc(r.id)}" role="button" tabindex="0"`:''} title="${esc(r.label)}">${esc(r.label)}</div><div class="track">${segs}</div><div class="val">${r.right??''}</div>`}).join('')}</div>`;
 }
 const MOB=matchMedia('(max-width:640px)').matches;
@@ -379,7 +381,7 @@ function cols(series,labels,{h=230,line=null,W:W0=680}={}){
 function ring(v,size=58,col='--brand'){const r=size/2-6,c=2*Math.PI*r,f=Math.max(0,Math.min(1,v||0));
   return `<svg class="ring" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" role="img" aria-label="${PC(v)}"><circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" style="stroke:var(--soft)" stroke-width="7"/><circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" style="stroke:var(${col})" stroke-width="7" stroke-linecap="round" stroke-dasharray="${c*f} ${c}" transform="rotate(-90 ${size/2} ${size/2})"/><text x="50%" y="54%" text-anchor="middle" dominant-baseline="middle">${v==null?'–':Math.round(f*100)+'%'}</text></svg>`}
 function seg100(parts){const tot=parts.reduce((a,b)=>a+b.v,0)||1;
-  return `<div class="track" style="height:22px">${parts.map(p=>p.v>0?`<i class="${p.c}" style="width:${p.v/tot*100}%" data-tip="${esc(p.n)}: ${p.fmt?p.fmt(p.v):T(p.v)} (${PC(p.v/tot)})"></i>`:'').join('')}</div>
+  return `<div class="track" style="height:24px">${parts.map(p=>p.v>0?`<i class="${p.c}" style="width:${p.v/tot*100}%" data-tip="${esc(p.n)}: ${p.fmt?p.fmt(p.v):T(p.v)} (${PC(p.v/tot)})">${p.v/tot>=(MOB?0.16:0.07)?`<b class="sv">${p.fmt?p.fmt(p.v):T(p.v)} · ${Math.round(p.v/tot*100)}%</b>`:''}</i>`:'').join('')}</div>
   <div class="legend" style="margin-top:6px">${parts.map(p=>`<span><i class="${p.c}"></i>${esc(p.n)}: <b class="num" style="color:var(--ink)">${p.fmt?p.fmt(p.v):T(p.v)}</b></span>`).join('')}</div>`}
 function kpi(l,v,u,s,cls='',bar=null){return `<div class="kpi ${cls}"><div class="l">${l}</div><div class="v">${v}${u?`<small>${u}</small>`:''}</div>${s?`<div class="s">${s}</div>`:''}${bar!=null?`<div class="m"><i style="width:${Math.min(100,bar*100)}%"></i></div>`:''}</div>`}
 function table(id,cols,rows,{click,foot}={}){
