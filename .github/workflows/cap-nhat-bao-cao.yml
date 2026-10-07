@@ -43,6 +43,7 @@ jobs:
           NGUON_KHO: ${{ secrets.NGUON_KHO }}
           NGUON_KHO_KHOA: ${{ secrets.NGUON_KHO_KHOA }}
           NGUON_NESTING: ${{ secrets.NGUON_NESTING }}
+          NGUON_VIEC: ${{ secrets.NGUON_VIEC }}
         run: python cong_cu/tai_du_lieu.py
 
       - name: Chạy phân tích và dựng báo cáo

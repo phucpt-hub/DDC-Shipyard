@@ -4,6 +4,7 @@
 #   NGUON_CUTTING -> du_lieu/1_CUTTING
 #   NGUON_KHO     -> du_lieu/2_TON_KHO
 #   NGUON_NESTING -> du_lieu/3_NESTING   (nhiều link, cách nhau bằng dấu xuống dòng hoặc dấu ;)
+#   NGUON_VIEC    -> du_lieu/4_CAU_HINH  (Google Sheet danh sách việc cần xử lý / cần quyết định)
 # Link Apps Script (script.google.com/.../exec) cần đã gắn file apps_script_xuat_du_lieu.gs;
 # khóa đặt trong biến <TÊN>_KHOA (vd NGUON_KHO_KHOA) hoặc ghi sẵn trong link (?khoa=...).
 import os, re, sys, time, base64, datetime, urllib.request, urllib.parse
@@ -12,7 +13,8 @@ CC = os.path.dirname(os.path.abspath(__file__))
 DL = os.path.join(os.path.dirname(CC), 'du_lieu')
 NGUON = [('NGUON_CUTTING', '1_CUTTING', 'CUTTING_LINK'),
          ('NGUON_KHO', '2_TON_KHO', 'TON_KHO_LINK'),
-         ('NGUON_NESTING', '3_NESTING', 'NESTING_LINK')]
+         ('NGUON_NESTING', '3_NESTING', 'NESTING_LINK'),
+         ('NGUON_VIEC', '4_CAU_HINH', 'VIEC_LINK')]
 
 def log(*a): print('>>', *a, flush=True)
 

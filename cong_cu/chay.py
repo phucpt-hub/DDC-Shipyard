@@ -80,6 +80,65 @@ def to_sheets(xlsx, out_pkl, only=None):
     log('Đọc', os.path.basename(xlsx), '→', len(out), 'sheet:', ', '.join(list(out)[:8]))
     return out
 
+def tom_tat(D):
+    """Số liệu chính của một kỳ báo cáo (để so sánh giữa các kỳ)."""
+    P = D.get('projects', [])
+    open_lsx = [l for p in P for l in p.get('lsx', []) if (l.get('pc') or 0) < 0.999 and (l.get('kl') or 0) > 0]
+    def buy(p):
+        n = p.get('nes')
+        if n:
+            return sum(a['t'] for a in n.get('alloc', []) if a.get('k') == 'Phải mua')
+        return (p.get('kho') or {}).get('buy')
+    return {'date': D.get('date'), 'tot': D.get('tot', {}), 'bal': D.get('bal', {}),
+            'nes_tp': sum(((p.get('nes') or {}).get('flow') or {}).get('tp', 0) for p in P),
+            'open_lsx': len(open_lsx), 'open_t': sum(l['kl'] * (1 - (l.get('pc') or 0)) for l in open_lsx),
+            'proj': {p['id']: {'kl': p.get('kl'), 'req': p.get('req'), 'cut': p.get('cut'), 'bg': p.get('bg'), 'buy': buy(p),
+                               'need': (p.get('kho') or {}).get('need')} for p in P}}
+
+def ky_truoc(ngay):
+    """Tìm báo cáo đã lưu gần nhất TRƯỚC ngày báo cáo, lấy số liệu để so sánh."""
+    ls = os.path.join(ROOT, 'lich_su')
+    if not os.path.isdir(ls): return None
+    for d in sorted([x for x in os.listdir(ls) if re.match(r'\d{4}-\d{2}-\d{2}$', x) and x < ngay], reverse=True):
+        try:
+            h = open(os.path.join(ls, d, 'index.html'), encoding='utf-8').read()
+            m = re.search(r'const D=(\{.*?\});\s*\nconst P=', h, re.S)
+            if m: return tom_tat(json.loads(m.group(1).replace('<\\/', '</')))
+        except Exception as e:
+            log('Không đọc được báo cáo cũ', d, '-', e)
+    return None
+
+def doc_viec(cfg):
+    """Việc cần xử lý / cần quyết định: sheet VIEC_CAN_XU_LY (file cấu hình hoặc file VIEC_LINK tải từ link)."""
+    out = []
+    for f in sorted(cfg, key=lambda f: not os.path.basename(f).upper().startswith('VIEC_LINK')):
+        try:
+            names = sheet_names(f)
+            sh = next((n for n in names if n.strip().upper().replace(' ', '_') in ('VIEC_CAN_XU_LY', 'VIỆC_CẦN_XỬ_LÝ')), None)
+            if sh is None and os.path.basename(f).upper().startswith('VIEC_LINK'): sh = names[0]
+            if sh is None: continue
+            df = pd.read_excel(f, sheet_name=sh, dtype=object)
+        except Exception as e:
+            log('Không đọc được sheet việc cần xử lý trong', os.path.basename(f), '-', e); continue
+        cols = {str(c).strip().lower(): c for c in df.columns}
+        def col(*keys):
+            for k in keys:
+                for c in cols:
+                    if k in c: return cols[c]
+        cv, cd, cp, ch, cs, cg = col('việc', 'viec', 'nội dung'), col('dự án', 'du an'), col('phụ trách', 'phu trach', 'đơn vị'), col('hạn', 'deadline', 'han'), col('trạng thái', 'trang thai'), col('ghi chú', 'ghi chu')
+        if cv is None: continue
+        for _, r in df.iterrows():
+            v = r.get(cv)
+            if v is None or (isinstance(v, float) and v != v) or not str(v).strip(): continue
+            def s(c):
+                x = r.get(c) if c is not None else None
+                if x is None or (isinstance(x, float) and x != x): return ''
+                if isinstance(x, (pd.Timestamp, datetime.datetime, datetime.date)): return pd.Timestamp(x).strftime('%Y-%m-%d')
+                return str(x).strip()
+            out.append({'viec': str(v).strip(), 'du_an': s(cd), 'phu_trach': s(cp), 'han': s(ch), 'tt': s(cs), 'ghi_chu': s(cg)})
+        if out: break
+    return out
+
 def main():
     cut = files_in('1_CUTTING'); kho = files_in('2_TON_KHO'); nes = files_in('3_NESTING'); cfg = files_in('4_CAU_HINH')
     if not cut: sys.exit('THIẾU file Cutting trong du_lieu/1_CUTTING')
@@ -110,10 +169,15 @@ def main():
     os.environ.update(NGAY_BAO_CAO=str(ngay), NESTING_FILES=json.dumps(nfiles, ensure_ascii=False),
                       FILE_CUTTING=os.path.splitext(os.path.basename(f_cut))[0], FILE_KHO=os.path.splitext(os.path.basename(f_kho))[0],
                       OUT_JSON=os.path.join(TMP, 'data.json'), OUT_LOG=os.path.join(TMP, 'clean_log.pkl'))
-    if cfg: os.environ['FILE_CAU_HINH'] = cfg[-1]
+    cfg_map = [f for f in cfg if not os.path.basename(f).upper().startswith('VIEC_LINK')]
+    if cfg_map: os.environ['FILE_CAU_HINH'] = cfg_map[-1]
     os.chdir(CC)
     runpy.run_path('data.py', run_name='__main__')
-    data = open(os.path.join(TMP, 'data.json'), encoding='utf-8').read().replace('</', '<\\/')
+    D = json.load(open(os.path.join(TMP, 'data.json'), encoding='utf-8'))
+    D['prev'] = ky_truoc(str(ngay))
+    D['viec'] = doc_viec(cfg)
+    log('So với kỳ trước:', D['prev']['date'] if D['prev'] else 'không có', '· Việc cần xử lý:', len(D['viec']), 'dòng')
+    data = json.dumps(D, ensure_ascii=False, separators=(',', ':')).replace('</', '<\\/')
     html = open('template.html', encoding='utf-8').read().replace('/*DATA*/null', data)
     open(os.path.join(ROOT, 'index.html'), 'w', encoding='utf-8').write(html)
     hd = os.path.join(ROOT, 'lich_su', str(ngay)); os.makedirs(hd, exist_ok=True)

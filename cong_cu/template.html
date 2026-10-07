@@ -41,7 +41,7 @@ a{color:var(--brand)}
 .app{display:grid;grid-template-columns:264px minmax(0,1fr);min-height:100%}
 .rail{background:linear-gradient(180deg,var(--brand-d),var(--brand-dd));color:var(--rail-ink);position:sticky;top:0;height:100vh;overflow-y:auto;display:flex;flex-direction:column;gap:14px;padding:18px 12px 24px}
 .logo{padding:2px 8px 12px;border-bottom:1px solid rgba(255,255,255,.14)}
-.logo b{display:block;font:700 19px/1.2 var(--f-disp);color:var(--on-brand);letter-spacing:.02em}
+.logo b{display:block;font:700 16px/1.25 var(--f-disp);color:var(--on-brand);letter-spacing:.02em}
 .logo span{font-size:12px;opacity:.85}
 .rail h4{margin:4px 8px 2px;font:600 11px var(--f-disp);letter-spacing:.12em;text-transform:uppercase;opacity:.7}
 .nav{display:flex;flex-direction:column;gap:2px}
@@ -273,6 +273,25 @@ td .cellbar{width:220px}
 .hr .ax span{position:absolute;top:2px;transform:translateX(-50%)}
 .hr .ax span:first-child{transform:none}
 .hr .ax span:last-child{transform:translateX(-100%)}
+/* tóm tắt điều hành */
+.tt-head{font-size:13px;color:var(--muted);margin-bottom:-6px}
+.att{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.att li{display:grid;grid-template-columns:30px minmax(0,1fr) auto;gap:12px;align-items:start;background:var(--panel);border:1px solid var(--line);border-left:5px solid var(--neutral);border-radius:8px;padding:12px 14px}
+.att li.bad{border-left-color:var(--bad)}.att li.warn{border-left-color:var(--warn)}.att li.info{border-left-color:var(--d2)}
+.att .no{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font:700 13px var(--f-mono);background:var(--soft);color:var(--ink)}
+.att li.bad .no{background:var(--bad);color:#fff}.att li.warn .no{background:var(--warn);color:#2a2008}
+.att .ah{font-size:15px;line-height:1.4}.att .ad{font-size:12.5px;color:var(--muted);margin-top:3px;line-height:1.55}.att .ad b{color:var(--ink)}
+.att a{color:var(--brand);cursor:pointer}
+.ago{all:unset;cursor:pointer;font-size:12.5px;color:var(--brand);font-weight:600;white-space:nowrap;padding:2px 4px}
+.ago:hover{text-decoration:underline}
+.dd{font:600 12.5px var(--f-mono);white-space:nowrap}.dd.g{color:var(--good)}.dd.b{color:var(--bad)}.dd.n{color:var(--muted);font-weight:500}
+.km .dl2{margin-top:2px}
+.hp{display:inline-flex;align-items:center;gap:6px;font-weight:600;font-size:12.5px;white-space:nowrap}.hp i{width:10px;height:10px;border-radius:50%;background:var(--good)}
+.hp.bad{color:var(--bad)}.hp.bad i{background:var(--bad)}.hp.warn{color:var(--warn)}.hp.warn i{background:var(--warn)}.hp.good{color:var(--good)}
+.iss{display:block;font-size:12.5px;line-height:1.45;max-width:250px}.iss.bad{color:var(--bad);font-weight:600}.iss.warn{color:var(--ink)}.iss.neu{color:var(--muted)}
+table.viec tr.auto td{background:color-mix(in srgb,var(--soft) 45%,transparent)}
+table.viec tr.sep td{font-size:11.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);background:var(--soft);padding:6px 10px}
+@media (max-width:640px){.att li{grid-template-columns:26px minmax(0,1fr);padding:10px 12px}.ago{grid-column:2;justify-self:start;padding:0}.att .ah{font-size:14px}}
 .chart-x{overflow-x:auto;-webkit-overflow-scrolling:touch}
 @media (max-width:640px){
   .band h1{font-size:18px}
@@ -310,7 +329,7 @@ td .cellbar{width:220px}
 
 <div class="app">
   <aside class="rail" id="rail">
-    <div class="logo"><b>CHUỖI THÉP · SC VŨNG TÀU</b><span>Kho → Nesting → Cutting → Bàn giao</span></div>
+    <div class="logo"><b>BÁO CÁO ĐIỀU HÀNH CHUỖI THÉP – SC VŨNG TÀU</b><span id="logo-sub">Kho → Nesting → Cutting → Bàn giao</span></div>
     <button class="menu-btn" id="menu" aria-expanded="false">Menu</button>
     <div class="collapse">
       <div><h4>Chức năng</h4><nav class="nav" id="nav"></nav></div>
@@ -344,10 +363,13 @@ const days=d=>d?Math.round((TODAY-new Date(d+'T00:00:00'))/864e5):null;
 
 /* ---------- derived ---------- */
 function health(p){
-  const bad=p.alerts.some(a=>a.s==='bad');
-  if((p.pc??1)>=0.999&&!bad) return {c:'good',t:'Đã cắt xong'};
-  if(bad) return {c:'bad',t:'Rủi ro thép/LSX'};
-  if(p.alerts.length) return {c:'warn',t:'Theo dõi'};
+  // Đỏ: thiếu thép ≥ 5 t, hoặc LSX quá 60 ngày còn ≥ 5 t, hoặc ≥ 50 t đã nesting chưa nạp Cutting
+  // Cam: có vấn đề nhỏ hơn (thiếu thép, LSX quá 30 ngày, nesting chưa nạp, hàng cắt chờ bàn giao nhiều)
+  const b=buyOf(p)||0,ol=openLsx.filter(l=>l.p.id===p.id),o30=sum(ol.filter(l=>l.age>30),l=>l.rem),o60=sum(ol.filter(l=>l.age>60),l=>l.rem);
+  const ni=p.nes?sum(p.nes.lsx_not_in_cut,x=>x.t):0,wait=p.cut-p.bg;
+  if(b>=5||o60>=5||ni>=50) return {c:'bad',t:'Rủi ro thép/LSX'};
+  if(b>0.5||o30>1||ni>1||wait>Math.max(10,p.kl*0.05)) return {c:'warn',t:'Theo dõi'};
+  if((p.pc??1)>=0.999) return {c:'good',t:'Đã cắt xong'};
   return {c:'good',t:'Đúng tiến độ'};
 }
 const buyOf=p=>{if(p.nes){const nb=p.nes.alloc.find(a=>a.k==='Phải mua');return nb?nb.t:0}return p.kho?p.kho.buy:null};
@@ -525,7 +547,7 @@ V.ov={name:'Tổng quan dự án',title:'Tổng quan toàn bộ dự án',ico:'<
    <div class="pcards">${act.sort((a,b)=>(a.pc??0)-(b.pc??0)).map(pcard).join('')}</div></section>
   <section>${secH('Cảnh báo cần xử lý',`${alerts.filter(a=>a.s==='bad').length} mức cao · ${alerts.filter(a=>a.s!=='bad').length} cần theo dõi`)}
   <ul class="alerts">${alerts.slice(0,12).map(a=>`<li class="${a.s}">${pill(a.s==='bad'?'bad':'warn',a.s==='bad'?'Cao':'Theo dõi')}<span><a data-go="${esc(a.p.id)}">${esc(a.p.name)}</a> — ${esc(a.m)}</span></li>`).join('')}</ul></section>
-  <section>${secH('Bảng tổng hợp dự án','Bấm một dòng để xem chi tiết · bấm tiêu đề cột để sắp xếp')}${projTable()}</section>`;
+  <section>${secH('Sức khỏe dự án','Xếp Đỏ → Cam → Xanh · bấm một dòng để xem chi tiết · bấm tiêu đề cột để sắp xếp')}${projTable()}</section>`;
   return h;}};
 /* thanh xếp chồng mỏng dùng trong thẻ số */
 function miniStack(parts){const tot=parts.reduce((a,b)=>a+b.v,0)||1;return `<div class="track" style="height:14px;margin:12px 0 10px">${parts.map(p=>p.v>0?`<i style="width:${p.v/tot*100}%;background:var(${p.c})"></i>`:'').join('')}</div>`}
@@ -543,21 +565,7 @@ function agingChart(list){
   return `<div class="legend"><span><i class="c-br"></i>Chưa cắt</span><span><i class="c-com"></i>Đang cắt dở</span></div>`+
    hbars(rows.map(r=>({label:r.label,segs:[{v:r.chua,c:'c-br',n:'Chưa cắt'},{v:r.dang,c:'c-com',n:'Đang cắt dở'}],right:`${r.n} LSX · ${T(r.chua+r.dang)} t`})),mx);
 }
-function projTable(){
-  return table('t-ov',[
-    {h:'Dự án',f:p=>`<b>${esc(p.name)}</b><br><span style="color:var(--muted);font-size:11.5px">${esc(p.code||p.id)}</span>`,s:p=>p.name},
-    {h:'Trạng thái',f:p=>{const x=health(p);return pill(x.c,x.t)},s:p=>health(p).c},
-    {h:'KL (t)',n:1,f:p=>T(p.kl),s:p=>p.kl},
-    {h:'% cắt',n:1,f:p=>`${PC(p.pc)}<span class="mini"><i style="width:${(p.pc||0)*100}%"></i></span>`,s:p=>p.pc??0},
-    {h:'Còn cắt (t)',n:1,f:p=>T(Math.max(0,p.req-p.cut)),s:p=>p.req-p.cut},
-    {h:'% bàn giao',n:1,f:p=>PC(p.pb),s:p=>p.pb??0},
-    {h:'LSX xong/đang/chưa',n:1,f:p=>`${p.lsx_st['Đã cắt xong']||0} / ${p.lsx_st['Đang cắt']||0} / ${p.lsx_st['Chưa cắt']||0}`,s:p=>p.n_lsx},
-    {h:'Phôi chờ cắt (t)',n:1,f:p=>p.kho?T(p.kho.need):'–',s:p=>p.kho?p.kho.need:-1},
-    {h:'Thiếu thép (t)',n:1,f:p=>{const v=buyOf(p);return v==null?'<span style="color:var(--muted)">chưa map kho</span>':v>0.05?`<b style="color:var(--bad)">${T(v)}</b>`:'0,0'},s:p=>buyOf(p)??-1},
-    {h:'Cắt gần nhất',f:p=>p.last_cut||'–',s:p=>p.last_cut||''},
-    {h:'Cảnh báo',n:1,f:p=>p.alerts.length||'–',s:p=>p.alerts.length},
-  ],P.map(p=>({...p,_id:p.id})),{click:1,foot:['<b>Tổng</b>','',T(D.tot.kl),PC(D.tot.cut/D.tot.req),T(D.tot.req-D.tot.cut),PC(D.tot.bg/D.tot.kl),D.tot.n_lsx,T(D.bal.need),T(D.bal.buy),'','']});
-}
+function projTable(){return healthTable(sortHealth(P),'t-ov')}
 
 V.sx={name:'Tiến độ LSX',title:'Tiến độ lệnh sản xuất (LSX)',ico:'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',render(){
   const st={cut:'Cắt',khoan:'Khoan',chan:'Chấn / lốc',vat:'Vát mép'};
@@ -890,6 +898,115 @@ function donut(parts,center,sub){const tot=parts.reduce((a,b)=>a+b.v,0)||1;let a
 const PAL=['var(--s0)','var(--s1)','var(--s2)','var(--s3)','var(--s5)','var(--s4)','var(--s6)','var(--neutral)'];
 
 /* ---- 01 Điều hành ---- */
+/* ================= TÓM TẮT ĐIỀU HÀNH (trang mở đầu cho lãnh đạo) ================= */
+const PRV=D.prev||null;
+const ST_RANK={bad:0,warn:1,good:2},ST_NAME={bad:'Đỏ',warn:'Cam',good:'Xanh'};
+const fdate=s=>s?s.split('-').reverse().join('/'):'';
+/* chênh lệch so với kỳ trước; good: 'up' = tăng là tốt, 'down' = giảm là tốt, null = trung tính */
+function dlt(cur,prev,{good='up',unit=' t',int=false}={}){
+  if(prev==null||cur==null)return '<span class="dd n">chưa có kỳ trước</span>';
+  const d=cur-prev;if(Math.abs(d)<(int?0.5:0.05))return '<span class="dd n">= không đổi</span>';
+  const up=d>0,ok=good==null?null:(good==='up'?up:!up);
+  return `<span class="dd ${ok==null?'n':ok?'g':'b'}">${up?'▲':'▼'} ${int?T0(Math.abs(d)):T(Math.abs(d))}${unit}${ok===false?' ⚠':''}</span>`}
+const nesTp=ps=>sum(ps,p=>p.nes?p.nes.flow.tp:0);
+function impact(p){return Math.max(0,p.req-p.cut)+2*(buyOf(p)||0)+0.5*Math.max(0,p.cut-p.bg)}
+/* vấn đề chính của một dự án, xếp theo mức ảnh hưởng */
+function issues(p){const r=[],b=buyOf(p)||0;
+  if(b>0.5){let k='';if(p.nes&&p.nes.buy.length){k=p.nes.buy.slice().sort((x,y)=>y.t-x.t)[0].qc}else if(p.kho&&p.kho.bal.length){const x=p.kho.bal.slice().sort((x,y)=>y.buy-x.buy)[0];if(x.buy>0.05)k=x.k}
+    r.push({s:'bad',t:`Thiếu thép ${T(b)} t${k?' (nhiều nhất '+esc(k)+')':''}`,v:b*3})}
+  const ol=openLsx.filter(l=>l.p.id===p.id&&l.age>30);if(ol.length)r.push({s:'warn',t:`${ol.length} LSX chờ cắt quá 30 ngày (${T(sum(ol,l=>l.rem))} t)`,v:sum(ol,l=>l.rem)});
+  if(p.nes&&p.nes.lsx_not_in_cut.length){const t=sum(p.nes.lsx_not_in_cut,x=>x.t);if(t>1)r.push({s:'warn',t:`${p.nes.lsx_not_in_cut.length} LSX đã nesting chưa nạp Cutting (${T(t)} t)`,v:t})}
+  const w=p.cut-p.bg;if(w>Math.max(10,p.kl*0.05))r.push({s:'warn',t:`Chờ bàn giao ${T(w)} t`,v:w*0.5});
+  const rem=p.req-p.cut;if(!r.length&&rem>0.5)r.push({s:'neu',t:`Còn cắt ${T(rem)} t`,v:rem});
+  return r.sort((a,b)=>b.v-a.v)}
+const issueText=(p,n=2)=>{const r=issues(p);return r.length?r.slice(0,n).map(x=>`<span class="iss ${x.s}">${x.t}</span>`).join(''):'<span class="muted">—</span>'};
+const sortHealth=ps=>ps.slice().sort((a,b)=>ST_RANK[health(a).c]-ST_RANK[health(b).c]||impact(b)-impact(a));
+const hPill=p=>{const h=health(p);return `<span class="hp ${h.c}"><i></i>${ST_NAME[h.c]}</span>`};
+
+/* 1. Tình hình cần chú ý: 3–5 vấn đề lớn nhất, tự rút ra từ số liệu */
+function attention(){
+  const t=D.tot,b=D.bal,it=[];
+  const a7=agg(DEND-6*DAY,DEND,'day',{p:'',m:''}),a7p=agg(DEND-13*DAY,DEND-7*DAY,'day',{p:'',m:''});
+  const cut7=a7.tot[0],bg7=a7.tot[4],cut7p=a7p.tot[0],wait=Math.max(0,t.cut-t.bg),pwait=PRV?Math.max(0,PRV.tot.cut-PRV.tot.bg):null;
+  if(b.buy>0.5){const ks=D.bykey.filter(k=>k.buy>0.5).sort((x,y)=>y.buy-x.buy);
+    it.push({s:'bad',sc:1e4+b.buy,go:'v:th',h:`Phải mua <b>${T(b.buy)} t</b> thép cho nesting chưa cắt ${dlt(b.buy,PRV&&PRV.bal.buy,{good:'down'})}`,
+      d:`Nhiều nhất: ${ks.slice(0,3).map(k=>`<b>${esc(k.k)}</b> ${T(k.buy)} t`).join(' · ')}${ks.length>3?` · và ${ks.length-3} quy cách khác`:''}`})}
+  const R=sortHealth(P.filter(p=>health(p).c==='bad'&&((p.pc??1)<0.999||(buyOf(p)||0)>0.5)));
+  if(R.length)it.push({s:'bad',sc:9e3+R.length,go:'v:ov',h:`<b>${R.length} dự án đỏ</b> cần xử lý`,d:R.slice(0,3).map(p=>`<a data-go="${esc(p.id)}">${esc(p.name)}</a>: ${issues(p)[0]?issues(p)[0].t:''}`).join('<br>')});
+  if(wait>20&&cut7>1&&bg7<0.5*cut7){const W=P.filter(p=>p.cut-p.bg>1).sort((x,y)=>(y.cut-y.bg)-(x.cut-x.bg));
+    it.push({s:bg7<0.2*cut7?'bad':'warn',sc:8e3+wait,go:'v:dh',h:`Bàn giao chậm: 7 ngày qua bàn giao <b>${T(bg7)} t</b>, cắt ${T(cut7)} t`,
+      d:`Hàng đã cắt chờ bàn giao <b>${T(wait)} t</b> ${dlt(wait,pwait,{good:'down'})} · nhiều nhất: ${W.slice(0,3).map(p=>`<a data-go="${esc(p.id)}">${esc(p.name)}</a> ${T(p.cut-p.bg)} t`).join(' · ')}`})}
+  const old=openLsx.filter(l=>l.age>30).sort((x,y)=>y.age-x.age);
+  if(old.length){const rem=sum(old,l=>l.rem),o60=old.filter(l=>l.age>60);
+    it.push({s:o60.length?'bad':'warn',sc:7e3+rem,go:'v:sx',h:`<b>${old.length} LSX</b> ban hành quá 30 ngày chưa cắt xong · còn <b>${T(rem)} t</b>`,
+      d:`Lâu nhất: ${old.slice(0,3).map(l=>`<b>${esc(l.lsx)}</b> (${esc(l.p.name)}, ${l.age} ngày, còn ${T(l.rem)} t)`).join(' · ')}`})}
+  const NI=P.filter(p=>p.nes&&p.nes.lsx_not_in_cut.length).map(p=>({p,n:p.nes.lsx_not_in_cut.length,t:sum(p.nes.lsx_not_in_cut,x=>x.t)})).filter(x=>x.t>1).sort((x,y)=>y.t-x.t);
+  if(NI.length)it.push({s:'warn',sc:6e3+sum(NI,x=>x.t),go:'v:ne',h:`<b>${sum(NI,x=>x.n)} LSX</b> đã nesting nhưng chưa nạp vào Cutting · <b>${T(sum(NI,x=>x.t))} t</b>`,d:NI.slice(0,3).map(x=>`<a data-go="${esc(x.p.id)}">${esc(x.p.name)}</a> ${x.n} LSX (${T(x.t)} t)`).join(' · ')});
+  if(cut7p>20&&cut7<0.75*cut7p)it.push({s:'warn',sc:5e3,go:'v:dh',h:`Sản lượng cắt 7 ngày giảm: <b>${T(cut7)} t</b> so với ${T(cut7p)} t tuần trước`,d:`Giảm ${PC(1-cut7/cut7p)}.`});
+  it.push({s:'info',sc:1e3,go:'v:th',h:`Phôi chờ cắt <b>${T(b.need)} t</b> ${dlt(b.need,PRV&&PRV.bal.need,{good:null})}`,d:`Đáp ứng từ tồn dự án ${T(b.own)} t · Kho chung ${T(b.common)} t · phải mua ${T(b.buy)} t`});
+  const ord={bad:0,warn:1,info:2};return it.sort((x,y)=>ord[x.s]-ord[y.s]||y.sc-x.sc).slice(0,5)}
+
+/* 4. Việc cần xử lý: việc ghi tay (sheet VIEC_CAN_XU_LY) + đề xuất tự rút ra từ số liệu */
+const parseHan=s=>{if(!s)return null;let m=s.match(/^(\d{4})-(\d{2})-(\d{2})/);if(m)return Date.UTC(+m[1],+m[2]-1,+m[3]);m=s.match(/^(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{2,4})/);if(m){const y=+m[3]<100?2000+ +m[3]:+m[3];return Date.UTC(y,+m[2]-1,+m[1])}return null};
+function actions(){
+  const M=(D.viec||[]).filter(x=>!/^(xong|hoàn thành|đã xong|done)/i.test(x.tt)).map(x=>({...x,h:parseHan(x.han)})).sort((a,b)=>(a.h??9e15)-(b.h??9e15));
+  const S=[];
+  D.bykey.filter(k=>k.buy>0.5).sort((x,y)=>y.buy-x.buy).slice(0,3).forEach(k=>{const ps=kprojs.filter(p=>p.kho.bal.some(r=>r.k===k.k&&r.buy>0.05)).map(p=>p.name);S.push({viec:`Mua bổ sung ${T(k.buy)} t ${k.k}`,du_an:ps.slice(0,3).join(', ')+(ps.length>3?'…':''),phu_trach:'P. Vật tư'})});
+  P.filter(p=>p.nes&&sum(p.nes.lsx_not_in_cut,x=>x.t)>1).sort((x,y)=>sum(y.nes.lsx_not_in_cut,z=>z.t)-sum(x.nes.lsx_not_in_cut,z=>z.t)).slice(0,2).forEach(p=>S.push({viec:`Nạp ${p.nes.lsx_not_in_cut.length} LSX đã nesting vào Cutting (${T(sum(p.nes.lsx_not_in_cut,x=>x.t))} t)`,du_an:p.name,phu_trach:'P. Kế hoạch / Xưởng Cutting'}));
+  openLsx.filter(l=>l.age>60&&l.rem>1).sort((x,y)=>y.rem-x.rem).slice(0,3).forEach(l=>S.push({viec:`Ưu tiên cắt ${l.lsx} – còn ${T(l.rem)} t, ban hành ${l.age} ngày`,du_an:l.p.name,phu_trach:'Xưởng Cutting'}));
+  P.filter(p=>p.cut-p.bg>Math.max(20,p.kl*0.05)).sort((x,y)=>(y.cut-y.bg)-(x.cut-x.bg)).slice(0,2).forEach(p=>S.push({viec:`Bàn giao ${T(p.cut-p.bg)} t hàng đã cắt`,du_an:p.name,phu_trach:'Xưởng Cutting + đơn vị nhận'}));
+  return {M,S:S.slice(0,8)}}
+
+V.tt={name:'Tóm tắt điều hành',title:'Báo cáo điều hành chuỗi thép – SC Vũng Tàu',ico:'<path d="M12 2l9 4v6c0 5-3.8 9.3-9 10-5.2-.7-9-5-9-10V6z"/><path d="M12 8v5M12 16h.01"/>',render(){
+  const t=D.tot,b=D.bal,pv=PRV,att=attention(),{M,S}=actions();
+  const NP=P.filter(p=>p.nes),ntp=nesTp(NP);
+  const ref=pv?`so với kỳ trước <b>${fdate(pv.date)}</b>`:'chưa có kỳ trước để so sánh';
+  let h=`<section class="tt-head"><div>Cập nhật đến <b>${fdate(D.date)}</b>${D.files&&D.files.d_kho&&D.files.d_kho!==D.files.d_cut?` · tồn kho ngày ${fdate(D.files.d_kho)}`:''} · ${ref}</div></section>`;
+  /* 1. cần chú ý */
+  h+=`<section>${secH('Tình hình cần chú ý',`${att.filter(x=>x.s==='bad').length} mức cao · ${att.filter(x=>x.s==='warn').length} cần theo dõi`)}
+   <ol class="att">${att.map((a,i)=>`<li class="${a.s}"><span class="no">${i+1}</span><div><div class="ah">${a.h}</div><div class="ad">${a.d}</div></div><button class="ago" data-view="${a.go.slice(2)}">Xem →</button></li>`).join('')}</ol></section>`;
+  /* 2+6. chỉ số chính so với kỳ trước */
+  const K=[
+    {l:'Tổng khối lượng LSX',v:T(t.kl),u:'t',s:`${t.n_lsx} LSX · ${t.n_proj} dự án`,d:dlt(t.kl,pv&&pv.tot.kl,{good:null})},
+    {l:'Đã nesting (chi tiết)',v:T(ntp),u:'t',s:`${NP.length} dự án có file nesting`,d:dlt(ntp,pv&&pv.nes_tp,{good:'up'})},
+    {l:'Đã cắt',v:T(t.cut),u:'t',s:`${PC(t.cut/t.req)} khối lượng cần cắt`,d:dlt(t.cut,pv&&pv.tot.cut,{good:'up'})},
+    {l:'Đã bàn giao',v:T(t.bg),u:'t',s:`${PC(t.bg/t.kl)} tổng khối lượng`,d:dlt(t.bg,pv&&pv.tot.bg,{good:'up'})},
+    {l:'Phôi chờ cắt',v:T(b.need),u:'t',s:'nesting chưa cắt, quy ra phôi nguyên khổ',d:dlt(b.need,pv&&pv.bal.need,{good:null})},
+    {l:'Vật tư phải mua',v:T(b.buy),u:'t',s:'sau khi dùng tồn dự án + Kho chung',d:dlt(b.buy,pv&&pv.bal.buy,{good:'down'}),c:b.buy>0.5?'bad':'good'}];
+  h+=`<section>${secH('Chỉ số chính',pv?`Mũi tên: thay đổi so với báo cáo ngày ${fdate(pv.date)} · xanh = tốt lên, đỏ = xấu đi`:'')}
+   <div class="kpis km">${K.map(k=>`<div class="kpi ${k.c||''}"><div class="l">${k.l}</div><div class="v">${k.v}<small>${k.u}</small></div><div class="dl2">${k.d}</div><div class="s">${k.s}</div></div>`).join('')}</div></section>`;
+  /* 3. sức khỏe dự án */
+  const PS=sortHealth(P.filter(p=>p.kl>=1));const nb=PS.filter(p=>health(p).c==='bad').length,nw=PS.filter(p=>health(p).c==='warn').length;
+  h+=`<section>${secH('Sức khỏe dự án',`${nb} đỏ · ${nw} cam · ${PS.length-nb-nw} xanh · xếp Đỏ → Cam → Xanh, trong cùng màu dự án ảnh hưởng lớn nhất lên trên`)}${healthTable(PS,'t-hl')}</section>`;
+  /* 4. việc cần xử lý */
+  const now=DEND;
+  const row=(x,auto)=>{const late=x.h!=null&&x.h<now,dd=x.h!=null?Math.round((x.h-now)/DAY):null;
+    return `<tr class="${auto?'auto':''}"><td class="wrapc"><b>${esc(x.viec)}</b>${x.ghi_chu?`<br><span class="muted" style="font-size:12px">${esc(x.ghi_chu)}</span>`:''}</td><td class="wrapc">${esc(x.du_an||'')}</td><td>${auto?`<span class="muted">${esc(x.phu_trach)}</span>`:esc(x.phu_trach||'—')}</td>
+      <td class="n">${x.h!=null?`<span style="color:${late?'var(--bad)':dd<=3?'var(--warn)':'var(--ink)'};font-weight:${late?700:400}">${fdate(isoD(x.h))}${late?` · quá ${-dd} ngày`:dd<=3?` · còn ${dd} ngày`:''}</span>`:'—'}</td>
+      <td>${auto?pill('neu','Đề xuất'):x.tt?pill(/quyết/i.test(x.tt)?'bad':'warn',x.tt):'—'}</td></tr>`};
+  h+=`<section>${secH('Việc cần xử lý / cần quyết định',`${M.length} việc đang mở${S.length?` · ${S.length} đề xuất từ số liệu`:''}`)}
+   <div class="tbl-wrap"><table class="viec"><thead><tr><th>Việc</th><th>Dự án</th><th>Phụ trách</th><th class="n">Hạn</th><th>Trạng thái</th></tr></thead><tbody>
+   ${M.map(x=>row(x,0)).join('')}${S.length?`<tr class="sep"><td colspan="5">Đề xuất từ số liệu – cần người phụ trách xác nhận và đưa vào danh sách</td></tr>`+S.map(x=>row(x,1)).join(''):''}
+   ${!M.length&&!S.length?'<tr><td colspan="5" class="empty">Chưa có việc nào.</td></tr>':''}</tbody></table></div>
+   <p class="note">Thêm / sửa việc, phụ trách, hạn trong sheet <b>VIEC_CAN_XU_LY</b> của file cấu hình (du_lieu/4_CAU_HINH/MAP_VA_QUY_TAC.xlsx) hoặc Google Sheet gắn qua secret NGUON_VIEC. Việc có trạng thái "Xong" sẽ tự ẩn.</p></section>`;
+  return h}};
+document.addEventListener('click',e=>{const b=e.target.closest('[data-view]');if(b)show('v',b.dataset.view)});
+
+/* bảng sức khỏe dự án (dùng ở trang Tóm tắt điều hành và Tổng quan dự án) */
+function healthTable(ps,id){
+  const pp=PRV&&PRV.proj||{};
+  return table(id,[
+    {h:'Dự án',f:p=>`<b>${esc(p.name)}</b><br><span style="color:var(--muted);font-size:11.5px">${esc(String(p.code||p.id).split(' ')[0])}</span>`,s:p=>p.name},
+    {h:'Trạng thái',f:hPill,s:p=>ST_RANK[health(p).c]},
+    {h:'Vấn đề chính',w:1,f:p=>issueText(p),s:p=>-impact(p)},
+    {h:'KL (t)',n:1,f:p=>T(p.kl),s:p=>p.kl},
+    {h:'% cắt',n:1,f:p=>`${PC(p.pc)}<span class="mini"><i style="width:${(p.pc||0)*100}%"></i></span>`,s:p=>p.pc??0},
+    {h:'Cắt thêm',n:1,f:p=>{const o=pp[p.id];if(!o||o.cut==null)return '<span class="muted">–</span>';const d=p.cut-o.cut;return Math.abs(d)<0.05?'<span class="muted">0</span>':`<span class="dd ${d>0?'g':'b'}">${d>0?'+':'−'}${T(Math.abs(d))}</span>`},s:p=>{const o=pp[p.id];return o?p.cut-o.cut:-1e9}},
+    {h:'% bàn giao',n:1,f:p=>PC(p.pb),s:p=>p.pb??0},
+    {h:'Còn cắt (t)',n:1,f:p=>T(Math.max(0,p.req-p.cut)),s:p=>p.req-p.cut},
+    {h:'Thiếu thép (t)',n:1,f:p=>{const v=buyOf(p);return v==null?'<span style="color:var(--muted)">chưa map kho</span>':v>0.05?`<b style="color:var(--bad)">${T(v)}</b>`:'0,0'},s:p=>buyOf(p)??-1},
+  ],ps.map(p=>({...p,_id:p.id})),{click:1,foot:['<b>Tổng</b>','','',T(D.tot.kl),PC(D.tot.cut/D.tot.req),PRV?`<span class="dd ${D.tot.cut>=PRV.tot.cut?'g':'b'}">${D.tot.cut>=PRV.tot.cut?'+':'−'}${T(Math.abs(D.tot.cut-PRV.tot.cut))}</span>`:'',PC(D.tot.bg/D.tot.kl),T(D.tot.req-D.tot.cut),T(D.bal.buy)]})}
+
 V.dh={name:'Điều hành',title:'Sản lượng cắt · gia công · bàn giao',ico:'<path d="M3 3v18h18M7 15l4-4 3 3 5-6"/>',render(){
   const {from,to,g,p}=FS;const A=agg(from,to,g);const len=to-from+DAY;const hasPrev=from-len>=D0;const Bp=hasPrev?agg(from-len,from-DAY,g):{tot:new Array(7).fill(0),byP:{},byM:{}};
   const cut=A.tot[0],bg=A.tot[4],wd=workdays(from,to),dcut=[...A.days.values()].length;
@@ -987,7 +1104,7 @@ V.bc={name:'Báo cáo kỳ',title:'Báo cáo ngày · tuần · tháng · quý �
 /* ---------- navigation ---------- */
 const nav=$('nav'),plist=$('plist');
 const cnt={ov:'',sx:openLsx.length,th:D.bal.buy>0.05?'!':'',ne:P.filter(p=>p.nes).length,src:''};
-const ORDER=['dh','bc','ov','sx','th','ne'];cnt.dh='';cnt.bc='';
+const ORDER=['tt','dh','bc','ov','sx','th','ne'];cnt.dh='';cnt.bc='';cnt.tt=P.filter(p=>health(p).c==='bad'&&((p.pc??1)<0.999||(buyOf(p)||0)>0.5)).length||'';
 nav.innerHTML=ORDER.map((k,i)=>{const v=V[k];return `<button data-v="${k}"><svg viewBox="0 0 24 24" aria-hidden="true">${v.ico}</svg><span><small style="opacity:.6;font:600 10px var(--f-mono);margin-right:6px">${String(i+1).padStart(2,'0')}</small>${v.name}</span>${cnt[k]!==''&&cnt[k]!=null?`<span class="cnt">${cnt[k]}</span>`:''}</button>`}).join('');
 plist.innerHTML=P.slice().sort((a,b)=>{const g=p=>p.pc==null?2:p.pc>=0.999?1:0;return g(a)-g(b)||(a.pc??0)-(b.pc??0)||b.kl-a.kl}).map(p=>{const hs=health(p);return `<button data-p="${esc(p.id)}" title="${esc(p.name)} · ${hs.t}"><span class="dot dot-${hs.c}"></span><span class="nm">${esc(p.name)}</span><span class="pc">${p.pc==null?'–':Math.round(p.pc*100)+'%'}</span><span class="bar"><i style="width:${(p.pc||0)*100}%"></i></span></button>`}).join('');
 function show(kind,key){
@@ -1020,7 +1137,7 @@ $('theme').onclick=()=>{const cur=document.documentElement.dataset.theme||(match
 if(/github\.io$/.test(location.hostname)){$('prn').hidden=false;$('prn').onclick=()=>window.print()}
 const dd=D.date.split('-').reverse().join('/');
 const fd=x=>x?x.split('-').reverse().slice(0,2).join('/'):'';const dateNote=(D.files.d_cut&&D.files.d_kho&&D.files.d_cut!==D.files.d_kho)?` · Cutting ${fd(D.files.d_cut)} · Tồn kho ${fd(D.files.d_kho)}`:'';
-$('asof').textContent=`Số liệu ngày ${dd}${dateNote}`;$('dchip').title=dateNote?`File Cutting ngày ${fd(D.files.d_cut)}, file tồn kho ngày ${fd(D.files.d_kho)}: phần kho tính theo ngày ${fd(D.files.d_kho)}`:'';$('dchip').textContent=`Số liệu ${dd}`;
+$('asof').textContent=`Số liệu ngày ${dd}${dateNote}`;$('logo-sub').textContent=`Kho → Nesting → Cutting → Bàn giao | Cập nhật đến ${dd}`;document.title=`Báo cáo điều hành chuỗi thép – SC Vũng Tàu · ${dd}`;$('dchip').title=dateNote?`File Cutting ngày ${fd(D.files.d_cut)}, file tồn kho ngày ${fd(D.files.d_kho)}: phần kho tính theo ngày ${fd(D.files.d_kho)}`:'';$('dchip').textContent=`Số liệu ${dd}`;
 let st=null;try{st=JSON.parse(localStorage.getItem('chuoi-view2')||'null')}catch(e){}
-if(st&&st.kind==='p'&&P.some(p=>p.id===st.key))show('p',st.key);else if(st&&st.kind==='v'&&V[st.key])show('v',st.key);else show('v','dh');
+if(st&&st.kind==='p'&&P.some(p=>p.id===st.key))show('p',st.key);else if(st&&st.kind==='v'&&V[st.key])show('v',st.key);else show('v','tt');
 </script>

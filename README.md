@@ -22,6 +22,17 @@ Có thể tải nhiều file trong một lần commit. Muốn chạy lại mà k
 Mỗi lần chạy, `cong_cu/clean.py` tự chuẩn hóa dữ liệu trước khi tính báo cáo (ngày ghi kèm chữ, ngày đảo ngày/tháng, bàn giao thiếu ngày cắt, thiếu dấu "x", phân loại thép trống, ngày xuất kho bị đảo, số nesting lặp, mác viết khác kiểu…). File gốc không bị sửa.
 Kết quả ghi vào **`nhat_ky_lam_sach.xlsx`** (tải từ trang báo cáo, mục *Dữ liệu & làm sạch*): sheet TONG_HOP theo quy tắc, sheet CHI_TIET từng ô (file, sheet, dòng Excel, cột, giá trị cũ → mới) để các phòng sửa file gốc. Các dòng loại *Cần xác nhận* được giữ nguyên như file.
 
+## Trang Tóm tắt điều hành (trang mở đầu)
+
+- **Tình hình cần chú ý**: 3–5 vấn đề lớn nhất, tự rút ra từ số liệu (thiếu thép, dự án đỏ, bàn giao chậm, LSX tồn lâu, nesting chưa nạp Cutting, phôi chờ cắt).
+- **Chỉ số chính**: so với báo cáo đã lưu gần nhất của ngày trước (thư mục `lich_su/`). Xanh = tốt lên, đỏ = xấu đi.
+- **Sức khỏe dự án**: Đỏ = thiếu thép ≥ 5 t, hoặc LSX quá 60 ngày còn ≥ 5 t, hoặc ≥ 50 t đã nesting chưa nạp Cutting. Cam = có vấn đề nhỏ hơn (thiếu thép, LSX quá 30 ngày, nesting chưa nạp, hàng cắt chờ bàn giao nhiều). Xanh = còn lại.
+- **Việc cần xử lý / cần quyết định**: ghi trong sheet `VIEC_CAN_XU_LY` của `du_lieu/4_CAU_HINH/MAP_VA_QUY_TAC.xlsx` (Việc · Dự án · Phụ trách · Hạn · Trạng thái · Ghi chú). Trạng thái "Xong" sẽ tự ẩn. Muốn sửa nhanh trên Google Sheets: tạo Google Sheet cùng các cột, chia sẻ "ai có link đều xem được", dán link vào secret `NGUON_VIEC`. Bên dưới có thêm các việc **đề xuất** tự rút ra từ số liệu.
+
+## Lấy dữ liệu tự động từ link
+
+Secrets trong Settings → Secrets and variables → Actions: `NGUON_CUTTING` (Google Sheet Cutting), `NGUON_KHO` (+ `NGUON_KHO_KHOA` nếu là Apps Script), `NGUON_NESTING`, `NGUON_VIEC`. Báo cáo tự chạy 07:30 và 17:30 giờ Việt Nam; nút Run workflow để chạy ngay.
+
 ## Báo cáo cũ
 
 Mỗi lần chạy, báo cáo được lưu thêm vào `lich_su/<ngày>/`. Xem danh sách tại `/lich_su/` trên trang báo cáo.
