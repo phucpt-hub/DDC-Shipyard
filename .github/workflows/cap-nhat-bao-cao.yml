@@ -6,9 +6,9 @@ on:
       - 'du_lieu/**'
       - 'cong_cu/**'
   workflow_dispatch:        # nút "Run workflow" để chạy tay
-  schedule:                 # tự chạy lấy dữ liệu từ link: 06:52 và 15:52 giờ Việt Nam
-    - cron: '52 23 * * *'
-    - cron: '52 8 * * *'
+  schedule:                 # tự chạy lấy dữ liệu từ link: 07:30 và 17:30 giờ Việt Nam (UTC+7)
+    - cron: '30 0 * * *'
+    - cron: '30 10 * * *'
 
 permissions:
   contents: write
