@@ -587,44 +587,63 @@ function agingChart(list){
 }
 function projTable(){return healthTable(sortHealth(P),'t-ov')}
 
+let SX_OL=[];
 V.sx={name:'Tiến độ LSX',title:'Tiến độ lệnh sản xuất (LSX)',ico:'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',render(){
+  const {from,to,g,p,m}=FS;const A=agg(from,to,g);const len=to-from+DAY;const hasPrev=from-len>=D0;const B=hasPrev?agg(from-len,from-DAY,g):null;
+  const PP=p===''?P:[P[+p]],mName=m===''?'':MACH[+m];
   const st={cut:'Cắt',khoan:'Khoan',chan:'Chấn / lốc',vat:'Vát mép'};
-  const tot=Object.fromEntries(Object.keys(st).map(s=>[s,{req:sum(P,p=>p.stages[s].req),done:sum(P,p=>p.stages[s].done)}]));
-  const act=P.filter(p=>(p.pc??1)<0.999).sort((a,b)=>(a.pc??0)-(b.pc??0));
-  const mrows=D.months.map((m,i)=>({m:MLAB[i],c:D.m_cut[i],b:D.m_bg[i]}));
-  const projOpen=[...new Set(openLsx.map(l=>l.p))].sort((a,b)=>sum(openLsx.filter(l=>l.p===b),l=>l.rem)-sum(openLsx.filter(l=>l.p===a),l=>l.rem));
-  const ageRows=projOpen.map(p=>{const L=openLsx.filter(l=>l.p===p);return {p,n:L.length,rem:sum(L,l=>l.rem),b:BUCK.map((_,i)=>sum(L.filter(l=>bucketOf(l.age)===i),l=>l.rem))}});
+  const tot=Object.fromEntries(Object.keys(st).map(s=>[s,{req:sum(PP,x=>x.stages[s].req),done:sum(PP,x=>x.stages[s].done)}]));
+  const T_={kl:sum(PP,x=>x.kl),req:sum(PP,x=>x.req),cut:sum(PP,x=>x.cut),bg:sum(PP,x=>x.bg)};
+  const act=PP.filter(x=>(x.pc??1)<0.999).sort((a,b)=>(a.pc??0)-(b.pc??0));
+  const OL=SX_OL=openLsx.filter(l=>(p===''||l.p===P[+p])&&(!mName||(l.may||'')===mName));
+  const projOpen=[...new Set(OL.map(l=>l.p))].sort((a,b)=>sum(OL.filter(l=>l.p===b),l=>l.rem)-sum(OL.filter(l=>l.p===a),l=>l.rem));
+  const ageRows=projOpen.map(q=>{const L=OL.filter(l=>l.p===q);return {p:q,n:L.length,rem:sum(L,l=>l.rem),b:BUCK.map((_,i)=>sum(L.filter(l=>bucketOf(l.age)===i),l=>l.rem))}});
   const mxA=Math.max(1,...ageRows.flatMap(r=>r.b));
   const heat=v=>v<0.05?'<span class="muted">·</span>':`<span class="hc" style="background:color-mix(in srgb,var(--brand) ${Math.round(12+Math.sqrt(v/mxA)*70)}%,transparent);color:${v/mxA>0.35?'var(--on-brand)':'var(--ink)'}">${T(v)}</span>`;
-  return `
-  <section>${secH('1. Tiến độ lũy kế toàn xưởng'+info('Tính trên tất cả LSX trong file Cutting. % = khối lượng đã làm / khối lượng có yêu cầu công đoạn đó (đánh dấu "x").'),`số liệu đến ${D.date.split('-').reverse().join('/')}`)}
-   <div class="grid"><div class="card"><h3>Hoàn thành theo công đoạn <span class="sub">· tấn đã làm / tấn yêu cầu</span></h3>
-    ${Object.entries(tot).map(([s,v])=>`<div class="stage"><span>${st[s]}</span><div class="track"><i class="c-cut" style="width:${v.req?v.done/v.req*100:0}%" data-tip="${st[s]}: ${T(v.done)} / ${T(v.req)} t"></i></div><span class="num">${PC(v.req?v.done/v.req:null)} · ${T0(v.done)} / ${T0(v.req)} t</span></div>`).join('')}
-    <div class="stage"><span>Bàn giao</span><div class="track"><i class="c-bg" style="width:${D.tot.bg/D.tot.kl*100}%"></i></div><span class="num">${PC(D.tot.bg/D.tot.kl)} · ${T0(D.tot.bg)} / ${T0(D.tot.kl)} t</span></div>
-    <p class="note">Còn phải cắt <b>${T(D.tot.req-D.tot.cut)} t</b> · chờ bàn giao (đã cắt, chưa giao) <b>${T(Math.max(0,D.tot.cut-D.tot.bg))} t</b>.</p></div>
-   <div class="card"><h3>Sản lượng đã cắt theo máy <span class="sub">· tấn, lũy kế</span></h3>${hbars(D.mach.slice(0,10).map(m=>({label:m.k,segs:[{v:m.t,c:'c-cut',n:'Đã cắt'}],right:`${T(m.t)} · ${PC(m.t/D.tot.cut)}`})),D.mach[0].t)}</div></div></section>
-  <section>${secH('2. Cắt và bàn giao theo tháng'+info('Cắt: theo ngày cắt. Bàn giao: theo ngày bàn giao (đã chuẩn hóa). "Cắt − giao" dương = tháng đó cắt nhiều hơn giao, hàng tồn lại xưởng.'),'tấn · 12 tháng gần nhất')}
-   <div class="g21"><div class="card">${cols([{n:'Cắt',v:D.m_cut,col:'--d1'},{n:'Bàn giao',v:D.m_bg,col:'--d2'}],MLAB,{h:300})}</div>
-   <div class="card" style="padding:0;overflow:hidden">${table('t-m',[{h:'Tháng',f:r=>r.m,s:r=>r.m},{h:'Cắt',n:1,f:r=>T(r.c),s:r=>r.c},{h:'Bàn giao',n:1,f:r=>T(r.b),s:r=>r.b},{h:'Cắt − giao',n:1,f:r=>`<span style="color:${r.c-r.b>0.5?'var(--bad)':'var(--muted)'}">${T(r.c-r.b)}</span>`,s:r=>r.c-r.b}],mrows,{foot:['Tổng',T(sum(mrows,r=>r.c)),T(sum(mrows,r=>r.b)),T(sum(mrows,r=>r.c-r.b))]})}</div></div></section>
-  <section>${secH('3. Dự án chưa cắt xong: % hoàn thành từng công đoạn'+info('Chỉ liệt kê dự án còn khối lượng chưa cắt. Dấu "–" = dự án không có công đoạn đó. Sắp xếp: dự án có % cắt thấp nhất lên đầu.'),`${act.length} dự án · bấm dòng để xem chi tiết`)}
-   ${table('t-stg',[{h:'Dự án',f:p=>`<b>${esc(p.name)}</b>`,s:p=>p.name},{h:'KL (t)',n:1,f:p=>T(p.kl),s:p=>p.kl},...Object.keys(st).map(s=>({h:st[s],n:1,f:p=>{const v=p.stages[s];return v.req>0.05?`${PC(v.done/v.req)}<span class="mini"><i style="width:${v.done/v.req*100}%"></i></span>`:'<span class="muted">–</span>'},s:p=>p.stages[s].req?p.stages[s].done/p.stages[s].req:-1})),{h:'Bàn giao',n:1,f:p=>`${PC(p.pb)}<span class="mini"><i style="width:${(p.pb||0)*100}%;background:var(--d2)"></i></span>`,s:p=>p.pb??-1},{h:'Còn cắt (t)',n:1,f:p=>`<b>${T(Math.max(0,p.req-p.cut))}</b>`,s:p=>p.req-p.cut}],act.map(p=>({...p,_id:p.id})),{click:1})}</section>
-  <section>${secH('4. Tuổi LSX chưa cắt xong'+info('Tuổi = số ngày từ ngày ban hành LSX đến ngày số liệu. Khối lượng = phần còn phải cắt của LSX. Lệnh quá 30 ngày cần đôn đốc.'),`${openLsx.length} lệnh · ${T(sum(openLsx,l=>l.rem))} t còn phải cắt`)}
-   <div class="g12"><div class="card"><h3>Theo nhóm tuổi <span class="sub">· tấn còn phải cắt</span></h3>${agingChart(openLsx)}
-     <div class="kpis" style="margin-top:14px;grid-template-columns:repeat(3,1fr)">${kpi('Quá 30 ngày',openLsx.filter(l=>l.age>30).length,'lệnh',`${T(sum(openLsx.filter(l=>l.age>30),l=>l.rem))} t`,'bad')}${kpi('Chưa cắt lần nào',openLsx.filter(l=>!l.pc).length,'lệnh',`${T(sum(openLsx.filter(l=>!l.pc),l=>l.rem))} t`,'dim')}${kpi('Tuổi trung bình',T0(sum(openLsx,l=>l.age||0)/Math.max(1,openLsx.length)),'ngày','','dim')}</div></div>
+  const scope=(p===''?'toàn xưởng':esc(P[+p].name))+(mName?` · máy ${esc(mName)}`:'');
+  const per=`${dmy(from)} → ${dmy(to)}`;
+  /* KPI trong kỳ */
+  const KS=[[0,'Cắt','s0'],[1,'Khoan','s1'],[2,'Chấn / lốc','s2'],[3,'Vát mép','s3'],[4,'Bàn giao','s4']];
+  const wd=Math.max(1,workdays(from,to));
+  const kpis=KS.map(([i,n,c])=>kpi(n+' trong kỳ',T(A.tot[i]),'t',`TB ${T(A.tot[i]/wd)} t/ngày ${B?delta(A.tot[i],B.tot[i]):''}`,c)).join('');
+  /* máy trong kỳ */
+  const mrow=Object.entries(A.byM).map(([k,v])=>({k:MACH[+k],t:v[0]})).filter(r=>r.t>0.005).sort((a,b)=>b.t-a.t);const mt=sum(mrow,r=>r.t);
+  /* theo kỳ */
+  const keys=A.keys,rows=keys.map((k,i)=>({k,l:plabel(k,g),c:A.S[0][i],b:A.S[4][i]}));
+  /* dự án trong kỳ */
+  const pIn=x=>{const v=A.byP[P.findIndex(q=>q.id===x.id)];return v?v:new Array(7).fill(0)};
+  return filterBar()+`
+  <section>${secH(`1. Sản lượng trong kỳ · ${scope}`+info('Theo ngày cắt / khoan / chấn / vát / bàn giao ghi trong file Cutting. So sánh với kỳ liền trước cùng độ dài. Lọc máy chỉ áp dụng cho các công đoạn có ghi máy.'),per+` · ${wd} ngày làm việc`)}
+   <div class="kpis">${kpis}</div></section>
+  <section>${secH('2. Tiến độ lũy kế và sản lượng theo máy'+info('Lũy kế: tính trên tất cả LSX trong file Cutting (theo dự án đang lọc). % = khối lượng đã làm / khối lượng có yêu cầu công đoạn đó (đánh dấu "x").'),`lũy kế đến ${D.date.split('-').reverse().join('/')} · máy: trong kỳ đã chọn`)}
+   <div class="grid"><div class="card"><h3>Hoàn thành theo công đoạn <span class="sub">· lũy kế, ${scope.replace(/ · máy.*/,'')}</span></h3>
+    ${Object.entries(tot).filter(([s,v])=>v.req>0.05).map(([s,v])=>`<div class="stage"><span>${st[s]}</span><div class="track"><i class="c-cut" style="width:${v.req?v.done/v.req*100:0}%" data-tip="${st[s]}: ${T(v.done)} / ${T(v.req)} t"></i></div><span class="num">${PC(v.req?v.done/v.req:null)} · ${T0(v.done)} / ${T0(v.req)} t</span></div>`).join('')}
+    <div class="stage"><span>Bàn giao</span><div class="track"><i class="c-bg" style="width:${T_.kl?T_.bg/T_.kl*100:0}%"></i></div><span class="num">${PC(T_.kl?T_.bg/T_.kl:null)} · ${T0(T_.bg)} / ${T0(T_.kl)} t</span></div>
+    <p class="note">Còn phải cắt <b>${T(Math.max(0,T_.req-T_.cut))} t</b> · chờ bàn giao (đã cắt, chưa giao) <b>${T(Math.max(0,T_.cut-T_.bg))} t</b>.</p></div>
+   <div class="card"><h3>Sản lượng cắt theo máy <span class="sub">· tấn, ${per}</span></h3>${mrow.length?hbars(mrow.slice(0,12).map(r=>({label:r.k,segs:[{v:r.t,c:'c-cut',n:'Đã cắt'}],right:`${T(r.t)} · ${PC(r.t/(mt||1))}`})),mrow[0].t):'<p class="empty">Không có sản lượng cắt trong kỳ.</p>'}</div></div></section>
+  <section>${secH(`3. Cắt và bàn giao theo ${GLAB[g].toLowerCase()}`+info('Cắt: theo ngày cắt. Bàn giao: theo ngày bàn giao (đã chuẩn hóa). "Cắt − giao" dương = kỳ đó cắt nhiều hơn giao, hàng tồn lại xưởng.'),`tấn · ${per}`)}
+   <div class="g21"><div class="card">${barLine(keys,g,[{n:'Cắt',v:A.S[0],c:'--d1'},{n:'Bàn giao',v:A.S[4],c:'--d2'}],{h:300})}</div>
+   <div class="card" style="padding:0;overflow:hidden"><div class="tscroll">${table('t-m',[{h:GLAB[g],f:r=>r.l,s:r=>r.k},{h:'Cắt',n:1,f:r=>T(r.c),s:r=>r.c},{h:'Bàn giao',n:1,f:r=>T(r.b),s:r=>r.b},{h:'Cắt − giao',n:1,f:r=>`<span style="color:${r.c-r.b>0.5?'var(--bad)':'var(--muted)'}">${T(r.c-r.b)}</span>`,s:r=>r.c-r.b}],rows.slice().reverse(),{foot:['Tổng',T(sum(rows,r=>r.c)),T(sum(rows,r=>r.b)),T(sum(rows,r=>r.c-r.b))]})}</div></div></div></section>
+  <section>${secH('4. Dự án chưa cắt xong: % hoàn thành từng công đoạn'+info('Chỉ liệt kê dự án còn khối lượng chưa cắt. Dấu "–" = dự án không có công đoạn đó. Cột "trong kỳ" = tấn làm được trong kỳ đang lọc.'),`${act.length} dự án · bấm dòng để xem chi tiết`)}
+   ${table('t-stg',[{h:'Dự án',f:x=>`<b>${esc(x.name)}</b>`,s:x=>x.name},{h:'KL (t)',n:1,f:x=>T(x.kl),s:x=>x.kl},...Object.keys(st).map(s=>({h:st[s],n:1,f:x=>{const v=x.stages[s];return v.req>0.05?`${PC(v.done/v.req)}<span class="mini"><i style="width:${v.done/v.req*100}%"></i></span>`:'<span class="muted">–</span>'},s:x=>x.stages[s].req?x.stages[s].done/x.stages[s].req:-1})),{h:'Bàn giao',n:1,f:x=>`${PC(x.pb)}<span class="mini"><i style="width:${(x.pb||0)*100}%;background:var(--d2)"></i></span>`,s:x=>x.pb??-1},{h:'Cắt trong kỳ',n:1,f:x=>{const v=pIn(x)[0];return v>0.005?`<b>${T(v)}</b>`:'<span class="muted">0</span>'},s:x=>pIn(x)[0]},{h:'Giao trong kỳ',n:1,f:x=>{const v=pIn(x)[4];return v>0.005?T(v):'<span class="muted">0</span>'},s:x=>pIn(x)[4]},{h:'Còn cắt (t)',n:1,f:x=>`<b>${T(Math.max(0,x.req-x.cut))}</b>`,s:x=>x.req-x.cut}],act.map(x=>({...x,_id:x.id})),{click:1})}</section>
+  <section>${secH('5. Tuổi LSX chưa cắt xong'+info('Tuổi = số ngày từ ngày ban hành LSX đến ngày số liệu. Khối lượng = phần còn phải cắt của LSX. Lệnh quá 30 ngày cần đôn đốc. Lọc theo dự án và máy đang chọn (không lọc theo kỳ).'),`${OL.length} lệnh · ${T(sum(OL,l=>l.rem))} t còn phải cắt`)}
+   <div class="g12"><div class="card"><h3>Theo nhóm tuổi <span class="sub">· tấn còn phải cắt</span></h3>${agingChart(OL)}
+     <div class="kpis" style="margin-top:14px;grid-template-columns:repeat(3,1fr)">${kpi('Quá 30 ngày',OL.filter(l=>l.age>30).length,'lệnh',`${T(sum(OL.filter(l=>l.age>30),l=>l.rem))} t`,'bad')}${kpi('Chưa cắt lần nào',OL.filter(l=>!l.pc).length,'lệnh',`${T(sum(OL.filter(l=>!l.pc),l=>l.rem))} t`,'dim')}${kpi('Tuổi trung bình',T0(sum(OL,l=>l.age||0)/Math.max(1,OL.length)),'ngày','','dim')}</div></div>
     <div class="card"><h3>Dự án × nhóm tuổi <span class="sub">· tấn còn phải cắt, ô càng đậm càng nhiều</span></h3>
-     ${table('t-age',[{h:'Dự án',f:r=>`<a data-sxp="${P.indexOf(r.p)}">${esc(r.p.name)}</a>`,s:r=>r.p.name},{h:'LSX',n:1,f:r=>r.n,s:r=>r.n},...BUCK.map((bk,i)=>({h:bk[0].replace(' ngày',''),n:1,f:r=>heat(r.b[i]),s:r=>r.b[i]})),{h:'Tổng (t)',n:1,f:r=>`<b>${T(r.rem)}</b>`,s:r=>r.rem}],ageRows,{foot:['Tổng',openLsx.length,...BUCK.map((_,i)=>T(sum(ageRows,r=>r.b[i]))),T(sum(openLsx,l=>l.rem))]})}
+     ${table('t-age',[{h:'Dự án',f:r=>`<a data-sxp="${P.indexOf(r.p)}">${esc(r.p.name)}</a>`,s:r=>r.p.name},{h:'LSX',n:1,f:r=>r.n,s:r=>r.n},...BUCK.map((bk,i)=>({h:bk[0].replace(' ngày',''),n:1,f:r=>heat(r.b[i]),s:r=>r.b[i]})),{h:'Tổng (t)',n:1,f:r=>`<b>${T(r.rem)}</b>`,s:r=>r.rem}],ageRows,{foot:['Tổng',OL.length,...BUCK.map((_,i)=>T(sum(ageRows,r=>r.b[i]))),T(sum(OL,l=>l.rem))]})}
      <p class="note">Bấm tên dự án để lọc danh sách LSX bên dưới.</p></div></div></section>
-  <section id="sx-list">${secH('5. Danh sách LSX chưa cắt xong','<span id="sx-cnt"></span>')}
+  <section id="sx-list">${secH('6. Danh sách LSX chưa cắt xong','<span id="sx-cnt"></span>')}
    <div class="filters">
-    <select id="sx-p" style="max-width:260px"><option value="">Tất cả dự án (${projOpen.length})</option>${projOpen.map(p=>`<option value="${P.indexOf(p)}">${esc(p.name)} · ${openLsx.filter(l=>l.p===p).length} LSX</option>`).join('')}</select>
+    <select id="sx-p" style="max-width:260px"><option value="">Tất cả dự án (${projOpen.length})</option>${projOpen.map(q=>`<option value="${P.indexOf(q)}"${p!==''&&+p===P.indexOf(q)?' selected':''}>${esc(q.name)} · ${OL.filter(l=>l.p===q).length} LSX</option>`).join('')}</select>
     ${['Tất cả','Chưa cắt','Đang cắt'].map((s,i)=>`<button class="chip" data-sxs="${i?s:''}" aria-pressed="${i===0}">${s}</button>`).join('')}
     <span class="flab">Tuổi</span>${['Tất cả',...BUCK.map(b=>b[0])].map((s,i)=>`<button class="chip" data-sxa="${i-1}" aria-pressed="${i===0}">${s}</button>`).join('')}
     <input type="search" id="sx-q" placeholder="Tìm LSX, hạng mục, máy…" aria-label="Tìm LSX">
     <label style="font-size:12.5px;display:inline-flex;gap:5px;align-items:center"><input type="checkbox" id="sx-g"> Nhóm theo dự án</label></div>
    <div id="sx-box"></div></section>`;},
  after(){
-  const F={p:'',s:'',a:-1,q:'',g:false};
-  const draw=()=>{let L=openLsx.filter(l=>(F.p===''||l.p===P[+F.p])&&(!F.s||l.st===F.s)&&(F.a<0||bucketOf(l.age)===F.a)&&(!F.q||(l.lsx+' '+(l.hm||'')+' '+(l.may||'')).toLowerCase().includes(F.q)));
+  bindFilter(()=>show('v','sx'));
+  const F={p:FS.p,s:'',a:-1,q:'',g:false};
+  const draw=()=>{let L=SX_OL.filter(l=>(F.p===''||l.p===P[+F.p])&&(!F.s||l.st===F.s)&&(F.a<0||bucketOf(l.age)===F.a)&&(!F.q||(l.lsx+' '+(l.hm||'')+' '+(l.may||'')).toLowerCase().includes(F.q)));
     L=L.slice().sort((a,b)=>(b.age??-1)-(a.age??-1));
     $('sx-cnt').textContent=`${L.length} lệnh · ${T(sum(L,l=>l.rem))} t còn phải cắt`;
     const cols=[{h:'LSX',f:l=>`<b>${esc(l.lsx)}</b>`,s:l=>l.lsx},...(F.g?[]:[{h:'Dự án',f:l=>`<a data-go="${esc(l.p.id)}">${esc(l.p.name)}</a>`,s:l=>l.p.name}]),{h:'Hạng mục',w:1,f:l=>esc(l.hm||''),s:l=>l.hm||''},{h:'Ban hành',f:l=>l.bh?l.bh.split('-').reverse().join('/'):'–',s:l=>l.bh||''},{h:'Tuổi',n:1,f:l=>ageCell(l.age),s:l=>l.age??-1},{h:'KL lệnh (t)',n:1,f:l=>T(l.kl),s:l=>l.kl},{h:'% đã cắt',n:1,f:l=>`${PC(l.pc)}<span class="mini"><i style="width:${(l.pc||0)*100}%"></i></span>`,s:l=>l.pc??0},{h:'Còn cắt (t)',n:1,f:l=>`<b>${T(l.rem)}</b>`,s:l=>l.rem},{h:'Trạng thái',f:l=>stPill(l.st),s:l=>l.st},{h:'Máy',f:l=>esc(l.may||''),s:l=>l.may||''}];
