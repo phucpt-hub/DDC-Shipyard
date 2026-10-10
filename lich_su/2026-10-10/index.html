@@ -753,17 +753,43 @@ function nesCard(p){const n=p.nes,f=n.flow,tin=f.new+f.rin;const cs=k=>(n.cut_st
    ${hrows([{n:'Thép vào',v:tin,c:'--d1'},{n:'Thành phẩm',v:f.tp,tot:tin},{n:'Remain thu hồi',v:f.rm,tot:tin},{n:'Phế liệu',v:f.pl,tot:tin},{n:'Tiêu hao',v:f.th,tot:tin}],{base:tin||null})}
    <h4>Tấm nesting vào Cutting · tấn</h4>
    ${hrows([{n:'Đã cắt hết',v:done,tot:ctot},{n:'Cắt dở',v:cs('Cắt dở'),tot:ctot},{n:'Chưa cắt',v:cs('Chưa cắt'),tot:ctot},{n:'Chưa nạp Cutting',v:miss,tot:ctot,c:miss>0.05?'--bad':null}],{base:ctot||null})}</div>`}
+const NF={p:'',c:'',q:''};
 V.ne={name:'Nesting',title:'Hiệu quả nesting và đối chiếu Cutting',ico:'<path d="M4 4h7v7H4zM13 4h7v4h-7zM13 10h7v10h-7zM4 13h7v7H4z"/>',render(){
   const N=P.filter(p=>p.nes);
   if(!N.length) return `<p class="empty">Chưa có file nesting nào trong thư mục du_lieu/3_NESTING.</p>`;
-  return `<section>${secH('So sánh các file nesting',`${N.length} dự án có file nesting`)}
+  const ch=(k,n)=>`<button class="chip" data-nef="${k}" aria-pressed="${NF.c===k}">${n}</button>`;
+  return `<div class="fbar"><div class="frow"><span class="flab">Dự án</span><select id="ne-p" style="max-width:260px"><option value="">Tất cả dự án có nesting (${N.length})</option>${N.map(p=>`<option value="${esc(p.id)}"${NF.p===p.id?' selected':''}>${esc(p.name)}</option>`).join('')}</select>
+    <span class="flab">Lọc nhanh</span>${ch('','Tất cả')}${ch('hh','Hao hụt > 8%')}${ch('nap','Còn LSX chưa nạp Cutting')}${ch('mua','Có tấm phải mua')}${ch('rm','Remain > 30%')}${ch('cat','Chưa cắt hết')}
+    <input type="search" id="ne-q" placeholder="Tìm dự án, mã file…" value="${esc(NF.q)}" style="max-width:200px">
+    <button class="chip xoa" id="ne-x"${NF.p||NF.c||NF.q?'':' hidden'}>✕ Xóa lọc</button><span class="fsum" id="ne-sum"></span></div></div><div id="ne-box"></div>`;},
+ after(){
+  const draw=()=>{const NALL=P.filter(p=>p.nes);const f=p=>{const n=p.nes,cs=k=>(n.cut_st.find(c=>c.k===k)||{t:0}).t,ctot=sum(n.cut_st,c=>c.t);
+      if(NF.p&&p.id!==NF.p)return false;
+      if(NF.q&&!(p.name+' '+n.file+' '+(p.code||'')).toLowerCase().includes(NF.q.toLowerCase()))return false;
+      if(NF.c==='hh')return n.pct.hh>0.08;
+      if(NF.c==='nap')return cs('Chưa nạp Cutting')>0.05;
+      if(NF.c==='mua')return (n.alloc.find(a=>a.k==='Phải mua')||{t:0}).t>0.05;
+      if(NF.c==='rm')return n.pct.remain>0.3;
+      if(NF.c==='cat')return ctot>0&&cs('Đã cắt hết')/ctot<0.999;
+      return true};
+    const N=NALL.filter(f);
+    $('ne-sum').textContent=`${N.length} / ${NALL.length} dự án · thép vào ${T(sum(N,p=>p.nes.flow.new+p.nes.flow.rin))} t`;
+    $('ne-x').hidden=!(NF.p||NF.c||NF.q);
+    $('ne-box').innerHTML=N.length?`<section>${secH('So sánh các file nesting',`${N.length} / ${NALL.length} dự án có file nesting`)}
    ${table('t-nes',[{h:'Dự án',f:p=>`<b>${esc(p.name)}</b><br><span style="font-size:11.5px;color:var(--muted)">${esc(p.nes.file)}</span>`,s:p=>p.name},
      {h:'Nesting',n:1,f:p=>T0(p.nes.n_nesting),s:p=>p.nes.n_nesting},{h:'Thép vào (t)',n:1,f:p=>T(p.nes.flow.new+p.nes.flow.rin),s:p=>p.nes.flow.new+p.nes.flow.rin},
      {h:'Thành phẩm',n:1,f:p=>PC(p.nes.pct.tp),s:p=>p.nes.pct.tp},{h:'% Remain',n:1,f:p=>`<span style="color:${p.nes.pct.remain>0.3?'var(--warn)':'var(--ink)'}">${PC(p.nes.pct.remain)}</span>`,s:p=>p.nes.pct.remain},
      {h:'% Phế',n:1,f:p=>PC(p.nes.pct.phe),s:p=>p.nes.pct.phe},{h:'Hao hụt',n:1,f:p=>`<b style="color:${p.nes.pct.hh>0.08?'var(--bad)':'var(--good)'}">${PC(p.nes.pct.hh)}</b>`,s:p=>p.nes.pct.hh},
      {h:'Chưa nạp Cutting (t)',n:1,f:p=>{const x=p.nes.cut_st.find(c=>c.k==='Chưa nạp Cutting');return x?`<b style="color:var(--bad)">${T(x.t)}</b>`:'0,0'},s:p=>(p.nes.cut_st.find(c=>c.k==='Chưa nạp Cutting')||{t:0}).t},
      {h:'Tấm phải mua (t)',n:1,f:p=>{const x=p.nes.alloc.find(c=>c.k==='Phải mua');return x?`<b style="color:var(--bad)">${T(x.t)}</b> · ${x.n} tấm`:'0,0'},s:p=>(p.nes.alloc.find(c=>c.k==='Phải mua')||{t:0}).t}],N.map(p=>({...p,_id:p.id})),{click:1})}</section>
-  <section>${secH('Từng dự án','Thanh đậm = khối lượng, nền nhạt = tổng (100%) · % tính trên tổng của nhóm · bấm tên để xem chi tiết')}<div class="grid3">${N.slice().sort((a,b)=>{const q=p=>{const c=sum(p.nes.cut_st,x=>x.t);return c?(p.nes.cut_st.find(x=>x.k==='Đã cắt hết')||{t:0}).t/c:1};return q(a)-q(b)}).map(nesCard).join('')}</div></section>`;}};
+  <section>${secH('Từng dự án','Thanh đậm = khối lượng, nền nhạt = tổng (100%) · % tính trên tổng của nhóm · bấm tên để xem chi tiết')}<div class="grid3">${N.slice().sort((a,b)=>{const q=p=>{const c=sum(p.nes.cut_st,x=>x.t);return c?(p.nes.cut_st.find(x=>x.k==='Đã cắt hết')||{t:0}).t/c:1};return q(a)-q(b)}).map(nesCard).join('')}</div></section>`:'<p class="empty">Không có dự án nào khớp bộ lọc.</p>';
+    sortable($('ne-box'));requestAnimationFrame(()=>fitLabels())};
+  $('ne-p').onchange=e=>{NF.p=e.target.value;draw()};
+  $('ne-q').oninput=e=>{NF.q=e.target.value;draw()};
+  $('view').querySelectorAll('[data-nef]').forEach(b=>b.onclick=()=>{NF.c=b.dataset.nef;$('view').querySelectorAll('[data-nef]').forEach(x=>x.setAttribute('aria-pressed',x===b));draw()});
+  $('ne-x').onclick=()=>{NF.p='';NF.c='';NF.q='';show('v','ne')};
+  draw();}};
+
 
 V.src={name:'Dữ liệu & làm sạch',title:'Dữ liệu nạp, làm sạch và cách tính',ico:'<path d="M12 3v12M7 10l5 5 5-5M4 21h16"/>',render(){
   return `<section>${secH('File cần nạp mỗi lần cập nhật','Tải lên thư mục du_lieu/ trong repo GitHub, trang tự cập nhật sau khoảng 3 phút')}
