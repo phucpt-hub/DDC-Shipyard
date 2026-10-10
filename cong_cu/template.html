@@ -393,7 +393,11 @@ function health(p){
   return {c:'good',t:'Đúng tiến độ'};
 }
 const buyOf=p=>{if(p.nes){const nb=p.nes.alloc.find(a=>a.k==='Phải mua');return nb?nb.t:0}return p.kho?p.kho.buy:null};
-const openLsx=[]; P.forEach(p=>p.lsx.forEach(l=>{if((l.pc??0)<0.999&&l.kl>0){openLsx.push({...l,p,age:days(l.bh),rem:l.kl*(1-(l.pc||0))})}}));
+const openLsx=[],allLsx=[]; P.forEach(p=>p.lsx.forEach(l=>{if(!(l.kl>0))return;const o=(l.pc??0)<0.999,r={...l,p,age:o?days(l.bh):null,rem:o?l.kl*(1-(l.pc||0)):0};allLsx.push(r);if(o)openLsx.push(r)}));
+/* tìm kiếm không phân biệt dấu / hoa thường: "giàn nâng" khớp "GIAN NANG"; nhiều từ thì phải có đủ các từ */
+const nv=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[đĐ]/g,'d').toLowerCase();
+const hit=(txt,q)=>{q=nv(q).trim();if(!q)return true;const t=nv(txt);return t.includes(q)||q.split(/\s+/).every(w=>t.includes(w))};
+const onMay=(l,m)=>!m||(l.may||'').split(/\s*,\s*/).includes(m);
 const BUCK=[['≤ 7 ngày',0,7],['8–14 ngày',8,14],['15–30 ngày',15,30],['31–60 ngày',31,60],['> 60 ngày',61,1e9]];
 const bucketOf=a=>a==null?null:BUCK.findIndex(b=>a>=b[1]&&a<=b[2]);
 const kprojs=(()=>{const seen=new Set();return P.filter(p=>p.kho&&!seen.has(p.kho.name)&&seen.add(p.kho.name))})();
@@ -595,7 +599,7 @@ V.sx={name:'Tiến độ LSX',title:'Tiến độ lệnh sản xuất (LSX)',ico
   const tot=Object.fromEntries(Object.keys(st).map(s=>[s,{req:sum(PP,x=>x.stages[s].req),done:sum(PP,x=>x.stages[s].done)}]));
   const T_={kl:sum(PP,x=>x.kl),req:sum(PP,x=>x.req),cut:sum(PP,x=>x.cut),bg:sum(PP,x=>x.bg)};
   const act=PP.filter(x=>(x.pc??1)<0.999).sort((a,b)=>(a.pc??0)-(b.pc??0));
-  const OL=SX_OL=openLsx.filter(l=>(p===''||l.p===P[+p])&&(!mName||(l.may||'')===mName));
+  const OL=openLsx.filter(l=>(p===''||l.p===P[+p])&&onMay(l,mName));SX_OL=allLsx.filter(l=>onMay(l,mName));
   const projOpen=[...new Set(OL.map(l=>l.p))].sort((a,b)=>sum(OL.filter(l=>l.p===b),l=>l.rem)-sum(OL.filter(l=>l.p===a),l=>l.rem));
   const ageRows=projOpen.map(q=>{const L=OL.filter(l=>l.p===q);return {p:q,n:L.length,rem:sum(L,l=>l.rem),b:BUCK.map((_,i)=>sum(L.filter(l=>bucketOf(l.age)===i),l=>l.rem))}});
   const mxA=Math.max(1,...ageRows.flatMap(r=>r.b));
@@ -632,20 +636,21 @@ V.sx={name:'Tiến độ LSX',title:'Tiến độ lệnh sản xuất (LSX)',ico
     <div class="card"><h3>Dự án × nhóm tuổi <span class="sub">· tấn còn phải cắt, ô càng đậm càng nhiều</span></h3>
      ${table('t-age',[{h:'Dự án',f:r=>`<a data-sxp="${P.indexOf(r.p)}">${esc(r.p.name)}</a>`,s:r=>r.p.name},{h:'LSX',n:1,f:r=>r.n,s:r=>r.n},...BUCK.map((bk,i)=>({h:bk[0].replace(' ngày',''),n:1,f:r=>heat(r.b[i]),s:r=>r.b[i]})),{h:'Tổng (t)',n:1,f:r=>`<b>${T(r.rem)}</b>`,s:r=>r.rem}],ageRows,{foot:['Tổng',OL.length,...BUCK.map((_,i)=>T(sum(ageRows,r=>r.b[i]))),T(sum(OL,l=>l.rem))]})}
      <p class="note">Bấm tên dự án để lọc danh sách LSX bên dưới.</p></div></div></section>
-  <section id="sx-list">${secH('6. Danh sách LSX chưa cắt xong','<span id="sx-cnt"></span>')}
+  <section id="sx-list">${secH('6. Danh sách LSX'+info('Mặc định hiện lệnh chưa cắt xong. Chọn "Đã cắt xong" hoặc "Tất cả" để xem cả lệnh đã cắt hết. Ô tìm kiếm không phân biệt dấu: gõ "gian nang" hay "giàn nâng" đều được.'),'<span id="sx-cnt"></span>')}
    <div class="filters">
-    <select id="sx-p" style="max-width:260px"><option value="">Tất cả dự án (${projOpen.length})</option>${projOpen.map(q=>`<option value="${P.indexOf(q)}"${p!==''&&+p===P.indexOf(q)?' selected':''}>${esc(q.name)} · ${OL.filter(l=>l.p===q).length} LSX</option>`).join('')}</select>
-    ${['Tất cả','Chưa cắt','Đang cắt'].map((s,i)=>`<button class="chip" data-sxs="${i?s:''}" aria-pressed="${i===0}">${s}</button>`).join('')}
+    <select id="sx-p" style="max-width:260px"><option value="">Tất cả dự án (${P.length})</option>${P.filter(q=>SX_OL.some(l=>l.p===q)).map(q=>`<option value="${P.indexOf(q)}"${p!==''&&+p===P.indexOf(q)?' selected':''}>${esc(q.name)} · ${OL.filter(l=>l.p===q).length} chưa xong / ${SX_OL.filter(l=>l.p===q).length} LSX</option>`).join('')}</select>
+    ${[['Chưa xong','open'],['Chưa cắt','Chưa cắt'],['Đang cắt','Đang cắt'],['Đã cắt xong','done'],['Tất cả','']].map(([s,v],i)=>`<button class="chip" data-sxs="${v}" aria-pressed="${i===0}">${s}</button>`).join('')}
     <span class="flab">Tuổi</span>${['Tất cả',...BUCK.map(b=>b[0])].map((s,i)=>`<button class="chip" data-sxa="${i-1}" aria-pressed="${i===0}">${s}</button>`).join('')}
     <input type="search" id="sx-q" placeholder="Tìm LSX, hạng mục, máy…" aria-label="Tìm LSX">
     <label style="font-size:12.5px;display:inline-flex;gap:5px;align-items:center"><input type="checkbox" id="sx-g"> Nhóm theo dự án</label></div>
    <div id="sx-box"></div></section>`;},
  after(){
   bindFilter(()=>show('v','sx'));
-  const F={p:FS.p,s:'',a:-1,q:'',g:false};
-  const draw=()=>{let L=SX_OL.filter(l=>(F.p===''||l.p===P[+F.p])&&(!F.s||l.st===F.s)&&(F.a<0||bucketOf(l.age)===F.a)&&(!F.q||(l.lsx+' '+(l.hm||'')+' '+(l.may||'')).toLowerCase().includes(F.q)));
-    L=L.slice().sort((a,b)=>(b.age??-1)-(a.age??-1));
-    $('sx-cnt').textContent=`${L.length} lệnh · ${T(sum(L,l=>l.rem))} t còn phải cắt`;
+  const F={p:FS.p,s:'open',a:-1,q:'',g:false};
+  const stOk=l=>F.s===''||(F.s==='open'?l.rem>0:F.s==='done'?!(l.rem>0):l.rem>0&&l.st===F.s);
+  const draw=()=>{let L=SX_OL.filter(l=>(F.p===''||l.p===P[+F.p])&&stOk(l)&&(F.a<0||bucketOf(l.age)===F.a)&&hit(l.lsx+' '+(l.hm||'')+' '+(l.may||''),F.q));
+    L=L.slice().sort(F.s==='open'||F.s==='Chưa cắt'||F.s==='Đang cắt'?(a,b)=>(b.age??-1)-(a.age??-1):(a,b)=>(b.bh||'').localeCompare(a.bh||''));
+    $('sx-cnt').textContent=`${L.length} lệnh · KL ${T(sum(L,l=>l.kl))} t · còn ${T(sum(L,l=>l.rem))} t phải cắt`;
     const cols=[{h:'LSX',f:l=>`<b>${esc(l.lsx)}</b>`,s:l=>l.lsx},...(F.g?[]:[{h:'Dự án',f:l=>`<a data-go="${esc(l.p.id)}">${esc(l.p.name)}</a>`,s:l=>l.p.name}]),{h:'Hạng mục',w:1,f:l=>esc(l.hm||''),s:l=>l.hm||''},{h:'Ban hành',f:l=>l.bh?l.bh.split('-').reverse().join('/'):'–',s:l=>l.bh||''},{h:'Tuổi',n:1,f:l=>ageCell(l.age),s:l=>l.age??-1},{h:'KL lệnh (t)',n:1,f:l=>T(l.kl),s:l=>l.kl},{h:'% đã cắt',n:1,f:l=>`${PC(l.pc)}<span class="mini"><i style="width:${(l.pc||0)*100}%"></i></span>`,s:l=>l.pc??0},{h:'Còn cắt (t)',n:1,f:l=>`<b>${T(l.rem)}</b>`,s:l=>l.rem},{h:'Trạng thái',f:l=>stPill(l.st),s:l=>l.st},{h:'Máy',f:l=>esc(l.may||''),s:l=>l.may||''}];
     if(!F.g){$('sx-box').innerHTML=table('t-open',cols,L,{foot:['Tổng','','','','',T(sum(L,l=>l.kl)),'',T(sum(L,l=>l.rem)),'','']})}
     else{const ps=[...new Set(L.map(l=>l.p))];$('sx-box').innerHTML=ps.map(p=>{const G=L.filter(l=>l.p===p);return `<details class="grp" open><summary><b>${esc(p.name)}</b><span class="muted"> · ${G.length} LSX · còn ${T(sum(G,l=>l.rem))} t · cũ nhất ${Math.max(...G.map(l=>l.age||0))} ngày</span></summary>${table('t-o'+P.indexOf(p),cols,G)}</details>`}).join('')||'<p class="empty">Không có LSX phù hợp.</p>'}
@@ -653,7 +658,7 @@ V.sx={name:'Tiến độ LSX',title:'Tiến độ lệnh sản xuất (LSX)',ico
   $('sx-p').onchange=e=>{F.p=e.target.value;draw()};
   $('view').querySelectorAll('[data-sxs]').forEach(b=>b.onclick=()=>{F.s=b.dataset.sxs;$('view').querySelectorAll('[data-sxs]').forEach(x=>x.setAttribute('aria-pressed',x===b));draw()});
   $('view').querySelectorAll('[data-sxa]').forEach(b=>b.onclick=()=>{F.a=+b.dataset.sxa;$('view').querySelectorAll('[data-sxa]').forEach(x=>x.setAttribute('aria-pressed',x===b));draw()});
-  $('sx-q').oninput=e=>{F.q=e.target.value.toLowerCase();draw()};
+  $('sx-q').oninput=e=>{F.q=e.target.value;draw()};
   $('sx-g').onchange=e=>{F.g=e.target.checked;draw()};
   $('view').querySelectorAll('[data-sxp]').forEach(a=>a.onclick=()=>{F.p=a.dataset.sxp;$('sx-p').value=F.p;draw();$('sx-list').scrollIntoView({behavior:'smooth'})});
   draw();}};
@@ -704,7 +709,7 @@ function drillRender(){
   }
   $('drw-t').innerHTML=t;$('drw-body').innerHTML=h;$('drw-body').scrollTop=0;sortable($('drw-body'));
   $('drw-body').querySelectorAll('tr[data-drill]').forEach(tr=>tr.classList.add('click'));
-  const q=$('drw-body').querySelector('[data-drq]');if(q)q.oninput=()=>{const s=q.value.toLowerCase();$('drw-body').querySelectorAll('#t-drill tbody tr').forEach(tr=>tr.hidden=s&&!tr.textContent.toLowerCase().includes(s))};
+  const q=$('drw-body').querySelector('[data-drq]');if(q)q.oninput=()=>{const s=q.value;$('drw-body').querySelectorAll('#t-drill tbody tr').forEach(tr=>tr.hidden=!hit(tr.textContent,s))};
 }
 document.addEventListener('click',e=>{
   if(e.target.closest('[data-drw-back]')){drillBack();return}
@@ -765,7 +770,7 @@ V.ne={name:'Nesting',title:'Hiệu quả nesting và đối chiếu Cutting',ico
  after(){
   const draw=()=>{const NALL=P.filter(p=>p.nes);const f=p=>{const n=p.nes,cs=k=>(n.cut_st.find(c=>c.k===k)||{t:0}).t,ctot=sum(n.cut_st,c=>c.t);
       if(NF.p&&p.id!==NF.p)return false;
-      if(NF.q&&!(p.name+' '+n.file+' '+(p.code||'')).toLowerCase().includes(NF.q.toLowerCase()))return false;
+      if(NF.q&&!hit(p.name+' '+n.file+' '+(p.code||''),NF.q))return false;
       if(NF.c==='hh')return n.pct.hh>0.08;
       if(NF.c==='nap')return cs('Chưa nạp Cutting')>0.05;
       if(NF.c==='mua')return (n.alloc.find(a=>a.k==='Phải mua')||{t:0}).t>0.05;
@@ -894,7 +899,7 @@ function renderProject(p){
   $('view').innerHTML=h; sortable($('view'));
   let flt='Tất cả';
   const draw=()=>{const q=($('lsx-q').value||'').toLowerCase();
-    const rows=p.lsx.filter(r=>(flt==='Tất cả'||r.st===flt)&&(!q||(r.lsx+' '+(r.hm||'')+' '+(r.may||'')).toLowerCase().includes(q))).map(r=>({...r,age:(r.pc??0)<0.999?days(r.bh):null}));
+    const rows=p.lsx.filter(r=>(flt==='Tất cả'||r.st===flt)&&hit(r.lsx+' '+(r.hm||'')+' '+(r.may||''),q)).map(r=>({...r,age:(r.pc??0)<0.999?days(r.bh):null}));
     $('lsx-cnt').textContent=`${rows.length} / ${p.lsx.length} LSX · ${T(sum(rows,r=>r.kl))} t`;
     $('lsx-box').innerHTML=table('t-lsx',[{h:'LSX',f:r=>`<b>${esc(r.lsx)}</b>`,s:r=>r.lsx},{h:'Hạng mục',w:1,f:r=>esc(r.hm||''),s:r=>r.hm||''},{h:'Ban hành',f:r=>r.bh||'–',s:r=>r.bh||''},{h:'Tuổi',n:1,f:r=>ageCell(r.age),s:r=>r.age??-1},
       {h:'KL (t)',n:1,f:r=>T(r.kl),s:r=>r.kl},{h:'% cắt',n:1,f:r=>`${PC(r.pc)}<span class="mini"><i style="width:${(r.pc||0)*100}%"></i></span>`,s:r=>r.pc??-1},{h:'% bàn giao',n:1,f:r=>PC(r.pb),s:r=>r.pb??-1},{h:'Trạng thái',f:r=>stPill(r.st),s:r=>r.st},{h:'Cắt gần nhất',f:r=>r.last||'–',s:r=>r.last||''},{h:'Máy',f:r=>esc(r.may||''),s:r=>r.may||''}],rows,{foot:['Tổng','','','',T(sum(rows,r=>r.kl)),'','','','','']});
