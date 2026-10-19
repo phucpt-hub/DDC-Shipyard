@@ -28,40 +28,45 @@ function NgayTrongTen($name) {
 function Quet-Nesting {
   $dst = Join-Path $root 'du_lieu\3_NESTING'
   if (-not (Test-Path $NES_GOC)) { Log "Khong vao duoc o nesting $NES_GOC (chua ket noi mang?) - bo qua buoc quet nesting"; return }
-  foreach ($da in Get-ChildItem $NES_GOC -Directory) {
+  foreach ($da in Get-ChildItem $NES_GOC -Directory -ErrorAction SilentlyContinue) {
     if ($BO_QUA -contains $da.Name) { continue }
-    # cac thu muc lenh: ...VT-<MA>-TT-<so>...
-    $lenh = @(Get-ChildItem $da.FullName -Directory | ForEach-Object {
-      if ($_.Name -match 'VT-([A-Z0-9]+)-TT-?(\d{3})' -and $_.Name -notmatch '(?i)ĐÃ HỦY|DA HUY|HỦY LỆNH|HUY LENH|DELETE') {
-        [pscustomobject]@{ Dir = $_; Ma = $Matches[1]; So = [int]$Matches[2] } } })
-    if (-not $lenh.Count) { continue }
-    # chi theo ma xuat hien nhieu nhat trong du an (bo thu muc go sai ma, vd VT-CBD thay vi VT-CDB)
-    foreach ($g in @($lenh | Group-Object Ma | Sort-Object Count -Descending | Select-Object -First 1)) {
+    # Moi du an quet rieng: loi o 1 du an (vd khong co quyen doc file) chi ghi nhat ky roi quet tiep du an khac
+    try {
+      # cac thu muc lenh: ...VT-<MA>-TT-<so>...
+      $lenh = @(Get-ChildItem $da.FullName -Directory -ErrorAction Stop | ForEach-Object {
+        if ($_.Name -match 'VT-([A-Z0-9]+)-TT-?(\d{3})' -and $_.Name -notmatch '(?i)ĐÃ HỦY|DA HUY|HỦY LỆNH|HUY LENH|DELETE') {
+          [pscustomobject]@{ Dir = $_; Ma = $Matches[1]; So = [int]$Matches[2] } } })
+      if (-not $lenh.Count) { continue }
+      # chi theo ma xuat hien nhieu nhat trong du an (bo thu muc go sai ma, vd VT-CBD thay vi VT-CDB)
+      $g = $lenh | Group-Object Ma | Sort-Object Count -Descending | Select-Object -First 1
       $ma = $g.Name
       $hien = @(Get-ChildItem $dst -File | Where-Object { $_.Name -match "^VT-$ma-TT-" -and $_.Extension -match '^\.xls' })
-      $coHien = ($hien | Measure-Object Length -Maximum).Maximum
       $chon = $null
       foreach ($l in ($g.Group | Sort-Object So -Descending)) {
-        $so = '{0:D3}' -f $l.So
+        # Chi so dung luong voi ban dang dung CUA CUNG SO LENH (lenh moi it chi tiet hon thi file nho hon la binh thuong)
+        $cungLenh = @($hien | Where-Object { $_.Name -match "^VT-[A-Z0-9]+-TT-?0*$($l.So)(?!\d)" })
+        $coHien = ($cungLenh | Measure-Object Length -Maximum).Maximum
         $ung = @(Get-ChildItem $l.Dir.FullName -Recurse -File -ErrorAction SilentlyContinue | Where-Object {
-            $_.Extension -match '^\.xls[xbm]?$' -and $_.Name -notlike '~$*' -and $_.FullName -notmatch '(?i)\\DELETE\\' -and
-            $_.Name -match "^VT-[A-Z0-9]+-TT-?0*$($l.So)(?!\d)" } | Sort-Object LastWriteTime -Descending)
+          $_.Extension -match '^\.xls[xbm]?$' -and $_.Name -notlike '~$*' -and $_.FullName -notmatch '(?i)\\DELETE\\' -and
+          $_.Name -match "^VT-[A-Z0-9]+-TT-?0*$($l.So)(?!\d)" } | Sort-Object LastWriteTime -Descending)
         foreach ($f in $ung) {
-          if ($coHien -and $f.Length -lt 0.5 * $coHien) { Log "  bo qua $($f.Name) ($([int]($f.Length/1KB)) KB, nho hon 1/2 ban dang dung - co the dang lam do)"; continue }
-          if (-not $coHien -and $f.Length -lt 15KB) { continue }
+          if ($coHien -and $f.Length -lt 0.5 * $coHien) { Log "  bo qua $($f.Name) ($([int]($f.Length/1KB)) KB, nho hon 1/2 ban dang dung cua cung lenh - co the dang lam do)"; continue }
+          if ($f.Length -lt 15KB) { continue }
           $chon = $f; break
         }
         if ($chon) { break }
       }
       if (-not $chon) { continue }
       $cu = $hien | Where-Object { $_.Name -eq $chon.Name }
-      if ($cu -and $cu.Length -eq $chon.Length -and $cu.LastWriteTime -ge $chon.LastWriteTime) { continue }   # da moi nhat
+      if ($cu -and $cu.Length -eq $chon.Length -and $cu.LastWriteTime -ge $chon.LastWriteTime) { continue } # da moi nhat
+      # Copy truoc, copy thanh cong moi bo file cu (copy loi thi giu nguyen file dang dung)
+      try { Copy-Item $chon.FullName (Join-Path $dst $chon.Name) -Force -ErrorAction Stop }
+      catch { Log "  KHONG copy duoc $($chon.Name) (khong co quyen doc / file dang mo?): $($_.Exception.Message) - giu file nesting dang dung"; continue }
       $maFile = if ($chon.Name -match '^VT-([A-Z0-9]+)-TT-') { $Matches[1] } else { $ma }
       foreach ($o in (Get-ChildItem $dst -File | Where-Object { ($_.Name -match "^VT-$maFile-TT-" -or $_.Name -match "^VT-$ma-TT-") -and $_.Name -ne $chon.Name })) {
         Remove-Item $o.FullName -Force; Log "  bo file nesting cu: $($o.Name)" }
-      Copy-Item $chon.FullName (Join-Path $dst $chon.Name) -Force
       Log ("Nesting {0}: {1} ({2} KB, sua {3:dd/MM HH:mm})" -f $da.Name, $chon.Name, [int]($chon.Length/1KB), $chon.LastWriteTime)
-    }
+    } catch { Log "  LOI du an $($da.Name): $($_.Exception.Message) - bo qua, quet tiep du an khac" }
   }
 }
 
