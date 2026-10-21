@@ -56,6 +56,7 @@ jobs:
           git config user.name "bao-cao-tu-dong"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add index.html lich_su nhat_ky_lam_sach.xlsx
+          if [ -d chi_tiet ]; then git add -A chi_tiet; fi   # chi tiết từng LSX (bấm số LSX trên báo cáo)
           if git diff --cached --quiet; then
             echo "Không có thay đổi"
           else
