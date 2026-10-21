@@ -303,6 +303,11 @@ table.viec tr.sep td{font-size:11.5px;letter-spacing:.04em;text-transform:upperc
 .drw-t{flex:1;min-width:0;font-size:14.5px;line-height:1.35}
 .drw-b{all:unset;cursor:pointer;font-size:13px;font-weight:600;color:var(--brand);padding:4px 8px;border-radius:6px;white-space:nowrap}.drw-b:hover{background:var(--soft)}
 .drw-body{flex:1;overflow:auto;padding:14px 16px 30px}
+.drw-box.wide{width:min(1180px,100%)}
+.lsx-a{cursor:pointer;color:var(--brand);font-weight:700;text-decoration:underline dotted;text-underline-offset:3px}.lsx-a:hover{text-decoration-style:solid}
+.ct-no{color:var(--warn);font-weight:600}.ct-ok{color:var(--good)}.ct-h{margin:4px 0 8px;font-size:14px}
+.ct-bar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:10px}.ct-bar .sp{flex:1}
+
 .drl{display:grid;gap:4px}
 .drr{all:unset;cursor:pointer;display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px 10px;border-radius:7px;background:var(--panel);border:1px solid var(--line);font-size:13px}
 .drr:hover{border-color:var(--brand)}
@@ -667,7 +672,7 @@ V.sx={name:'Tiến độ LSX',title:'Tiến độ lệnh sản xuất (LSX)',ico
     let L=LP.filter(l=>(!F.h||l.g===F.h)&&(F.a<0||bucketOf(l.age)===F.a)&&hit(l.lsx+' '+(l.hm||'')+' '+(l.may||''),F.q));
     L=L.slice().sort(F.s==='open'||F.s==='Chưa cắt'||F.s==='Đang cắt'?(a,b)=>(b.age??-1)-(a.age??-1):(a,b)=>(b.bh||'').localeCompare(a.bh||''));
     $('sx-cnt').textContent=`${L.length} lệnh · KL ${T(sum(L,l=>l.kl))} t · còn ${T(sum(L,l=>l.rem))} t phải cắt`;
-    const cols=[{h:'LSX',f:l=>`<b>${esc(l.lsx)}</b>`,s:l=>l.lsx},...(F.g?[]:[{h:'Dự án',f:l=>`<a data-go="${esc(l.p.id)}">${esc(l.p.name)}</a>`,s:l=>l.p.name}]),{h:'Hạng mục',w:1,f:l=>esc(l.hm||''),s:l=>l.hm||''},{h:'Ban hành',f:l=>l.bh?l.bh.split('-').reverse().join('/'):'–',s:l=>l.bh||''},{h:'Tuổi',n:1,f:l=>ageCell(l.age),s:l=>l.age??-1},{h:'KL lệnh (t)',n:1,f:l=>T(l.kl),s:l=>l.kl},{h:'% đã cắt',n:1,f:l=>`${PC(l.pc)}<span class="mini"><i style="width:${(l.pc||0)*100}%"></i></span>`,s:l=>l.pc??0},{h:'Còn cắt (t)',n:1,f:l=>`<b>${T(l.rem)}</b>`,s:l=>l.rem},{h:'Trạng thái',f:l=>stPill(l.st),s:l=>l.st},{h:'Máy',f:l=>esc(l.may||''),s:l=>l.may||''}];
+    const cols=[{h:'LSX',f:l=>lsxA(l.lsx),s:l=>l.lsx},...(F.g?[]:[{h:'Dự án',f:l=>`<a data-go="${esc(l.p.id)}">${esc(l.p.name)}</a>`,s:l=>l.p.name}]),{h:'Hạng mục',w:1,f:l=>esc(l.hm||''),s:l=>l.hm||''},{h:'Ban hành',f:l=>l.bh?l.bh.split('-').reverse().join('/'):'–',s:l=>l.bh||''},{h:'Tuổi',n:1,f:l=>ageCell(l.age),s:l=>l.age??-1},{h:'KL lệnh (t)',n:1,f:l=>T(l.kl),s:l=>l.kl},{h:'% đã cắt',n:1,f:l=>`${PC(l.pc)}<span class="mini"><i style="width:${(l.pc||0)*100}%"></i></span>`,s:l=>l.pc??0},{h:'Còn cắt (t)',n:1,f:l=>`<b>${T(l.rem)}</b>`,s:l=>l.rem},{h:'Trạng thái',f:l=>stPill(l.st),s:l=>l.st},{h:'Máy',f:l=>esc(l.may||''),s:l=>l.may||''}];
     if(!F.g){$('sx-box').innerHTML=table('t-open',cols,L,{foot:['Tổng','','','','',T(sum(L,l=>l.kl)),'',T(sum(L,l=>l.rem)),'','']})}
     else{const ps=[...new Set(L.map(l=>l.p))];$('sx-box').innerHTML=ps.map(p=>{const G=L.filter(l=>l.p===p);return `<details class="grp" open><summary><b>${esc(p.name)}</b><span class="muted"> · ${G.length} LSX · còn ${T(sum(G,l=>l.rem))} t · cũ nhất ${Math.max(...G.map(l=>l.age||0))} ngày</span></summary>${table('t-o'+P.indexOf(p),cols,G)}</details>`}).join('')||'<p class="empty">Không có LSX phù hợp.</p>'}
     sortable($('sx-box'));};
@@ -679,6 +684,46 @@ V.sx={name:'Tiến độ LSX',title:'Tiến độ lệnh sản xuất (LSX)',ico
   $('sx-g').onchange=e=>{F.g=e.target.checked;draw()};
   $('view').querySelectorAll('[data-sxp]').forEach(a=>a.onclick=()=>{F.p=a.dataset.sxp;$('sx-p').value=F.p;draw();$('sx-list').scrollIntoView({behavior:'smooth'})});
   draw();}};
+
+/* ================= CHI TIẾT LSX: bấm số LSX → tải chi_tiet/<lsx>.json → danh sách chi tiết của lệnh ================= */
+const CTC={};
+const CT_BASE=(location.pathname.includes('/lich_su/')?location.pathname.split('/lich_su/')[0]+'/':'')+'chi_tiet/';
+const LSXI={};P.forEach(p=>(p.lsx||[]).forEach(l=>{if(!LSXI[l.lsx])LSXI[l.lsx]={...l,p}}));
+const lsxA=l=>`<a class="lsx-a" tabindex="0" data-drill="lsx|${esc(l)}" title="Bấm để xem lệnh này gồm những chi tiết nào">${esc(l)}</a>`;
+function ctLoad(l){const m=LSXI[l];
+  if(!m||!m.cf){CTC[l]={err:'Lệnh này chưa có dòng chi tiết nào trong sheet List Chi Tiết của file Cutting.'};return Promise.resolve()}
+  return fetch(CT_BASE+encodeURIComponent(m.cf)+'.json',{cache:'no-cache'}).then(r=>{if(!r.ok)throw new Error('lỗi '+r.status);return r.json()}).then(j=>{CTC[l]=j})
+    .catch(e=>{CTC[l]={err:'Không tải được danh sách chi tiết ('+e.message+'). '+(location.protocol==='file:'?'Hãy mở báo cáo qua trang web, không mở file trực tiếp.':'Thử tải lại trang (Ctrl + Shift + R).')}})}
+const ctCell=v=>v==null?'<span class="muted">–</span>':v===''?'<span class="ct-no">chưa</span>':`<span class="ct-ok">${esc(v)}</span>`;
+const ctSort=v=>v==null?'':v===''?'0':v==='✓'?'1':'1'+v.split('/').reverse().join('');
+function ctHtml(l,m,c){const R=c.rows,kg=r=>r[4]||0;
+  const need=R.filter(r=>r[7]!=null),done=need.filter(r=>r[7]),bg=R.filter(r=>r[11]);
+  const nes=s=>s&&s.startsWith(l+'-')?s.slice(l.length+1):s;
+  const has=i=>R.some(r=>r[i]!=null);
+  const cols=[{h:'Tên chi tiết',f:r=>`<b>${esc(r[0]||'')}</b>`,s:r=>r[0]||''},{h:'Mác',f:r=>esc(r[1]||''),s:r=>r[1]||''},{h:'Quy cách',f:r=>esc(r[2]||''),s:r=>r[2]||''},
+    {h:'SL',n:1,f:r=>r[3]==null?'–':T0(r[3]),s:r=>r[3]??0},{h:'KL (kg)',n:1,f:r=>T(r[4]),s:r=>r[4]??0},
+    {h:'Nesting',f:r=>`<span title="${esc(r[5]||'')}">${esc(nes(r[5]||''))}</span>`,s:r=>r[5]||''},{h:'Máy',f:r=>esc(r[6]||''),s:r=>r[6]||''},
+    {h:'Cắt',f:r=>ctCell(r[7]),s:r=>ctSort(r[7])}]
+    .concat([[8,'Khoan'],[9,'Chấn'],[10,'Vát']].filter(([i])=>has(i)).map(([i,h])=>({h,f:r=>ctCell(r[i]),s:r=>ctSort(r[i])})))
+    .concat([{h:'Bàn giao',f:r=>ctCell(r[11]),s:r=>ctSort(r[11])}]);
+  return `<div class="drsum">${m.hm?`<span>Hạng mục: <b>${esc(m.hm)}</b></span>`:''}${m.bh?`<span>Ban hành: <b>${m.bh.split('-').reverse().join('/')}</b></span>`:''}
+      <span>${R.length} dòng chi tiết · <b>${T0(sum(R,r=>r[3]||0))}</b> cái · <b>${T(sum(R,kg)/1000)} t</b></span>
+      <span>Đã cắt <b>${T(sum(done,kg)/1000)}</b> / ${T(sum(need,kg)/1000)} t (${PC(sum(done,kg)/(sum(need,kg)||1))})</span><span>Đã bàn giao <b>${T(sum(bg,kg)/1000)} t</b></span>
+      ${m.p?`<a data-go="${esc(m.p.id)}" data-drw-x>Mở trang dự án →</a>`:''}</div>
+    <div class="ct-bar">${[['all','Tất cả'],['todo','Chưa cắt'],['cut','Đã cắt'],['nobg','Đã cắt, chưa bàn giao']].map(([k,v],i)=>`<button class="chip" data-ctf="${k}" aria-pressed="${i===0}">${v}</button>`).join('')}
+      <span class="sp"></span><span class="muted" data-ctn></span><button class="hdr-btn" data-ctx>Xuất Excel</button></div>
+    <input type="search" class="drq" placeholder="Tìm tên chi tiết, quy cách, nesting, máy…" data-ctq>
+    <h3 class="ct-h">Chi tiết ${esc(l)}</h3>
+    ${table('t-ct',cols,R)}
+    <p class="note">Nguồn: sheet List Chi Tiết của file Cutting. "chưa" = công đoạn phải làm nhưng chưa có ngày; "–" = không phải làm; ✓ = đã làm nhưng ô ngày không đọc được.${location.pathname.includes('/lich_su/')?' Đây là chi tiết theo số liệu mới nhất, không phải của ngày báo cáo cũ này.':''}</p>`}
+function ctBind(){const b=$('drw-body'),q=b.querySelector('[data-ctq]');if(!q)return;let f='all';
+  const ap=()=>{let n=0,k=0;b.querySelectorAll('#t-ct tbody tr').forEach(tr=>{const c=tr.cells;
+      const cut=c[7].querySelector('.ct-no')?0:c[7].querySelector('.ct-ok')?1:-1,bgd=!!c[c.length-1].querySelector('.ct-ok');
+      const ok=(f==='all'||(f==='todo'&&cut===0)||(f==='cut'&&cut===1)||(f==='nobg'&&cut===1&&!bgd))&&hit(tr.textContent,q.value);
+      tr.hidden=!ok;if(ok){n++;k+=parseFloat(c[4].dataset.s)||0}});
+    b.querySelector('[data-ctn]').textContent=`${n} dòng · ${T(k/1000)} t`};
+  b.querySelectorAll('[data-ctf]').forEach(x=>x.onclick=()=>{f=x.dataset.ctf;b.querySelectorAll('[data-ctf]').forEach(y=>y.setAttribute('aria-pressed',y===x));ap()});
+  q.oninput=ap;b.querySelector('[data-ctx]').onclick=()=>$('csv').onclick();ap()}
 
 /* ================= XEM CHI TIẾT (bấm vào ô số / thanh) ================= */
 const KCT=D.kho_ct||{nhap:{},xuat:{},ton:{},map:{}};
@@ -692,7 +737,7 @@ function drillClose(){DRS=[];const d=$('drw');if(d)d.hidden=true;document.body.c
 function drillRender(){
   let d=$('drw');if(!d){d=document.createElement('div');d.id='drw';d.className='drw';d.innerHTML='<div class="drw-bg" data-drw-x></div><aside class="drw-box" role="dialog" aria-modal="true"><header class="drw-h"><button class="drw-b" data-drw-back>← Quay lại</button><div class="drw-t" id="drw-t"></div><button class="drw-b" data-drw-x aria-label="Đóng">✕</button></header><div class="drw-body" id="drw-body"></div></aside>';document.body.appendChild(d)}
   d.hidden=false;document.body.classList.add('noscroll');
-  const spec=DRS[DRS.length-1];const [kind,arg]=spec.split('|');d.querySelector('[data-drw-back]').style.visibility=DRS.length>1?'visible':'hidden';
+  const spec=DRS[DRS.length-1];const kind=spec.split('|')[0],arg=spec.slice(kind.length+1);d.querySelector('.drw-box').classList.toggle('wide',kind==='lsx');d.querySelector('[data-drw-back]').style.visibility=DRS.length>1?'visible':'hidden';
   let t='',h='';
   if(['nhap','xuat','ton'].includes(kind)&&!arg){                       /* cấp 1: các dự án kho */
     const rows=Object.entries(KCT[kind]).map(([da,L])=>({da,t:sum(L,r=>r[2]),n:L.length})).filter(r=>Math.abs(r.t)>0.05).sort((a,b)=>b.t-a.t);const tot=sum(rows,r=>r.t),mx=Math.max(1e-9,...rows.map(r=>r.t));
@@ -718,6 +763,11 @@ function drillRender(){
     t=`<b>${esc(p.name)}</b> · cần ${T(k.need)} t · phải mua <b style="color:var(--bad)">${T(k.buy)} t</b>`;
     h=`<div class="drsum"><span>Dự án kho: <b>${esc(k.name)}</b></span><a data-drill="ton|${esc(k.name)}">Xem tồn kho của dự án →</a><a data-go="${esc(p.id)}" data-drw-x>Mở trang dự án →</a></div>
       ${k.bal.length?table('t-drill',[{h:'Quy cách',f:r=>`<b>${esc(r.k)}</b>`,s:r=>r.k},{h:'Nesting',n:1,f:r=>r.n,s:r=>r.n},{h:'Cần (t)',n:1,f:r=>T(r.need),s:r=>r.need},{h:'Tồn DA',n:1,f:r=>T(r.own),s:r=>r.own},{h:'Kho chung',n:1,f:r=>T(r.fc),s:r=>r.fc},{h:'Phải mua',n:1,f:r=>r.buy>0.05?`<b style="color:var(--bad)">${T(r.buy)}</b>`:'0,0',s:r=>r.buy}],k.bal.slice().sort((a,b)=>b.buy-a.buy||b.need-a.need),{foot:['Tổng','',T(k.need),T(k.own),T(k.common),T(k.buy)]}):'<p class="empty">Không còn nesting chờ cắt.</p>'}`;
+  }else if(kind==='lsx'){                                                  /* chi tiết của 1 LSX */
+    const m=LSXI[arg]||{},c=CTC[arg];
+    t=`LSX <b>${esc(arg)}</b>${m.p?` · ${esc(m.p.name)}`:''}${m.kl!=null?` · ${T(m.kl)} t · cắt ${PC(m.pc)}`:''}`;
+    if(!c){h='<p class="empty">Đang tải danh sách chi tiết…</p>';ctLoad(arg).then(()=>{if(DRS[DRS.length-1]===spec)drillRender()})}
+    else h=c.err?`<p class="empty">${esc(c.err)}</p>`:ctHtml(arg,m,c);
   }else if(kind==='key'){                                                  /* 1 quy cách thép: dự án nào cần */
     const r0=D.bykey.find(r=>r.k===arg)||{need:0,own:0,fc:0,buy:0};
     const rows=kprojs.map(p=>({p,r:p.kho.bal.find(b=>b.k===arg)})).filter(x=>x.r&&x.r.need>0.005).sort((a,b)=>b.r.buy-a.r.buy||b.r.need-a.r.need);
@@ -726,6 +776,7 @@ function drillRender(){
   }
   $('drw-t').innerHTML=t;$('drw-body').innerHTML=h;$('drw-body').scrollTop=0;sortable($('drw-body'));
   $('drw-body').querySelectorAll('tr[data-drill]').forEach(tr=>tr.classList.add('click'));
+  if(kind==='lsx')ctBind();
   const q=$('drw-body').querySelector('[data-drq]');if(q)q.oninput=()=>{const s=q.value;$('drw-body').querySelectorAll('#t-drill tbody tr').forEach(tr=>tr.hidden=!hit(tr.textContent,s))};
 }
 document.addEventListener('click',e=>{
@@ -919,7 +970,7 @@ function renderProject(p){
     const hg=$('lsx-h').value;
     const rows=p.lsx.filter(r=>(flt==='Tất cả'||r.st===flt)&&(!hg||r.g===hg)&&hit(r.lsx+' '+(r.hm||'')+' '+(r.may||''),q)).map(r=>({...r,age:(r.pc??0)<0.999?days(r.bh):null}));
     $('lsx-cnt').textContent=`${rows.length} / ${p.lsx.length} LSX · ${T(sum(rows,r=>r.kl))} t`;
-    $('lsx-box').innerHTML=table('t-lsx',[{h:'LSX',f:r=>`<b>${esc(r.lsx)}</b>`,s:r=>r.lsx},{h:'Hạng mục',w:1,f:r=>`${esc(r.hm||'')}<div class="muted" style="font-size:11.5px">${esc(r.g||'')}</div>`,s:r=>r.hm||''},{h:'Ban hành',f:r=>r.bh||'–',s:r=>r.bh||''},{h:'Tuổi',n:1,f:r=>ageCell(r.age),s:r=>r.age??-1},
+    $('lsx-box').innerHTML=table('t-lsx',[{h:'LSX',f:r=>lsxA(r.lsx),s:r=>r.lsx},{h:'Hạng mục',w:1,f:r=>`${esc(r.hm||'')}<div class="muted" style="font-size:11.5px">${esc(r.g||'')}</div>`,s:r=>r.hm||''},{h:'Ban hành',f:r=>r.bh||'–',s:r=>r.bh||''},{h:'Tuổi',n:1,f:r=>ageCell(r.age),s:r=>r.age??-1},
       {h:'KL (t)',n:1,f:r=>T(r.kl),s:r=>r.kl},{h:'% cắt',n:1,f:r=>`${PC(r.pc)}<span class="mini"><i style="width:${(r.pc||0)*100}%"></i></span>`,s:r=>r.pc??-1},{h:'% bàn giao',n:1,f:r=>PC(r.pb),s:r=>r.pb??-1},{h:'Trạng thái',f:r=>stPill(r.st),s:r=>r.st},{h:'Cắt gần nhất',f:r=>r.last||'–',s:r=>r.last||''},{h:'Máy',f:r=>esc(r.may||''),s:r=>r.may||''}],rows,{foot:['Tổng','','','',T(sum(rows,r=>r.kl)),'','','','','']});
     sortable($('lsx-box'));};
   $('lsx-q').addEventListener('input',draw);$('lsx-h').addEventListener('change',draw);
@@ -1281,13 +1332,14 @@ $('theme').onclick=()=>{const cur=document.documentElement.dataset.theme||(match
 if(/github\.io$/.test(location.hostname)){$('prn').hidden=false;$('prn').onclick=()=>window.print()}
 // Xuat Excel: moi bang dang hien tren trang -> 1 sheet (.xlsx); khong tai duoc thu vien thi xuat CSV (dau ;)
 $('csv').onclick=async()=>{
-  const tbs=[...$('view').querySelectorAll('table')].filter(t=>t.getClientRects().length);
+  const drw=$('drw'),inD=!!(drw&&!drw.hidden),root=inD?$('drw-body'):$('view');
+  const tbs=[...root.querySelectorAll('table')].filter(t=>t.getClientRects().length);
   if(!tbs.length){alert('Trang này không có bảng số liệu để xuất. Hãy mở trang có bảng (vd Tiến độ LSX, Thép & tồn kho) rồi bấm lại.');return}
   const txt=c=>(c.innerText||'').replace(/\s+/g,' ').trim();
   const num=s=>{const m=s.replace(/^[▲▼]\s*/,'').match(/^([-−+]?)(\d{1,3}(?:\.\d{3})+|\d+)(?:,(\d+))?\s*(%|t)?$/);if(!m)return null;
     let n=parseFloat(m[2].replace(/\./g,'')+(m[3]?'.'+m[3]:''));if(m[1]==='-'||m[1]==='−'||s.startsWith('▼'))n=-n;return m[4]==='%'?{v:n/100,z:'0.0%'}:{v:n}};
-  const name=(($('title').textContent||'Bao cao').trim()+' '+D.date).replace(/[\\/:*?"<>|]+/g,'-');
-  const grids=tbs.map((tb,i)=>{const hs=[...$('view').querySelectorAll('h2,h3')].filter(x=>x.compareDocumentPosition(tb)&4);const h=hs[hs.length-1];const rows=[];
+  const name=((inD?'Chi tiết '+(DRS[DRS.length-1]||'').split('|').slice(1).join('|'):($('title').textContent||'Bao cao').trim())+' '+D.date).replace(/[\\/:*?"<>|]+/g,'-');
+  const grids=tbs.map((tb,i)=>{const hs=[...root.querySelectorAll('h2,h3')].filter(x=>x.compareDocumentPosition(tb)&4);const h=hs[hs.length-1];const rows=[];
     tb.querySelectorAll('tr').forEach(tr=>{if(!tr.getClientRects().length)return;const r=[];
       [...tr.children].forEach(c=>{if(!/^T[DH]$/.test(c.tagName))return;r.push(txt(c));for(let k=1;k<(c.colSpan||1);k++)r.push('')});if(r.length)rows.push(r)});
     const hn=h?[...h.childNodes].filter(n=>n.nodeType===3).map(n=>n.textContent).join(' ').replace(/\s+/g,' ').trim():'';return {name:hn||'Bảng '+(i+1),rows}});

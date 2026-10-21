@@ -140,6 +140,12 @@ def nesting_block(ct,files,pk):
       lsx_cut_not_in_nes=sorted(lsx_c-lsx_n)[:15])
 # ---------------- PER PROJECT ----------------
 V=CUT_V.reset_index(drop=True); V['m_cut']=V.d_cut_dt.dt.to_period('M').astype(str); V['m_bg']=V.d_bg_dt.dt.to_period('M').astype(str)
+# tên file chi tiết của từng LSX (chi_tiet/<tên>.json); không phân biệt hoa thường để chạy được trên Windows
+def _cf_name(l,used):
+    b=re.sub(r'[^A-Za-z0-9._-]+','_',str(l)).strip('._') or 'lsx'; n=b; i=2
+    while n.lower() in used: n=f'{b}~{i}'; i+=1
+    used.add(n.lower()); return n
+_used=set(); CF={l:_cf_name(l,_used) for l in sorted(V.lsx.dropna().astype(str).unique())}
 kho_tot=lambda df,pk: float(df.loc[df.du_an==pk,'kl'].sum())
 PR=[]
 for ct,Vp in V.groupby('cong_trinh'):
@@ -173,7 +179,7 @@ for ct,Vp in V.groupby('cong_trinh'):
       m_cut=[t_(mc.get(m,0)) for m in months],m_bg=[t_(mb.get(m,0)) for m in months],
       mach=[dict(k=k,t=t_(v)) for k,v in mach.items()],
       lsx=[dict(lsx=r.lsx,hm=(None if pd.isna(r.hang_muc) else str(r.hang_muc).replace('\\_','_'))[:60] if not pd.isna(r.hang_muc) else None,bh=None if pd.isna(r.ngay_bh) else str(r.ngay_bh.date()),kl=t_(r.kl or 0),pc=f(r.pc),pb=f(r.pb),st=r.st,
-               last=None if pd.isna(r.last_cut) else str(r.last_cut.date()),may=None if pd.isna(r.may) else str(r.may)) for r in Lx.itertuples()],
+               last=None if pd.isna(r.last_cut) else str(r.last_cut.date()),may=None if pd.isna(r.may) else str(r.may),cf=CF.get(str(r.lsx))) for r in Lx.itertuples()],
       fix=[dict(c=r.ma,d=r.quy_tac,g=r.nhom,n=int(r.n),t=t_(r.kl)) for r in iss.itertuples()],
       nes_st={k:dict(n=int(v.n),t=t_(v.kl)) for k,v in gst.iterrows()},
       kho=kho,nes=nes))
@@ -262,6 +268,26 @@ def _drill(df):
         out[da]=[[r.ten,r.qc,round(r.kl/1000,3),(None if pd.isna(r.sl) else round(float(r.sl),1)),int(r.n)] for r in a.itertuples() if abs(r.kl)>0.5]
     return out
 OUT['kho_ct']=dict(nhap=_drill(N),xuat=_drill(X),ton=_drill(T),map={p['kho']['name']:p['id'] for p in PR if p.get('kho')})
+# ---------------- CHI TIẾT TỪNG LSX: mỗi lệnh 1 file JSON, trang web tải khi bấm vào số LSX ----------------
+# dòng: [tên chi tiết, mác, quy cách, SL, KL tổng (kg), nesting, máy, cắt, khoan, chấn, vát, bàn giao]
+# ô công đoạn: null = không phải làm · "" = chưa làm · "dd/mm/yy" = ngày làm xong ("✓" nếu xong mà không rõ ngày)
+_od=os.environ.get('OUT_CT')
+if _od:
+    os.makedirs(_od,exist_ok=True)
+    for _f in os.listdir(_od):
+        if _f.endswith('.json'): os.remove(os.path.join(_od,_f))
+    _u=lambda x: None if pd.isna(x) else str(x).replace('\\_','_').replace('\\*','*').strip()
+    _n=lambda x: None if pd.isna(x) else (int(x) if float(x).is_integer() else round(float(x),3))
+    def _st(req,raw,dt):
+        if not req: return None
+        if pd.isna(raw): return ''
+        return dt.strftime('%d/%m/%y') if pd.notna(dt) else '✓'
+    for _l,_g in V.groupby(V.lsx.astype(str),sort=False):
+        _rows=[[_u(r.ten_ct),_u(r.mac),_u(r.qc_part),_n(r.qty),None if pd.isna(r.kl_tong) else round(float(r.kl_tong),1),_u(r.nesting),_u(r.may),
+                _st(pd.notna(r.x_cut),r.d_cut,r.d_cut_dt),_st(pd.notna(r.x_khoan),r.d_khoan,r.d_khoan_dt),_st(pd.notna(r.x_chan),r.d_chan,r.d_chan_dt),
+                _st(pd.notna(r.x_vat),r.d_vat,r.d_vat_dt),_st(True,r.d_bg,r.d_bg_dt)] for r in _g.itertuples()]
+        json.dump(dict(lsx=_l,ct=_u(_g.cong_trinh.iloc[0]),rows=_rows),open(os.path.join(_od,CF[_l]+'.json'),'w',encoding='utf-8'),ensure_ascii=False,separators=(',',':'))
+    print('Chi tiết LSX:',len(CF),'file →',_od)
 pickle.dump(CLEAN_LOG,open(os.environ.get('OUT_LOG','clean_log.pkl'),'wb'))
 json.dump(OUT,open(os.environ.get('OUT_JSON','data.json'),'w'),ensure_ascii=False,default=str)
 print(json.dumps(tot,ensure_ascii=False),bal,len(json.dumps(OUT))//1024,'KB')

@@ -168,7 +168,8 @@ def main():
         nfiles.append([p, os.path.splitext(os.path.basename(f))[0]])
     os.environ.update(NGAY_BAO_CAO=str(ngay), NESTING_FILES=json.dumps(nfiles, ensure_ascii=False),
                       FILE_CUTTING=os.path.splitext(os.path.basename(f_cut))[0], FILE_KHO=os.path.splitext(os.path.basename(f_kho))[0],
-                      OUT_JSON=os.path.join(TMP, 'data.json'), OUT_LOG=os.path.join(TMP, 'clean_log.pkl'))
+                      OUT_JSON=os.path.join(TMP, 'data.json'), OUT_LOG=os.path.join(TMP, 'clean_log.pkl'),
+                      OUT_CT=os.path.join(ROOT, 'chi_tiet'))
     cfg_map = [f for f in cfg if not os.path.basename(f).upper().startswith('VIEC_LINK')]
     if cfg_map: os.environ['FILE_CAU_HINH'] = cfg_map[-1]
     os.chdir(CC)
