@@ -420,6 +420,8 @@ const onMay=(l,m)=>!m||(l.may||'').split(/\s*,\s*/).includes(m);
 const BUCK=[['≤ 7 ngày',0,7],['8–14 ngày',8,14],['15–30 ngày',15,30],['31–60 ngày',31,60],['> 60 ngày',61,1e9]];
 const bucketOf=a=>a==null?null:BUCK.findIndex(b=>a>=b[1]&&a<=b[2]);
 const kprojs=(()=>{const seen=new Set();return P.filter(p=>p.kho&&!seen.has(p.kho.name)&&seen.add(p.kho.name))})();
+/* dự án kho còn tồn nhưng chưa có lệnh cắt trong file Cutting: vẫn hiện trong biểu đồ và bảng cân đối kho */
+const kxo=(D.kho_only||[]).filter(r=>r.t>0.05).map(r=>{const KC=D.kho_ct||{};const s=(k)=>((KC[k]||{})[r.k]||[]).reduce((a,x)=>a+(x[2]||0),0);return {id:null,_ko:1,name:r.k,kho:{name:r.k,shared:[],nhap:s('nhap'),xuat:s('xuat'),ton:r.t,need:0,own:0,common:0,buy:0,tandung:0}}});
 
 /* ---------- chart helpers ---------- */
 function hbars(rows,max,{click}={}){
@@ -798,15 +800,15 @@ V.th={name:'Thép & tồn kho',title:'Tồn kho và cân đối thép',ico:'<pat
     ${hbars(D.bykey.filter(r=>r.need>0.05).map(r=>({drill:'key|'+r.k,label:r.k,segs:[{v:r.own,c:'c-own',n:'Tồn dự án'},{v:r.fc,c:'c-com',n:'Kho chung/BRAVO'},{v:r.buy,c:'c-buy',n:'Phải mua'}],right:r.buy>0.05?`<span style="color:var(--bad)">mua ${T(r.buy)}</span>`:'đủ'})),Math.max(...D.bykey.map(r=>r.need)))}</div>
    <div class="card"><h3>Nhập · xuất · tồn theo dự án kho (tấn)</h3>
     <div class="legend"><span><i class="c-cut"></i>Đã xuất</span><span><i class="c-own"></i>Còn tồn</span></div>
-    ${hbars(kprojs.slice().sort((a,b)=>b.kho.nhap-a.kho.nhap).map(p=>({id:p.id,drill:'nhap|'+p.kho.name,label:p.name,segs:[{v:p.kho.xuat,c:'c-cut',n:'Đã xuất'},{v:p.kho.ton,c:'c-own',n:'Còn tồn'}],right:`<span class="nw">xuất ${T(p.kho.xuat)}</span> <span class="nw sep"><span style="color:var(--good)">tồn</span> <b style="color:var(--ink)">${T(p.kho.ton)}</b></span>`})),Math.max(...kprojs.map(p=>p.kho.nhap)),{click:1})}
-    ${D.kho_only.length?`<h3 style="margin-top:16px">Tồn của dự án chưa có lệnh cắt</h3>${hbars(D.kho_only.map(r=>({drill:'ton|'+r.k,label:r.k,segs:[{v:r.t,c:'c-own',n:'Tồn'}],right:T(r.t)+' t'})),Math.max(1,...D.kho_only.map(r=>r.t)))}`:''}</div></section>
+    ${hbars(kprojs.concat(kxo).sort((a,b)=>b.kho.nhap-a.kho.nhap).map(p=>({id:p.id,drill:(p._ko?'ton|':'nhap|')+p.kho.name,label:p._ko?p.name+' (chưa có LSX)':p.name,segs:[{v:p.kho.xuat,c:'c-cut',n:'Đã xuất'},{v:p.kho.ton,c:'c-own',n:'Còn tồn'}],right:`<span class="nw">xuất ${T(p.kho.xuat)}</span> <span class="nw sep"><span style="color:var(--good)">tồn</span> <b style="color:var(--ink)">${T(p.kho.ton)}</b></span>`})),Math.max(...kprojs.concat(kxo).map(p=>p.kho.nhap)),{click:1})}
+    </div></section>
   <section>${secH('Cân đối theo dự án kho','Nhu cầu = nesting chưa cắt trong file Cutting, quy ra phôi nguyên khổ')}
    ${table('t-kb',[{h:'Dự án kho',f:p=>`<b>${esc(p.kho.name)}</b>${p.kho.shared.length?`<br><span style="font-size:11.5px;color:var(--muted)">dùng chung: ${esc(p.name)}, ${p.kho.shared.map(esc).join(', ')}</span>`:''}`,s:p=>p.kho.name},
      {h:'Nhập (t)',n:1,f:p=>T(p.kho.nhap),s:p=>p.kho.nhap},{h:'Xuất (t)',n:1,f:p=>T(p.kho.xuat),s:p=>p.kho.xuat},{h:'Tồn (t)',n:1,f:p=>T(p.kho.ton),s:p=>p.kho.ton},
      {h:'Cần (t)',n:1,f:p=>T(p.kho.need),s:p=>p.kho.need},{h:'Từ tồn DA',n:1,f:p=>T(p.kho.own),s:p=>p.kho.own},{h:'Kho chung',n:1,f:p=>T(p.kho.common),s:p=>p.kho.common},
      {h:'Phải mua',n:1,f:p=>p.kho.buy>0.05?`<b style="color:var(--bad)">${T(p.kho.buy)}</b>`:'0,0',s:p=>p.kho.buy},{h:'Tận dụng (t)',n:1,f:p=>T(p.kho.tandung),s:p=>p.kho.tandung},
-     {h:'',f:p=>p.kho.buy>0.05?pill('bad','Thiếu'):p.kho.common>0.05?pill('warn','Bù Kho chung'):p.kho.need>0.05?pill('good','Đủ'):pill('neu','Không cần'),s:p=>p.kho.buy}],
-     kprojs.map(p=>({...p,_id:p.id})).sort((a,b)=>b.kho.buy-a.kho.buy),{click:1,foot:['Tổng',T(D.kho.nhap),T(D.kho.xuat),T(D.kho.ton),T(b.need),T(b.own),T(b.common),T(b.buy),'','']})}
+     {h:'',f:p=>p._ko?pill('neu','Chưa có LSX'):p.kho.buy>0.05?pill('bad','Thiếu'):p.kho.common>0.05?pill('warn','Bù Kho chung'):p.kho.need>0.05?pill('good','Đủ'):pill('neu','Không cần'),s:p=>p.kho.buy}],
+     kprojs.map(p=>({...p,_id:p.id})).concat(kxo.map(p=>({...p,_drill:'ton|'+p.kho.name}))).sort((a,b)=>b.kho.buy-a.kho.buy||b.kho.ton-a.kho.ton),{click:1,foot:['Tổng',T(D.kho.nhap),T(D.kho.xuat),T(D.kho.ton),T(b.need),T(b.own),T(b.common),T(b.buy),'','']})}
    <p class="note">Tổng nhập/xuất/tồn ở dòng cuối gồm cả Kho chung, BRAVO và dự án không có lệnh cắt. Công trình chưa map kho: ${D.nomap.map(esc).join(', ')||'không'}.</p></section>`;}};
 
 /* thanh ngang có trục: rows [{n, v, tot?, c?}] — tot = phần nền nhạt (100%) */
