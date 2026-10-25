@@ -12,6 +12,11 @@ def grade_family(m):
     return 'KHÁC'
 def stock_key(ten):
     t=str(ten)
+    if not t.startswith('Thép tấm'): t=t.replace(' lỡ cỡ','')      # thép hình lỡ cỡ: vẫn đúng quy cách
+    m=re.match(r'Thép tấm cuộn\s+(\d+(?:\.\d+)?)\s*mm\s*(.*)',t)
+    if m: return 'PL',f'PL{fnum(m.group(1))}',m.group(2).strip()
+    m=re.match(r'Thép Rail\s*([A-Za-z]*\s*\d+)\s*(.*)',t)
+    if m: return 'HÌNH','RAIL'+m.group(1).replace(' ','').upper(),m.group(2).strip()
     m=re.match(r'Thép tấm (?:lỡ cỡ[^\d]*)?(\d+(?:\.\d+)?)\s*mm\s*(.*)',t)
     if m: return 'PL',f'PL{fnum(m.group(1))}',m.group(2).replace('k.gửi','').strip()
     m=re.match(r'Thép tấm\s+(\d+(?:\.\d+)?)x(\d+)x(\d+),\s*([^,]+)',t)   # bravo

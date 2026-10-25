@@ -26,16 +26,25 @@ def _find(inc, exc=()):
         u=name.strip().upper()
         if all(w in u for w in inc) and not any(w in u for w in exc): return name
     raise KeyError('Không tìm thấy sheet có chữ ' + ' + '.join(inc) + ' trong file tồn kho. Các sheet: ' + ', '.join(d))
+def _finds(inc, exc=()):
+    # mọi sheet/file khớp từ khóa (vd thư mục ngày có 2 file Xuất: THÉP TẤM + THÉP HÌNH → gộp)
+    r=[name for name in d if all(w in name.strip().upper() for w in inc) and not any(w in name.strip().upper() for w in exc)]
+    if not r: _find(inc, exc)          # báo lỗi rõ ràng như cũ
+    return r
+def _gop(names, spec, cb):
+    out=[]
+    for s in names:
+        df=_by_header(d[s],spec,s); df['xrow']=df.index+2; df['nguon_file']=s; out.append(cb(df))
+    return pd.concat(out, ignore_index=True)
 DV=('ĐVT','DVT'); DV2=('ĐVT2','DVT2')
 def nhap():
-    s=_find(['NHẬP']); df=_by_header(d[s],[('ma',('MÃ VẬT TƯ','MÃ')),('ten',('TÊN VẬT TƯ','TÊN')),('qc',('QUY CÁCH',)),('kl',('KHỐI LƯỢNG','K.LƯỢNG')),('dvt',DV),('sl',('S.LƯỢNG','SỐ LƯỢNG')),('dvt2',DV2),('du_an',('DỰ ÁN',))],s)
-    df['xrow']=df.index+2; df['kl']=num(df.kl); df['sl']=num(df.sl); return df
+    return _gop(_finds(['NHẬP']),[('ma',('MÃ VẬT TƯ','MÃ')),('ten',('TÊN VẬT TƯ','TÊN')),('qc',('QUY CÁCH',)),('kl',('KHỐI LƯỢNG','K.LƯỢNG')),('dvt',DV),('sl',('S.LƯỢNG','SỐ LƯỢNG')),('dvt2',DV2),('du_an',('DỰ ÁN',))],_cb_nhap)
+def _cb_nhap(df): df['kl']=num(df.kl); df['sl']=num(df.sl); return df
 def xuat():
-    s=_find(['XUẤT'],['NHẬP']); df=_by_header(d[s],[('ngay',('NGÀY',)),('ma',('MÃ VẬT TƯ','MÃ')),('ten',('TÊN VẬT TƯ','TÊN')),('qc',('QUY CÁCH',)),('bp',('BỘ PHẬN NHẬN','BỘ PHẬN')),('kl',('K.LƯỢNG XUẤT (KG)','K.LƯỢNG','KHỐI LƯỢNG')),('dvt',DV),('sl',('S.LƯỢNG','SỐ LƯỢNG')),('dvt2',DV2),('du_an',('DỰ ÁN',))],s)
-    df['xrow']=df.index+2; df['kl']=num(df.kl); df['sl']=num(df.sl); df['ngay_dt']=pd.to_datetime(df.ngay,format='%m/%d/%Y',errors='coerce'); return df
+    return _gop(_finds(['XUẤT'],['NHẬP']),[('ngay',('NGÀY',)),('ma',('MÃ VẬT TƯ','MÃ')),('ten',('TÊN VẬT TƯ','TÊN')),('qc',('QUY CÁCH',)),('bp',('BỘ PHẬN NHẬN','BỘ PHẬN')),('kl',('K.LƯỢNG XUẤT (KG)','K.LƯỢNG','KHỐI LƯỢNG')),('dvt',DV),('sl',('S.LƯỢNG','SỐ LƯỢNG')),('dvt2',DV2),('du_an',('DỰ ÁN',))],_cb_xuat)
+def _cb_xuat(df): df['kl']=num(df.kl); df['sl']=num(df.sl); df['ngay_dt']=pd.to_datetime(df.ngay,format='%m/%d/%Y',errors='coerce'); return df
 def ton():
-    s=_find(['TỒN'],['NHẬP']); df=_by_header(d[s],[('nhom',('PHÂN NHÓM','NHÓM')),('ma',('MÃ VẬT TƯ','MÃ')),('ten',('TÊN VẬT TƯ','TÊN')),('qc',('QUY CÁCH (BATCH)','QUY CÁCH','BATCH')),('kl',('KHỐI LƯỢNG TỒN (KG)','KHỐI LƯỢNG','K.LƯỢNG')),('dvt',DV),('sl',('S.LƯỢNG','SỐ LƯỢNG')),('dvt2',DV2),('du_an',('DỰ ÁN',))],s)
-    df['xrow']=df.index+2; df['kl']=num(df.kl); df['sl']=num(df.sl); return df
+    return _gop(_finds(['TỒN'],['NHẬP']),[('nhom',('PHÂN NHÓM','NHÓM')),('ma',('MÃ VẬT TƯ','MÃ')),('ten',('TÊN VẬT TƯ','TÊN')),('qc',('QUY CÁCH (BATCH)','QUY CÁCH','BATCH')),('kl',('KHỐI LƯỢNG TỒN (KG)','KHỐI LƯỢNG','K.LƯỢNG')),('dvt',DV),('sl',('S.LƯỢNG','SỐ LƯỢNG')),('dvt2',DV2),('du_an',('DỰ ÁN',))],_cb_nhap)
 
 # ================= FILE TỒN KHO DẠNG SAP (Google Sheet "THEO DÕI SĐC - THÉP - THU HỒI") =================
 # Sheet "Tổng hợp nhập - xuất - tồn" = tồn hiện tại theo dự án/lô · sheet "lệnh xuất" = các lần xuất (221 xuất cho dự án, 261 xuất cho LSX)
