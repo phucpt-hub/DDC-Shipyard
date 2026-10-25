@@ -1,5 +1,5 @@
 # Chạy toàn bộ: đọc Excel trong du_lieu/ -> phân tích -> index.html + lich_su/<ngày>/
-import os, sys, re, glob, json, pickle, subprocess, datetime, shutil, runpy
+import os, sys, re, io, glob, json, pickle, subprocess, datetime, shutil, runpy
 import pandas as pd
 
 CC = os.path.dirname(os.path.abspath(__file__))
@@ -27,7 +27,10 @@ def name_date(p):
         except ValueError: continue
     return None
 
-def files_in(folder):
+def commit_date(p):
+    return datetime.datetime.fromtimestamp(commit_time(p), datetime.timezone(datetime.timedelta(hours=7))).date()
+
+def files_in(folder, theo_ngay_tai_len=False):
     fs = [f for f in glob.glob(os.path.join(DL, folder, '*')) if f.lower().endswith(EXT) and not os.path.basename(f).startswith('~$')]
     # cùng tên nhưng khác đuôi (.xlsx và .xlsb) → ưu tiên .xlsx
     best = {}
@@ -37,7 +40,8 @@ def files_in(folder):
     skipped = sorted(set(fs) - {v[1] for v in best.values()})
     for f in skipped: log('Bỏ qua (trùng tên, đã có bản .xlsx):', os.path.basename(f))
     # file mới nhất xếp cuối: theo ngày trong tên file, rồi theo thời điểm tải lên
-    return sorted([v[1] for v in best.values()], key=lambda f: (name_date(f) or datetime.date(1900, 1, 1), commit_time(f)))
+    # theo_ngay_tai_len: tên file không có ngày thì lấy ngày tải file lên (dùng cho file tồn kho cập nhật tay)
+    return sorted([v[1] for v in best.values()], key=lambda f: (name_date(f) or (commit_date(f) if theo_ngay_tai_len else datetime.date(1900, 1, 1)), commit_time(f)))
 
 def _cell(v):
     if v is None: return 'NaN'
@@ -78,6 +82,50 @@ def to_sheets(xlsx, out_pkl, only=None):
         d2 = pd.DataFrame(data, columns=[f'c{i}' for i in range(n)]); d2.attrs['hdr'] = hdr; out[k.strip() if k.strip() != k and k.strip() in ('TỔNG HỢP NHẬP (TỒN + XUẤT)',) else k] = d2
     pickle.dump(out, open(out_pkl, 'wb'))
     log('Đọc', os.path.basename(xlsx), '→', len(out), 'sheet:', ', '.join(list(out)[:8]))
+    return out
+
+def is_html(f):
+    """File .xls xuất từ phần mềm thường là trang HTML đổi đuôi (không phải Excel thật)."""
+    with open(f, 'rb') as fh: h = fh.read(2048).lstrip().lower()
+    return h.startswith(b'<') or b'<html' in h or b'<table' in h
+
+def html_sheets(f):
+    """Đọc file HTML đổi đuôi .xls → 1 bảng (bảng có nhiều dòng nhất), cùng định dạng với to_sheets."""
+    raw = open(f, 'rb').read()
+    for enc in ('utf-8', 'utf-16', 'cp1258'):
+        try: txt = raw.decode(enc); break
+        except UnicodeDecodeError: continue
+    else: txt = raw.decode('utf-8', 'replace')
+    df = max(pd.read_html(io.StringIO(txt)), key=len)
+    if isinstance(df.columns, pd.MultiIndex): df.columns = [str(c[-1]) for c in df.columns]
+    hdr = [_cell(c) if not str(c).startswith('Unnamed') else str(c) for c in df.columns]
+    d2 = pd.DataFrame([[_cell(v) for v in row] for row in df.itertuples(index=False, name=None)], columns=[f'c{i}' for i in range(len(hdr))]); d2.attrs['hdr'] = hdr
+    return {'Sheet1': d2}
+
+def kho_sets():
+    """Các bộ dữ liệu tồn kho, cũ → mới. Một bộ = 1 file đặt thẳng trong 2_TON_KHO,
+    hoặc 1 thư mục con (vd 2_TON_KHO/25.10.2026) chứa 1–3 file Nhập / Xuất / Tồn. Ngày = ngày trong tên (thư mục/file), không có thì ngày tải lên."""
+    base = os.path.join(DL, '2_TON_KHO'); sets = []
+    for f in files_in('2_TON_KHO', theo_ngay_tai_len=True):
+        sets.append((name_date(f) or commit_date(f), commit_time(f), [f], os.path.splitext(os.path.basename(f))[0]))
+    for sub in sorted(glob.glob(os.path.join(base, '*'))):
+        if not os.path.isdir(sub): continue
+        fs = sorted(f for f in glob.glob(os.path.join(sub, '*')) if f.lower().endswith(EXT) and not os.path.basename(f).startswith('~$'))
+        if fs: sets.append((name_date(sub) or max(name_date(f) or commit_date(f) for f in fs), max(commit_time(f) for f in fs), fs, 'TỒN KHO ' + os.path.basename(sub)))
+    return sorted(sets, key=lambda s: (s[0], s[1]))
+
+def doc_kho(files, out_pkl):
+    """Đọc bộ file tồn kho vào 1 pickle. File chỉ có 1 sheet thì đặt tên sheet = tên file
+    (để nhận ra file Nhập / Xuất / Tồn theo chữ trong tên file)."""
+    out = {}
+    for f in files:
+        stem = os.path.splitext(os.path.basename(f))[0]
+        if is_html(f): sh = html_sheets(f); log('Đọc', os.path.basename(f), '(HTML) →', len(sh['Sheet1']), 'dòng')
+        else: sh = to_sheets(f, os.path.join(TMP, 'kho_tmp.pkl'))
+        if len(sh) == 1: out[stem] = list(sh.values())[0]
+        else:
+            for k, v in sh.items(): out[k if k not in out else stem + ' · ' + k] = v
+    pickle.dump(out, open(out_pkl, 'wb'))
     return out
 
 def tom_tat(D):
@@ -140,21 +188,21 @@ def doc_viec(cfg):
     return out
 
 def main():
-    cut = files_in('1_CUTTING'); kho = files_in('2_TON_KHO'); nes = files_in('3_NESTING'); cfg = files_in('4_CAU_HINH')
+    cut = files_in('1_CUTTING'); kho = kho_sets(); nes = files_in('3_NESTING'); cfg = files_in('4_CAU_HINH')
     if not cut: sys.exit('THIẾU file Cutting trong du_lieu/1_CUTTING')
     if not kho: sys.exit('THIẾU file tồn kho trong du_lieu/2_TON_KHO')
-    f_cut, f_kho = cut[-1], kho[-1]
-    log('File Cutting:', os.path.basename(f_cut)); log('File tồn kho:', os.path.basename(f_kho))
+    f_cut, (d_kho, _, f_khos, ten_kho) = cut[-1], kho[-1]
+    log('File Cutting:', os.path.basename(f_cut)); log('File tồn kho:', ten_kho, '←', ', '.join(os.path.basename(f) for f in f_khos))
     # Ngày báo cáo = ngày mới nhất trong tên file Cutting / tồn kho; không có ngày trong tên thì lấy hôm nay (giờ VN)
     now = datetime.datetime.utcnow() + datetime.timedelta(hours=7)
-    d_cut, d_kho = name_date(f_cut), name_date(f_kho)
+    d_cut = name_date(f_cut)
     ds = [d for d in (d_cut, d_kho) if d and d <= now.date()]
     ngay = max(ds) if ds else now.date()
     os.environ.update(NGAY_CUTTING=str(d_cut or ''), NGAY_KHO=str(d_kho or ''))
     if d_cut and d_kho and d_cut != d_kho: log(f'Lưu ý: file Cutting ngày {d_cut:%d/%m}, file tồn kho ngày {d_kho:%d/%m} – phần kho tính theo ngày {d_kho:%d/%m}')
     log('Ngày báo cáo:', ngay)
     to_sheets(f_cut, os.path.join(CC, 'sheets.pkl'), SHEETS_CUTTING)
-    to_sheets(f_kho, os.path.join(CC, 'kho', 'sheets.pkl'))
+    doc_kho(f_khos, os.path.join(CC, 'kho', 'sheets.pkl'))
     nfiles = []
     NES_OK = []
     for i, f in enumerate(nes):
@@ -167,7 +215,7 @@ def main():
             log('Bỏ qua', os.path.basename(f), '- không có sheet "Phieu vat tu" (không phải file nesting)'); continue
         nfiles.append([p, os.path.splitext(os.path.basename(f))[0]])
     os.environ.update(NGAY_BAO_CAO=str(ngay), NESTING_FILES=json.dumps(nfiles, ensure_ascii=False),
-                      FILE_CUTTING=os.path.splitext(os.path.basename(f_cut))[0], FILE_KHO=os.path.splitext(os.path.basename(f_kho))[0],
+                      FILE_CUTTING=os.path.splitext(os.path.basename(f_cut))[0], FILE_KHO=ten_kho,
                       OUT_JSON=os.path.join(TMP, 'data.json'), OUT_LOG=os.path.join(TMP, 'clean_log.pkl'),
                       OUT_CT=os.path.join(ROOT, 'chi_tiet'))
     cfg_map = [f for f in cfg if not os.path.basename(f).upper().startswith('VIEC_LINK')]
