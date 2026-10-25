@@ -34,7 +34,7 @@ def xuat():
     s=_find(['XUẤT'],['NHẬP']); df=_by_header(d[s],[('ngay',('NGÀY',)),('ma',('MÃ VẬT TƯ','MÃ')),('ten',('TÊN VẬT TƯ','TÊN')),('qc',('QUY CÁCH',)),('bp',('BỘ PHẬN NHẬN','BỘ PHẬN')),('kl',('K.LƯỢNG XUẤT (KG)','K.LƯỢNG','KHỐI LƯỢNG')),('dvt',DV),('sl',('S.LƯỢNG','SỐ LƯỢNG')),('dvt2',DV2),('du_an',('DỰ ÁN',))],s)
     df['xrow']=df.index+2; df['kl']=num(df.kl); df['sl']=num(df.sl); df['ngay_dt']=pd.to_datetime(df.ngay,format='%m/%d/%Y',errors='coerce'); return df
 def ton():
-    s=_find(['TỒN'],['NHẬP']); df=_by_header(d[s],[('nhom',('PHÂN NHÓM','NHÓM')),('ma',('MÃ VẬT TƯ','MÃ')),('ten',('TÊN VẬT TƯ','TÊN')),('qc',('QUY CÁCH (BATCH)','QUY CÁCH')),('kl',('KHỐI LƯỢNG TỒN (KG)','KHỐI LƯỢNG','K.LƯỢNG')),('dvt',DV),('sl',('S.LƯỢNG','SỐ LƯỢNG')),('dvt2',DV2),('du_an',('DỰ ÁN',))],s)
+    s=_find(['TỒN'],['NHẬP']); df=_by_header(d[s],[('nhom',('PHÂN NHÓM','NHÓM')),('ma',('MÃ VẬT TƯ','MÃ')),('ten',('TÊN VẬT TƯ','TÊN')),('qc',('QUY CÁCH (BATCH)','QUY CÁCH','BATCH')),('kl',('KHỐI LƯỢNG TỒN (KG)','KHỐI LƯỢNG','K.LƯỢNG')),('dvt',DV),('sl',('S.LƯỢNG','SỐ LƯỢNG')),('dvt2',DV2),('du_an',('DỰ ÁN',))],s)
     df['xrow']=df.index+2; df['kl']=num(df.kl); df['sl']=num(df.sl); return df
 
 # ================= FILE TỒN KHO DẠNG SAP (Google Sheet "THEO DÕI SĐC - THÉP - THU HỒI") =================
@@ -94,3 +94,18 @@ if IS_SAP:
     def nhap():
         k=['ma','ten','qc','kl','dvt','sl','dvt2','du_an']
         df=pd.concat([_T0[k],_X0[k]],ignore_index=True); df['xrow']=df.index+2; return df
+
+# ================= GỘP TÊN DỰ ÁN KHO bị đổi giữa các kỳ (áp dụng cho mọi loại file tồn kho) =================
+KHO_ALIAS={'XK THREE (3) SETS RMG GANTRY CRANE':'DG XK THREE (3) SETS RMG GANTRY CRANE','DG XK HSC':'DG XK STRUCTURE HSC PROJECT',
+ 'DG TN CAO TỐC VIN':'CAO TỐC VIN'}
+def kho_alias(s):
+    if not isinstance(s,str): return s
+    s=re.sub(r'\s+',' ',s.replace('\\_','_')).strip()
+    m=re.match(r'^(?:VT|NS) (TN|XK) (.+)$',s)                 # "VT TN ..." / "NS TN ..." = cùng dự án với "DG TN ..."
+    if m: s=f'DG {m.group(1)} {m.group(2)}'
+    return KHO_ALIAS.get(s,s)
+_nhap0,_xuat0,_ton0=nhap,xuat,ton
+def _al(df): df['du_an']=df.du_an.map(kho_alias); return df
+def nhap(): return _al(_nhap0())
+def xuat(): return _al(_xuat0())
+def ton(): return _al(_ton0())
