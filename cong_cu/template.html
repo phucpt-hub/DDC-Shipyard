@@ -421,7 +421,7 @@ const BUCK=[['≤ 7 ngày',0,7],['8–14 ngày',8,14],['15–30 ngày',15,30],['
 const bucketOf=a=>a==null?null:BUCK.findIndex(b=>a>=b[1]&&a<=b[2]);
 const kprojs=(()=>{const seen=new Set();return P.filter(p=>p.kho&&!seen.has(p.kho.name)&&seen.add(p.kho.name))})();
 /* tên dự án kho dễ đọc: bỏ tiền tố DG TN / DG XK / VT, viết hoa chữ đầu */
-const KHO_TEN={'DG TN CẦU AN BIÊN (CC-S1 MEKONG)':'Cầu An Biên','DG TN NÚI TUYẾT':'Núi Tuyết','VT ĐẦU TƯ VŨNG TÀU - ĐT MỚI & MỞ RỘNG':'Đầu tư NM Vũng Tàu','DG TN SÂN BAY PHÚ QUỐC':'Sân bay Phú Quốc'};
+const KHO_TEN={'DG TN CẦU AN BIÊN (CC-S1 MEKONG)':'Cầu An Biên','DG TN NÚI TUYẾT':'Núi Tuyết','VT ĐẦU TƯ VŨNG TÀU - ĐT MỚI & MỞ RỘNG':'Đầu tư NM Vũng Tàu','DG TN SÂN BAY PHÚ QUỐC':'Sân bay PQ (chưa tách)'};
 const khoTen=n=>KHO_TEN[n]||String(n).replace(/^(DG|VT|NS|D2)\s+(TN|XK)\s+/,'').toLowerCase().replace(/(^|[\s(\-\/])(\S)/g,(m,a,b)=>a+b.toUpperCase());
 /* dự án kho còn tồn nhưng chưa có lệnh cắt trong file Cutting: vẫn hiện trong biểu đồ và bảng cân đối kho */
 const kxo=(D.kho_only||[]).filter(r=>r.t>0.05).map(r=>{const KC=D.kho_ct||{};const s=(k)=>((KC[k]||{})[r.k]||[]).reduce((a,x)=>a+(x[2]||0),0);return {id:null,_ko:1,name:r.k,kho:{name:r.k,shared:[],nhap:s('nhap'),xuat:s('xuat'),ton:r.t,need:0,own:0,common:0,buy:0,tandung:0}}});
@@ -810,7 +810,7 @@ V.th={name:'Thép & tồn kho',title:'Tồn kho và cân đối thép',ico:'<pat
      {h:'Nhập (t)',n:1,f:p=>T(p.kho.nhap),s:p=>p.kho.nhap},{h:'Xuất (t)',n:1,f:p=>T(p.kho.xuat),s:p=>p.kho.xuat},{h:'Tồn (t)',n:1,f:p=>T(p.kho.ton),s:p=>p.kho.ton},
      {h:'Cần (t)',n:1,f:p=>T(p.kho.need),s:p=>p.kho.need},{h:'Từ tồn DA',n:1,f:p=>T(p.kho.own),s:p=>p.kho.own},{h:'Kho chung',n:1,f:p=>T(p.kho.common),s:p=>p.kho.common},
      {h:'Phải mua',n:1,f:p=>p.kho.buy>0.05?`<b style="color:var(--bad)">${T(p.kho.buy)}</b>`:'0,0',s:p=>p.kho.buy},{h:'Tận dụng (t)',n:1,f:p=>T(p.kho.tandung),s:p=>p.kho.tandung},
-     {h:'',f:p=>p._ko?pill('neu','Chưa có LSX'):p.kho.buy>0.05?pill('bad','Thiếu'):p.kho.common>0.05?pill('warn','Bù Kho chung'):p.kho.need>0.05?pill('good','Đủ'):pill('neu','Không cần'),s:p=>p.kho.buy}],
+     {h:'',f:p=>p._ko?(khoTen(p.name).includes('chưa tách')?pill('warn','Cần tách Facade / GA T2'):pill('neu','Chưa có LSX')):p.kho.buy>0.05?pill('bad','Thiếu'):p.kho.common>0.05?pill('warn','Bù Kho chung'):p.kho.need>0.05?pill('good','Đủ'):pill('neu','Không cần'),s:p=>p.kho.buy}],
      kprojs.map(p=>({...p,_id:p.id})).concat(kxo.map(p=>({...p,_drill:'ton|'+p.kho.name}))).sort((a,b)=>b.kho.buy-a.kho.buy||b.kho.ton-a.kho.ton),{click:1,foot:['Tổng',T(D.kho.nhap),T(D.kho.xuat),T(D.kho.ton),T(b.need),T(b.own),T(b.common),T(b.buy),'','']})}
    <p class="note">Tổng nhập/xuất/tồn ở dòng cuối gồm cả Kho chung, BRAVO và dự án không có lệnh cắt. Công trình chưa map kho: ${D.nomap.map(esc).join(', ')||'không'}.</p></section>`;}};
 
