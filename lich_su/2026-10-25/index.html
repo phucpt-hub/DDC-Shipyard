@@ -420,6 +420,9 @@ const onMay=(l,m)=>!m||(l.may||'').split(/\s*,\s*/).includes(m);
 const BUCK=[['≤ 7 ngày',0,7],['8–14 ngày',8,14],['15–30 ngày',15,30],['31–60 ngày',31,60],['> 60 ngày',61,1e9]];
 const bucketOf=a=>a==null?null:BUCK.findIndex(b=>a>=b[1]&&a<=b[2]);
 const kprojs=(()=>{const seen=new Set();return P.filter(p=>p.kho&&!seen.has(p.kho.name)&&seen.add(p.kho.name))})();
+/* tên dự án kho dễ đọc: bỏ tiền tố DG TN / DG XK / VT, viết hoa chữ đầu */
+const KHO_TEN={'DG TN CẦU AN BIÊN (CC-S1 MEKONG)':'Cầu An Biên','DG TN NÚI TUYẾT':'Núi Tuyết','VT ĐẦU TƯ VŨNG TÀU - ĐT MỚI & MỞ RỘNG':'Đầu tư NM Vũng Tàu','DG TN SÂN BAY PHÚ QUỐC':'Sân bay Phú Quốc'};
+const khoTen=n=>KHO_TEN[n]||String(n).replace(/^(DG|VT|NS|D2)\s+(TN|XK)\s+/,'').toLowerCase().replace(/(^|[\s(\-\/])(\S)/g,(m,a,b)=>a+b.toUpperCase());
 /* dự án kho còn tồn nhưng chưa có lệnh cắt trong file Cutting: vẫn hiện trong biểu đồ và bảng cân đối kho */
 const kxo=(D.kho_only||[]).filter(r=>r.t>0.05).map(r=>{const KC=D.kho_ct||{};const s=(k)=>((KC[k]||{})[r.k]||[]).reduce((a,x)=>a+(x[2]||0),0);return {id:null,_ko:1,name:r.k,kho:{name:r.k,shared:[],nhap:s('nhap'),xuat:s('xuat'),ton:r.t,need:0,own:0,common:0,buy:0,tandung:0}}});
 
@@ -799,8 +802,8 @@ V.th={name:'Thép & tồn kho',title:'Tồn kho và cân đối thép',ico:'<pat
     <div class="legend"><span><i class="c-own"></i>Tồn dự án</span><span><i class="c-com"></i>Kho chung/BRAVO</span><span><i class="c-buy"></i>Phải mua</span></div>
     ${hbars(D.bykey.filter(r=>r.need>0.05).map(r=>({drill:'key|'+r.k,label:r.k,segs:[{v:r.own,c:'c-own',n:'Tồn dự án'},{v:r.fc,c:'c-com',n:'Kho chung/BRAVO'},{v:r.buy,c:'c-buy',n:'Phải mua'}],right:r.buy>0.05?`<span style="color:var(--bad)">mua ${T(r.buy)}</span>`:'đủ'})),Math.max(...D.bykey.map(r=>r.need)))}</div>
    <div class="card"><h3>Nhập · xuất · tồn theo dự án kho (tấn)</h3>
-    <div class="legend"><span><i class="c-cut"></i>Đã xuất</span><span><i class="c-own"></i>Còn tồn</span></div>
-    ${hbars(kprojs.concat(kxo).sort((a,b)=>b.kho.nhap-a.kho.nhap).map(p=>({id:p.id,drill:(p._ko?'ton|':'nhap|')+p.kho.name,label:p._ko?p.name+' (chưa có LSX)':p.name,segs:[{v:p.kho.xuat,c:'c-cut',n:'Đã xuất'},{v:p.kho.ton,c:'c-own',n:'Còn tồn'}],right:`<span class="nw">xuất ${T(p.kho.xuat)}</span> <span class="nw sep"><span style="color:var(--good)">tồn</span> <b style="color:var(--ink)">${T(p.kho.ton)}</b></span>`})),Math.max(...kprojs.concat(kxo).map(p=>p.kho.nhap)),{click:1})}
+    <div class="legend"><span><i class="c-cut"></i>Đã xuất</span><span><i class="c-own"></i>Còn tồn</span>${kxo.length?'<span class="muted">* chưa có lệnh cắt</span>':''}</div>
+    ${hbars(kprojs.concat(kxo).filter(p=>p.kho.nhap>0.05||p.kho.ton>0.05).sort((a,b)=>b.kho.nhap-a.kho.nhap).map(p=>({id:p.id,drill:(p._ko?'ton|':'nhap|')+p.kho.name,label:p._ko?khoTen(p.name)+' *':p.kho.shared.length?khoTen(p.kho.name):p.name,segs:[{v:p.kho.xuat,c:'c-cut',n:'Đã xuất'},{v:p.kho.ton,c:'c-own',n:'Còn tồn'}],right:`<span class="nw">xuất ${T(p.kho.xuat)}</span> <span class="nw sep"><span style="color:var(--good)">tồn</span> <b style="color:var(--ink)">${T(p.kho.ton)}</b></span>`})),Math.max(...kprojs.concat(kxo).map(p=>p.kho.nhap)),{click:1})}
     </div></section>
   <section>${secH('Cân đối theo dự án kho','Nhu cầu = nesting chưa cắt trong file Cutting, quy ra phôi nguyên khổ')}
    ${table('t-kb',[{h:'Dự án kho',f:p=>`<b>${esc(p.kho.name)}</b>${p.kho.shared.length?`<br><span style="font-size:11.5px;color:var(--muted)">dùng chung: ${esc(p.name)}, ${p.kho.shared.map(esc).join(', ')}</span>`:''}`,s:p=>p.kho.name},
