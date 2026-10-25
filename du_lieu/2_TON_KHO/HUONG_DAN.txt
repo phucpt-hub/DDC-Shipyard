@@ -1,3 +1,8 @@
-Tải lên đây file tồn kho, đặt tên có ngày: TỒN KHO dd.mm.xlsx (vd TỒN KHO 30.09.xlsx)
-Ngày trong tên file = ngày của báo cáo.
-Nên xóa file ngày cũ sau khi tải file mới (báo cáo cũ vẫn giữ trong lich_su).
+CẬP NHẬT TỒN KHO BẰNG TAY
+Cách 1 (đang dùng): tạo thư mục con đặt tên theo ngày số liệu, vd 2_TON_KHO\25.10.2026,
+  chép vào đó 3 file xuất từ phần mềm: TỔNG THÉP NHẬP (TỒN + XUẤT) / TỔNG THÉP XUẤT / TỔNG TỒN THÉP HIỆN TẠI
+  (giữ chữ NHẬP, XUẤT, TỒN trong tên file; đuôi .xls dạng HTML hay .xlsx đều được).
+Cách 2: 1 file Excel có đủ 3 sheet Nhập / Xuất / Tồn, hoặc file SAP "THEO DÕI SĐC - THÉP - THU HỒI"
+  tải từ Google Sheet (Tệp > Tải xuống > .xlsx), đặt thẳng trong 2_TON_KHO, tên có ngày, vd TON KHO 25.10.2026.xlsx
+Báo cáo tự lấy bộ có ngày mới nhất (ngày trong tên thư mục / tên file; không có ngày thì lấy ngày tải lên).
+Thư mục ngày cũ có thể giữ lại hoặc xóa – không ảnh hưởng.
