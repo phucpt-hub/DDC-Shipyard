@@ -41,7 +41,6 @@ def ton():
 # Sheet "Tổng hợp nhập - xuất - tồn" = tồn hiện tại theo dự án/lô · sheet "lệnh xuất" = các lần xuất (221 xuất cho dự án, 261 xuất cho LSX)
 # Đổi về đúng 3 bảng NHẬP / XUẤT / TỒN như file tồn kho cũ để phần tính cân đối giữ nguyên. NHẬP = TỒN + XUẤT (như file cũ).
 SAP_DU_AN={'':'Kho Chung','DG TN SÂN VẬN ĐỘNG HÙNG VƯƠNG':'DG TN SVĐ HÙNG VƯƠNG','DG TN APEC S2 KẾT CẤU':'DG TN APEC S2 (Tổng Hợp)',
- 'DG TN FACADE SÂN BAY PHÚ QUỐC':'DG TN SÂN BAY PHÚ QUỐC','DG TN GA T2 CẢNG HÀNG KHÔNG QT PHÚ QUỐC':'DG TN SÂN BAY PHÚ QUỐC',
  'DG XK MOMBASA PORT DEVELOPMENT PROJECT':'DG XK MOMBASA PORT','DG TN CAO TỐC VIN':'CAO TỐC VIN'}
 def sap_du_an(s):
     s=re.sub(r'\s+',' ',str(s).replace('\\_','_').replace('\\*','*')).strip()
