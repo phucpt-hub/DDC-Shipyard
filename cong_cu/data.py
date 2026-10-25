@@ -203,6 +203,7 @@ m_all=V[V.d_cut_dt.notna()].groupby('m_cut').kl_tong.sum(); b_all=V[V.d_bg_dt.no
 mach_all=V[V.done_cut>0].groupby(V.may.fillna('(trống)')).done_cut.sum().sort_values(ascending=False)
 bal=dict(need=t_(D.need.sum()),own=t_(D.from_own.sum()),common=t_(D.from_common.sum()),buy=t_(D.buy.sum()))
 bykey=D.groupby('key')[['need','from_own','from_common','buy']].sum().sort_values('buy',ascending=False)
+_LK=D.groupby('key').loai.first().to_dict()   # PL = thép tấm, còn lại = thép hình
 nomap=sorted(set(V.cong_trinh)-set(C2I))
 kho_only=T[~T.du_an.isin(set(C2I.values())|{'Kho Chung','TỒN BRAVO'})].groupby('du_an').kl.sum().sort_values(ascending=False)
 errs=FX.assign(kl=lambda x: V.kl_tong.values[x.row]).groupby(['ma','quy_tac','nhom'],sort=False).agg(n=('row','size'),kl=('kl','sum')).reset_index()
@@ -247,7 +248,7 @@ _base=round(float(np.mean([m_all.get(m,0) for m in _full]))/1000/100)*100 if _fu
 OUT=dict(date=REPORT_DATE,months=months,projects=PR,tot=tot,bal=bal,
   kho=dict(nhap=t_(N.kl.sum()),xuat=t_(X.kl.sum()),ton=t_(T.kl.sum()),common=t_(T[T.du_an=='Kho Chung'].kl.sum()),bravo=t_(T[T.du_an=='TỒN BRAVO'].kl.sum())),
   m_cut=[t_(m_all.get(m,0)) for m in months],m_bg=[t_(b_all.get(m,0)) for m in months],mach=[dict(k=k,t=t_(v)) for k,v in mach_all.items()],
-  bykey=[dict(k=k,need=t_(r.need),own=t_(r.from_own),fc=t_(r.from_common),buy=t_(r.buy)) for k,r in bykey.head(14).iterrows()],
+  bykey=[dict(k=k,loai=_LK.get(k),need=t_(r.need),own=t_(r.from_own),fc=t_(r.from_common),buy=t_(r.buy)) for k,r in bykey.iterrows() if r.need>0.0005],
   kho_only=[dict(k=k,t=t_(v)) for k,v in kho_only.items()],nomap=nomap,
   fix=[dict(c=r.ma,d=r.quy_tac,g=r.nhom,n=int(r.n),t=t_(r.kl)) for r in errs.itertuples()],
   files=dict(d_cut=os.environ.get('NGAY_CUTTING',''),d_kho=os.environ.get('NGAY_KHO',''),cutting=os.environ.get('FILE_CUTTING','DDC_SHIPYARD - KHGC - SC'),kho=os.environ.get('FILE_KHO','TỒN KHO'),nesting=[f for v in NES.values() for _,f in v],nes_skip=NES_SKIP))
