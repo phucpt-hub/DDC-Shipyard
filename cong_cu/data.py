@@ -35,7 +35,8 @@ def short(ct):
     s=re.sub(r'^[\w.]+-?\d+\s+','',ct) if re.match(r'^\d',ct) or ct.startswith('TCTN') else ct
     s=s.replace('\\_','').replace('DGRP ','').replace('DG XK ','').replace('DG TN ','').replace('DG ','').strip(' _')
     return s.title() if s.isupper() else s
-NAMES={'10626-051':'SVĐ Hùng Vương','10725-006':'Mombasa Port','10626-010':'Facade Sân bay Phú Quốc','10626-048':'APEC S2','10625-036':'APEC S3','10625-030':'Ga T2 Phú Quốc','10625-031':'Cầu đi bộ sông Sài Gòn','10726-141':'Shiplift Úc','10626-130':'Quảng trường TTTP & TTHC','10726-075':'RMG Crane','10626-022':'Núi Chứa Chan','TCTN.DNS.26.004':'Cao tốc VIN','10726-040':'BPI HO Redev','10726-049':'HSC Mockup Casing','TCTN.DVT.26.001':'ADAMAS','TCTN.DVT.26.002':'Tàu dầu H1033','10626-125':'Cầu Cỏ May'}
+NAMES={'10626-051':'SVĐ Hùng Vương','10725-006':'Mombasa Port','10626-010':'Facade Sân bay Phú Quốc','10626-048':'APEC S2','10625-036':'APEC S3','10625-030':'Ga T2 Phú Quốc','10625-031':'Cầu đi bộ sông Sài Gòn','10726-141':'Shiplift Úc','10626-130':'Quảng trường TTTP & TTHC','10726-075':'RMG Crane','10626-022':'Núi Chứa Chan','TCTN.DNS.26.004':'Cao tốc VIN','10726-040':'BPI HO Redev','10726-049':'HSC Mockup Casing','TCTN.DVT.26.001':'ADAMAS','TCTN.DVT.26.002':'Tàu dầu H1033','10626-125':'Cầu Cỏ May','10626-155':'Núi Tuyết'}
+_short0=short
 def short(ct):
     c=ct.split(' ')[0]
     return NAMES.get(c,ct.replace('\\_','').strip())
@@ -112,10 +113,14 @@ def nesting_block(ct,files,pk):
         if pd.notna(bv) and abs(bv)>1: CLEAN_LOG.append(dict(file=r.srcfile,sheet='Phieu vat tu',row=int(r.xrow),obj=str(r.nesting),du_an=ct,cot='WEIGHT',cu=f'{r.weight:.2f}',moi=f'lệch {bv:+.2f} kg',ma='N03',quy_tac='Weight ≠ thành phẩm + remain + phế + tiêu hao (lệch > 1 kg) → giữ nguyên, cần phòng Nesting kiểm tra',nhom='Cần xác nhận',kl=float(r.weight or 0)))
     Cc=C[C.cong_trinh==ct].copy(); Cc['nk']=norm(Cc.nesting); Pn['nk']=norm(Pn.nesting)
     cs=Cc.groupby('nk').agg(n=('cut','size'),nc=('cut','sum'))
-    def st(nk):
-        if nk not in cs.index: return 'Chưa nạp Cutting'
+    lsx_ok=Cc.groupby(Cc.lsx.astype(str)).cut.all().to_dict()   # LSX đã cắt xong 100% trong Cutting
+    def st(nk,lsx):
+        if nk not in cs.index: return 'Đã cắt hết' if lsx_ok.get(str(lsx),False) else 'Chưa nạp Cutting'
         r=cs.loc[nk]; return 'Đã cắt hết' if r.nc==r.n else ('Chưa cắt' if r.nc==0 else 'Cắt dở')
-    Pn['cut_st']=Pn.nk.map(st); Pn['mac']=Pn.mac.astype(str).str.upper().str.replace(' ','')
+    Pn['cut_st']=[st(a,b) for a,b in zip(Pn.nk,Pn.lsx)]
+    for r in Pn[(~Pn.nk.isin(cs.index))&(Pn.cut_st=='Đã cắt hết')].itertuples():
+        CLEAN_LOG.append(dict(file=r.srcfile,sheet='Phieu vat tu',row=int(r.xrow),obj=str(r.nesting),du_an=ct,cot='NESTING NO',cu=str(r.nesting),moi='coi là đã cắt',ma='N04',quy_tac='Số nesting không có trong Cutting nhưng LSX của nó đã cắt xong 100% → coi là đã cắt (không tính nhu cầu thép)',nhom='Đã chuẩn hóa',kl=float(r.weight or 0)))
+    Pn['mac']=Pn.mac.astype(str).str.upper().str.replace(' ','')
     Pn['vao']=np.where(Pn.nguon=='NEWPLATE','Tấm mới',np.where(Pn.nguon=='TAN DUNG','Tận dụng','Remain'))
     s=lambda c: float(Pn[c].fillna(0).sum())
     new=float(Pn.loc[Pn.vao=='Tấm mới','weight'].sum()); rin=float(Pn.loc[Pn.vao!='Tấm mới','weight'].sum())
@@ -194,7 +199,7 @@ for p in PR:
         m=sum(x['t'] or 0 for x in p['nes']['lsx_not_in_cut'])
         if m>0.5: a.append(('bad',f"{len(p['nes']['lsx_not_in_cut'])} LSX có trong file nesting nhưng chưa nạp vào Cutting ({m:,.1f} t)"))
         b=[x for x in p['nes']['alloc'] if x['k']=='Phải mua']
-        if b: a.append(('bad',f"Nesting: {b[0]['n']} tấm mới chưa cắt không có phôi trong kho ({b[0]['t']:,.1f} t)"))
+        if b and b[0]['t']>0.5: a.append(('warn',f"Đối chiếu khổ tấm nesting: {b[0]['n']} tấm chưa cắt không có khổ phù hợp trong kho ({b[0]['t']:,.1f} t)"))
     if p['pc'] is not None and p['pc']<0.999 and p['last_cut'] and p['last_cut']<'2026-08-28': a.append(('warn',f"Còn {p['req']-p['cut']:,.1f} t chưa cắt, lần cắt cuối {p['last_cut']}"))
     p['alerts']=[dict(s=s,m=m) for s,m in a]
 # totals
@@ -202,6 +207,9 @@ tot=dict(kl=sum(p['kl'] for p in PR),req=sum(p['req'] for p in PR),cut=sum(p['cu
 m_all=V[V.d_cut_dt.notna()].groupby('m_cut').kl_tong.sum(); b_all=V[V.d_bg_dt.notna()].groupby('m_bg').kl_tong.sum()
 mach_all=V[V.done_cut>0].groupby(V.may.fillna('(trống)')).done_cut.sum().sort_values(ascending=False)
 bal=dict(need=t_(D.need.sum()),own=t_(D.from_own.sum()),common=t_(D.from_common.sum()),buy=t_(D.buy.sum()))
+_Dn=D[D.proj_kho=='(chưa map)']
+kho_nomap=dict(projects=sorted({short(c) for c in DEM.loc[DEM.proj_kho=='(chưa map)','cong_trinh'].dropna().unique()}),need=t_(_Dn.need.sum()),own=0.0,common=t_(_Dn.from_common.sum()),buy=t_(_Dn.buy.sum()),
+  bal=[dict(k=r.key,loai=r.loai,n=int(r.n),need=t_(r.need),own=0.0,fo=0.0,fc=t_(r.from_common),buy=t_(r.buy)) for r in _Dn.sort_values('need',ascending=False).itertuples()]) if len(_Dn) else None
 bykey=D.groupby('key')[['need','from_own','from_common','buy']].sum().sort_values('buy',ascending=False)
 _LK=D.groupby('key').loai.first().to_dict()   # PL = thép tấm, còn lại = thép hình
 nomap=sorted(set(V.cong_trinh)-set(C2I))
@@ -249,7 +257,7 @@ OUT=dict(date=REPORT_DATE,months=months,projects=PR,tot=tot,bal=bal,
   kho=dict(nhap=t_(N.kl.sum()),xuat=t_(X.kl.sum()),ton=t_(T.kl.sum()),common=t_(T[T.du_an=='Kho Chung'].kl.sum()),bravo=t_(T[T.du_an=='TỒN BRAVO'].kl.sum())),
   m_cut=[t_(m_all.get(m,0)) for m in months],m_bg=[t_(b_all.get(m,0)) for m in months],mach=[dict(k=k,t=t_(v)) for k,v in mach_all.items()],
   bykey=[dict(k=k,loai=_LK.get(k),need=t_(r.need),own=t_(r.from_own),fc=t_(r.from_common),buy=t_(r.buy)) for k,r in bykey.iterrows() if r.need>0.0005],
-  kho_only=[dict(k=k,t=t_(v)) for k,v in kho_only.items()],nomap=nomap,
+  kho_only=[dict(k=k,t=t_(v)) for k,v in kho_only.items()],nomap=nomap,kho_nomap=kho_nomap,
   fix=[dict(c=r.ma,d=r.quy_tac,g=r.nhom,n=int(r.n),t=t_(r.kl)) for r in errs.itertuples()],
   files=dict(d_cut=os.environ.get('NGAY_CUTTING',''),d_kho=os.environ.get('NGAY_KHO',''),cutting=os.environ.get('FILE_CUTTING','DDC_SHIPYARD - KHGC - SC'),kho=os.environ.get('FILE_KHO','TỒN KHO'),nesting=[f for v in NES.values() for _,f in v],nes_skip=NES_SKIP))
 _CL=pd.DataFrame(CLEAN_LOG)
