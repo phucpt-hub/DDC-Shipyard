@@ -801,6 +801,10 @@ const kpiD=(kind,...a)=>kpi(...a).replace('<div class="kpi ',`<div role="button"
 
 /* ---------- Thép & tồn kho: chọn loại thép (Tất cả / Thép tấm / Thép hình) ---------- */
 let THL='all';
+const THF={p:'',k:''};   /* lọc trang Thép: dự án (id) và kho (tên dự án kho trong file tồn kho) */
+const POOLK=['Kho Chung','TỒN BRAVO'];
+const khoNames=()=>{const o=D.kho_ct||{},s=new Set();['nhap','xuat','ton'].forEach(k=>Object.keys(o[k]||{}).forEach(n=>s.add(n)));return [...s].sort((a,b)=>(POOLK.includes(b)-POOLK.includes(a))||khoTen(a).localeCompare(khoTen(b),'vi'))};
+const khoLab=n=>n==='Kho Chung'?'Kho chung':n==='TỒN BRAVO'?'BRAVO':khoTen(n);
 const LOAI_TH={all:'Tất cả',tam:'Thép tấm',hinh:'Thép hình'};
 const tenTam=t=>/^thép tấm/i.test(String(t||''));
 const keyTam=r=>r.loai?r.loai==='PL':/^PL/.test(r.k);
@@ -816,15 +820,21 @@ function keyBars(L,lim){const R=L.filter(r=>r.need>0.05).sort((a,b)=>b.buy-a.buy
   return R.length?hbars(top.map(r=>({drill:'key|'+r.k,label:r.k,segs:[{v:r.own,c:'c-own',n:'Tồn dự án'},{v:r.fc,c:'c-com',n:'Kho chung/BRAVO'},{v:r.buy,c:'c-buy',n:'Phải mua'}],right:r.buy>0.05?`<span style="color:var(--bad)">mua ${T(r.buy)}</span>`:'đủ'})),mx)+(R.length>lim?`<p class="note">và ${R.length-lim} quy cách khác (bấm ô "Phải mua" ở trên để xem hết)</p>`:''):'<p class="empty">Không có nhu cầu.</p>'}
 V.th={name:'Thép & tồn kho',title:'Tồn kho và cân đối thép',ico:'<path d="M3 7l9-4 9 4-9 4-9-4zM3 12l9 4 9-4M3 17l9 4 9-4"/>',render(){
   const l=THL,BK=D.bykey.filter(r=>inL(l,keyTam(r)));
-  const k=l==='all'?D.kho:{nhap:khoTot('nhap',l),xuat:khoTot('xuat',l),ton:khoTot('ton',l),common:khoSum('ton','Kho Chung',l),bravo:khoSum('ton','TỒN BRAVO',l)};
-  const b=l==='all'?D.bal:{need:sum(BK,r=>r.need),own:sum(BK,r=>r.own),common:sum(BK,r=>r.fc),buy:sum(BK,r=>r.buy)};
-  const tl=l==='all'?'':' · '+LOAI_TH[l].toLowerCase();
+  const SP=THF.p?kprojs.concat(P).find(x=>x.id===THF.p):null,SK=THF.k||(SP&&SP.kho?SP.kho.name:''),scoped=!!(SP||SK),isPool=POOLK.includes(SK);
+  const SPK=SP||(SK&&!isPool?kprojs.find(x=>x.kho.name===SK):null);   /* dự án (có cân đối) ứng với kho đang chọn */
+  const sb=SPK?balOf(SPK,l):null;
+  const k=scoped?{nhap:khoSum('nhap',SK,l),xuat:khoSum('xuat',SK,l),ton:khoSum('ton',SK,l),common:isPool?0:khoSum('ton','Kho Chung',l),bravo:isPool?0:khoSum('ton','TỒN BRAVO',l)}:l==='all'?D.kho:{nhap:khoTot('nhap',l),xuat:khoTot('xuat',l),ton:khoTot('ton',l),common:khoSum('ton','Kho Chung',l),bravo:khoSum('ton','TỒN BRAVO',l)};
+  const b=scoped?(sb?{need:sb.need,own:sb.fo,common:sb.fc,buy:sb.buy}:{need:0,own:0,common:0,buy:0}):l==='all'?D.bal:{need:sum(BK,r=>r.need),own:sum(BK,r=>r.own),common:sum(BK,r=>r.fc),buy:sum(BK,r=>r.buy)};
+  const tl=(l==='all'?'':' · '+LOAI_TH[l].toLowerCase())+(scoped?' · '+esc(SP?SP.name:khoLab(SK)):'');
+  const pOpt=kprojs.concat(P.filter(x=>x.kho&&!kprojs.includes(x))).sort((a,b)=>(a._nm?1:0)-(b._nm?1:0)||a.name.localeCompare(b.name,'vi')).map(x=>`<option value="${esc(x.id)}" ${THF.p===x.id?'selected':''}>${esc(x.name)}</option>`).join('');
+  const kOpt=khoNames().map(n=>`<option value="${esc(n)}" ${SK===n?'selected':''}>${esc(khoLab(n))}${KCT.map&&KCT.map[n]?'':POOLK.includes(n)?'':' *'}</option>`).join('');
   const AL=kprojs.concat(kxo).map(p=>({p,nhap:khoSum('nhap',p.kho.name,l),xuat:khoSum('xuat',p.kho.name,l),ton:khoSum('ton',p.kho.name,l),z:balOf(p,l),
      tt:khoSum('ton',p.kho.name,'tam'),th:khoSum('ton',p.kho.name,'hinh'),zt:balOf(p,'tam'),zh:balOf(p,'hinh')}));
+  const keep=x=>isPool?(x.zt.fc+x.zh.fc>0.05):(SP&&SP._nm?!!x.p._nm:x.p.kho.name===SK),ALs=scoped?AL.filter(keep):AL;
   const drw=x=>x.p._nm?{_drill:'bal|'+x.p.id}:x.p._ko?{_drill:'ton|'+x.p.kho.name}:{_id:x.p.id};
   const nameCol={h:'Dự án kho',f:x=>x.p._nm?`<b>Dự án chưa gắn kho</b><br><span style="font-size:11.5px;color:var(--muted)">${x.p.kho.shared.map(esc).join(', ')}</span>`:`<b>${esc(x.p.kho.name)}</b>${x.p.kho.shared.length?`<br><span style="font-size:11.5px;color:var(--muted)">dùng chung: ${esc(x.p.name)}, ${x.p.kho.shared.map(esc).join(', ')}</span>`:''}`,s:x=>x.p.kho.name};
   let tbl;
-  if(l==='all'){
+  if(l==='all'&&!scoped){
     const R=AL.filter(x=>!x.p._ko||x.ton>0.05).map(x=>({...x,...drw(x),buy:x.zt.buy+x.zh.buy})).sort((a,b)=>b.buy-a.buy||(b.tt+b.th)-(a.tt+a.th));
     const g=(h,c)=>({h,n:1,...c});
     tbl=table('t-kb',[nameCol,
@@ -835,30 +845,51 @@ V.th={name:'Thép & tồn kho',title:'Tồn kho và cân đối thép',ico:'<pat
         T(khoTot('ton','hinh')),T(sum(D.bykey.filter(r=>!keyTam(r)),r=>r.need)),T(sum(D.bykey.filter(r=>!keyTam(r)),r=>r.fc)),buyCell(sum(D.bykey.filter(r=>!keyTam(r)),r=>r.buy)),buyCell(b.buy),'']})
       .replace('<thead><tr>','<thead><tr class="grp"><td></td><td colspan="4" class="g-tam">THÉP TẤM</td><td colspan="4" class="g-hinh">THÉP HÌNH</td><td colspan="2"></td></tr><tr>');
   }else{
-    const R=AL.filter(x=>x.nhap>0.05||x.ton>0.05||x.z.need>0.05||(!x.p._ko&&l==='tam')).map(x=>({...x,...drw(x)})).sort((a,b)=>b.z.buy-a.z.buy||b.ton-a.ton);
+    const R=ALs.filter(x=>scoped||x.nhap>0.05||x.ton>0.05||x.z.need>0.05||(!x.p._ko&&l==='tam')).map(x=>({...x,...drw(x)})).sort((a,b)=>b.z.buy-a.z.buy||b.ton-a.ton);
     tbl=table('t-kb',[nameCol,{h:'Nhập (t)',n:1,f:x=>zc(x.nhap),s:x=>x.nhap},{h:'Xuất (t)',n:1,f:x=>zc(x.xuat),s:x=>x.xuat},{h:'Tồn (t)',n:1,f:x=>zc(x.ton),s:x=>x.ton},
       {h:'Cần (t)',n:1,f:x=>zc(x.z.need),s:x=>x.z.need},{h:'Từ tồn DA',n:1,f:x=>zc(x.z.fo),s:x=>x.z.fo},{h:'Kho chung',n:1,f:x=>zc(x.z.fc),s:x=>x.z.fc},{h:'Phải mua',n:1,f:x=>buyCell(x.z.buy),s:x=>x.z.buy}]
       .concat(l==='tam'?[{h:'Tận dụng (t)',n:1,f:x=>zc(x.p.kho.tandung),s:x=>x.p.kho.tandung}]:[]).concat([{h:'',f:x=>stPillKho(x.p,x.z),s:x=>x.z.buy}]),R,
-      {click:1,foot:['<b>Tổng</b>',T(k.nhap),T(k.xuat),T(k.ton),T(b.need),T(b.own),T(b.common),buyCell(b.buy)].concat(l==='tam'?['']:[]).concat([''])});
+      {click:1,foot:scoped?['<b>Tổng</b>',T(sum(R,x=>x.nhap)),T(sum(R,x=>x.xuat)),T(sum(R,x=>x.ton)),T(sum(R,x=>x.z.need)),T(sum(R,x=>x.z.fo)),T(sum(R,x=>x.z.fc)),buyCell(sum(R,x=>x.z.buy))].concat(l==='tam'?['']:[]).concat(['']):['<b>Tổng</b>',T(k.nhap),T(k.xuat),T(k.ton),T(b.need),T(b.own),T(b.common),buyCell(b.buy)].concat(l==='tam'?['']:[]).concat([''])});
   }
   const NX=AL.filter(x=>x.nhap>0.05||x.ton>0.05).sort((a,b)=>b.nhap-a.nhap);
-  return `<section><div class="th-l"><span class="flab">Loại thép</span>${Object.keys(LOAI_TH).map(x=>`<button class="chip th-chip" data-thl="${x}" aria-pressed="${x===l}">${LOAI_TH[x]}</button>`).join('')}
-      <span class="muted th-n">Thép tấm tồn <b>${T(khoTot('ton','tam'))} t</b> · thép hình tồn <b>${T(khoTot('ton','hinh'))} t</b></span></div>
-    <div class="kpis">
-    ${kpiD('nhap','Tổng nhập'+tl,T(k.nhap),'t','từ đầu kỳ, gồm tồn + xuất','dim')}${kpiD('xuat','Đã xuất'+tl,T(k.xuat),'t',PC(k.xuat/(k.nhap||1))+' tổng nhập','',k.xuat/(k.nhap||1))}${kpiD('ton','Tồn hiện tại'+tl,T(k.ton),'t',`Kho chung ${T(k.common)} · BRAVO ${T(k.bravo)}`)}
-    ${kpiD('need','Nhu cầu phôi chờ cắt'+tl,T(b.need),'t','','dim')}${kpiD('own','Đáp ứng từ tồn dự án',T(b.own),'t',PC(b.own/(b.need||1)),'good',b.own/(b.need||1))}${kpiD('buy','Phải mua'+tl,T(b.buy),'t',PC(b.buy/(b.need||1))+' nhu cầu','bad',b.buy/(b.need||1))}</div></section>
-  <section class="grid"><div class="card"><h3>Nhu cầu phôi được đáp ứng từ${tl}</h3>${b.need>0.05?seg100([{n:'Tồn dự án',v:b.own,c:'c-own'},{n:'Kho chung/BRAVO',v:b.common,c:'c-com'},{n:'Phải mua',v:b.buy,c:'c-buy'}]):'<p class="empty">Không có nhu cầu.</p>'}
-    <h3 style="margin-top:16px">Thiếu thép theo quy cách, toàn công ty (tấn)</h3>
+  const TONL=scoped?((KCT.ton||{})[SK]||[]).filter(r=>inL(l,tenTam(r[0]))).slice().sort((a,b)=>b[2]-a[2]):[];
+  const dk=kind=>scoped?(['nhap','xuat','ton'].includes(kind)?kind+'|'+SK:(SPK?'bal|'+SPK.id:'ton|'+SK)):kind;
+  const nmS=SP?SP.name:khoLab(SK);
+  const kpiB=isPool?`${kpiD(dk('ton'),'Cấp cho nhu cầu dự án',T(sum(ALs,x=>x.z.fc)),'t',`${ALs.length} dự án lấy từ Kho chung/BRAVO (gộp 2 kho)`,'dim')}`
+    :scoped&&!SPK?`<div class="kpi dim"><div class="l">Cân đối thép</div><div class="v">–</div><div class="s">Kho này chưa có lệnh cắt (chưa gắn công trình nào)</div></div>`
+    :`${kpiD(dk('need'),'Nhu cầu phôi chờ cắt'+tl,T(b.need),'t','','dim')}${kpiD(dk('own'),'Đáp ứng từ tồn dự án',T(b.own),'t',PC(b.own/(b.need||1)),'good',b.own/(b.need||1))}${kpiD(dk('buy'),'Phải mua'+tl,T(b.buy),'t',PC(b.buy/(b.need||1))+' nhu cầu','bad',b.buy/(b.need||1))}`;
+  const balRows=SPK?((SPK.kho.bal||[]).filter(r=>inL(l,keyTam(r))).map(r=>({...r,own:r.fo}))):isPool?BK.filter(r=>r.fc>0.05).map(r=>({...r,own:0,buy:0,need:r.fc})):[];
+  const left=!scoped?`<h3 style="margin-top:16px">Thiếu thép theo quy cách, toàn công ty (tấn)</h3>
     <div class="legend"><span><i class="c-own"></i>Tồn dự án</span><span><i class="c-com"></i>Kho chung/BRAVO</span><span><i class="c-buy"></i>Phải mua</span></div>
-    ${l==='all'?`<h4 class="th-h4"><i class="g-tam"></i>Thép tấm</h4>${keyBars(D.bykey.filter(r=>keyTam(r)),10)}<h4 class="th-h4"><i class="g-hinh"></i>Thép hình</h4>${keyBars(D.bykey.filter(r=>!keyTam(r)),10)}`:keyBars(BK,20)}</div>
-   <div class="card"><h3>Nhập · xuất · tồn theo dự án kho${tl} (tấn)</h3>
+    ${l==='all'?`<h4 class="th-h4"><i class="g-tam"></i>Thép tấm</h4>${keyBars(D.bykey.filter(r=>keyTam(r)),10)}<h4 class="th-h4"><i class="g-hinh"></i>Thép hình</h4>${keyBars(D.bykey.filter(r=>!keyTam(r)),10)}`:keyBars(BK,20)}`
+    :`<h3 style="margin-top:16px">${isPool?'Kho chung/BRAVO cấp theo quy cách':'Cân đối theo quy cách · '+esc(nmS)} (tấn)</h3>
+    <div class="legend"><span><i class="c-own"></i>Tồn dự án</span><span><i class="c-com"></i>Kho chung/BRAVO</span><span><i class="c-buy"></i>Phải mua</span></div>${balRows.length?keyBars(balRows,20):'<p class="empty">Không có nesting chưa cắt cần thép.</p>'}`;
+  const right=!scoped?`<h3>Nhập · xuất · tồn theo dự án kho${tl} (tấn)</h3>
     <div class="legend"><span><i class="c-cut"></i>Đã xuất</span><span><i class="c-own"></i>Còn tồn</span>${kxo.length?'<span class="muted">* chưa có lệnh cắt</span>':''}</div>
-    ${NX.length?hbars(NX.map(x=>({id:x.p.id,drill:(x.p._ko?'ton|':'nhap|')+x.p.kho.name,label:khoLabel(x.p),segs:[{v:x.xuat,c:'c-cut',n:'Đã xuất'},{v:x.ton,c:'c-own',n:'Còn tồn'}],right:`<span class="nw">xuất ${T(x.xuat)}</span> <span class="nw sep"><span style="color:var(--good)">tồn</span> <b style="color:var(--ink)">${T(x.ton)}</b></span>`})),Math.max(...NX.map(x=>x.nhap)),{click:1}):'<p class="empty">Không có số liệu.</p>'}
+    ${NX.length?hbars(NX.map(x=>({id:x.p.id,drill:(x.p._ko?'ton|':'nhap|')+x.p.kho.name,label:khoLabel(x.p),segs:[{v:x.xuat,c:'c-cut',n:'Đã xuất'},{v:x.ton,c:'c-own',n:'Còn tồn'}],right:`<span class="nw">xuất ${T(x.xuat)}</span> <span class="nw sep"><span style="color:var(--good)">tồn</span> <b style="color:var(--ink)">${T(x.ton)}</b></span>`})),Math.max(...NX.map(x=>x.nhap)),{click:1}):'<p class="empty">Không có số liệu.</p>'}`
+    :`<h3>Tồn kho theo vật tư · ${esc(SK?khoLab(SK):nmS)}${tl&&l!=='all'?' · '+LOAI_TH[l].toLowerCase():''} (tấn)</h3>
+    ${TONL.length?hbars(TONL.slice(0,18).map(r=>({drill:'ton|'+SK,label:r[0]+(r[1]?' · '+r[1]:''),segs:[{v:r[2],c:'c-own',n:'Tồn'}],right:`<b style="color:var(--ink)">${T(r[2])}</b>${r[3]?` <span class="muted">· ${T0(r[3])}</span>`:''}`})),TONL[0][2]):'<p class="empty">Kho không còn tồn'+(l!=='all'?' loại này':'')+'.</p>'}
+    ${TONL.length>18?`<p class="note">và ${TONL.length-18} vật tư khác · <a data-drill="ton|${esc(SK)}">xem hết</a></p>`:''}`;
+  return `<section><div class="th-l"><span class="flab">Loại thép</span>${Object.keys(LOAI_TH).map(x=>`<button class="chip th-chip" data-thl="${x}" aria-pressed="${x===l}">${LOAI_TH[x]}</button>`).join('')}
+      <span class="flab" style="margin-left:10px">Dự án</span><select id="thf-p" style="max-width:220px"><option value="">Tất cả dự án</option>${pOpt}</select>
+      <span class="flab">Kho</span><select id="thf-k" style="max-width:240px"><option value="">Tất cả kho</option>${kOpt}</select>
+      ${scoped?'<button class="chip xoa" id="thf-x">✕ Bỏ lọc</button>':''}
+      <span class="muted th-n">${scoped?`Đang xem: <b>${esc(nmS)}</b>${SK&&SP&&!SP._nm?` · kho <b>${esc(SK)}</b>`:''}`:`Thép tấm tồn <b>${T(khoTot('ton','tam'))} t</b> · thép hình tồn <b>${T(khoTot('ton','hinh'))} t</b>`}</span></div>
+    <div class="kpis">
+    ${kpiD(dk('nhap'),'Tổng nhập'+tl,T(k.nhap),'t','từ đầu kỳ, gồm tồn + xuất','dim')}${kpiD(dk('xuat'),'Đã xuất'+tl,T(k.xuat),'t',PC(k.xuat/(k.nhap||1))+' tổng nhập','',k.xuat/(k.nhap||1))}${kpiD(dk('ton'),'Tồn hiện tại'+tl,T(k.ton),'t',scoped?(TONL.length+' loại vật tư'):`Kho chung ${T(k.common)} · BRAVO ${T(k.bravo)}`)}
+    ${kpiB}</div></section>
+  <section class="grid"><div class="card"><h3>Nhu cầu phôi được đáp ứng từ${tl}</h3>${b.need>0.05?seg100([{n:'Tồn dự án',v:b.own,c:'c-own'},{n:'Kho chung/BRAVO',v:b.common,c:'c-com'},{n:'Phải mua',v:b.buy,c:'c-buy'}]):`<p class="empty">${isPool?'Kho chung/BRAVO không có nhu cầu riêng – xem phần cấp cho dự án bên dưới.':'Không có nhu cầu.'}</p>`}
+    ${left}</div>
+   <div class="card">${right}
     </div></section>
-  <section>${secH('Cân đối theo dự án kho'+tl,'Nhu cầu = nesting chưa cắt trong file Cutting, quy ra phôi nguyên khổ · bấm một dòng để xem chi tiết')}
+  <section>${secH((isPool?'Dự án lấy thép từ Kho chung/BRAVO':'Cân đối theo dự án kho')+tl,'Nhu cầu = nesting chưa cắt trong file Cutting, quy ra phôi nguyên khổ · bấm một dòng để xem chi tiết')}
    ${tbl}
-   <p class="note">Tổng ở dòng cuối gồm cả Kho chung, BRAVO và dự án không có lệnh cắt. Thép hình gồm cả thép ống, hộp, I/H, U/C, L/V, ray, thép đặc. Công trình chưa map kho: ${D.nomap.map(esc).join(', ')||'không'}.</p></section>`;},
- after(){$('view').querySelectorAll('[data-thl]').forEach(bt=>bt.onclick=()=>{THL=bt.dataset.thl;const y=window.scrollY;$('view').innerHTML=V.th.render();sortable($('view'));V.th.after();window.scrollTo(0,y)})}};
+   <p class="note">${scoped?(isPool?'Kho chung và BRAVO được cân đối chung một nguồn; cột Kho chung = phần dự án lấy từ nguồn này. ':''):'Tổng ở dòng cuối gồm cả Kho chung, BRAVO và dự án không có lệnh cắt. '}Thép hình gồm cả thép ống, hộp, I/H, U/C, L/V, ray, thép đặc. Công trình chưa map kho: ${D.nomap.map(esc).join(', ')||'không'}.</p></section>`;},
+ after(){const re=()=>{const y=window.scrollY;$('view').innerHTML=V.th.render();sortable($('view'));V.th.after();window.scrollTo(0,y)};
+  $('view').querySelectorAll('[data-thl]').forEach(bt=>bt.onclick=()=>{THL=bt.dataset.thl;re()});
+  $('thf-p').onchange=e=>{THF.p=e.target.value;THF.k='';re()};
+  $('thf-k').onchange=e=>{THF.k=e.target.value;const q=THF.k&&kprojs.find(x=>x.kho.name===THF.k);THF.p=q&&!q._nm?q.id:'';re()};
+  const x=$('thf-x');if(x)x.onclick=()=>{THF.p='';THF.k='';re()}}};
 
 /* thanh ngang có trục: rows [{n, v, tot?, c?}] — tot = phần nền nhạt (100%) */
 function hrows(rows,{base=null,unit='t'}={}){
