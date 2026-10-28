@@ -510,6 +510,28 @@ details.bcx{margin-top:16px;background:var(--panel);border:1px solid var(--line)
 details.bcx>summary{cursor:pointer;font-size:14px;color:var(--brand);padding:4px 0}details.bcx>summary b{font-size:15px}details.bcx[open]>summary{margin-bottom:10px}
 .logo #logo-sub b.slg{display:block;font:800 12.5px/1.35 "Be Vietnam Pro",Arial,sans-serif;color:#ffd76a;letter-spacing:.01em;opacity:1}.logo #logo-sub small{display:block;font-size:10.5px;opacity:.8;margin-top:2px}
 @media (max-width:1500px){.hero-tag{display:none}}
+.tb-act{display:flex;gap:6px;margin-right:4px}
+.tbtn{all:unset;box-sizing:border-box;cursor:pointer;display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 11px;border:1px solid var(--line);border-radius:9px;background:var(--panel);font:600 13px "Be Vietnam Pro",Arial,sans-serif;color:var(--ink);white-space:nowrap}
+.tbtn:hover{border-color:var(--brand);color:var(--brand)}.tbtn svg{width:17px;height:17px;flex:none}.tbtn[hidden]{display:none}
+.tf .fld{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--ink);font-weight:700;min-width:250px;flex:1.4}
+.trc{position:relative}
+.trb{all:unset;box-sizing:border-box;display:flex;align-items:center;gap:8px;width:100%;min-height:37px;padding:6px 10px;border:1px solid var(--line);border-radius:8px;background:var(--panel);cursor:pointer;font:400 13px "Be Vietnam Pro",Arial,sans-serif;color:var(--ink)}
+.trb:hover,.trb:focus-visible{border-color:var(--brand)}.trb .ic{width:18px;height:18px;stroke:var(--brand);fill:none;stroke-width:2;flex:none}
+.trl{display:flex;gap:8px;align-items:baseline;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.trl b{color:var(--brand);font-weight:700}.trl em{font-style:normal;color:var(--muted)}
+.trb .cv{width:16px;height:16px;stroke:var(--muted);fill:none;stroke-width:2;flex:none}
+.trp{position:absolute;z-index:60;top:calc(100% + 6px);left:0;width:min(470px,92vw);background:var(--panel);border:1px solid var(--line);border-radius:12px;box-shadow:0 14px 34px rgba(60,10,10,.2);padding:12px 14px;font-weight:400}
+.trh{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin:2px 0 7px}
+.trq{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:12px}
+.trq button{all:unset;box-sizing:border-box;cursor:pointer;border:1px solid var(--line);border-radius:8px;padding:6px 6px;text-align:center;font:600 12.5px "Be Vietnam Pro",Arial,sans-serif;color:var(--ink);display:flex;flex-direction:column;gap:1px}
+.trq button small{color:var(--muted);font-size:10.5px;font-weight:400}.trq button:hover{border-color:var(--brand)}
+.trq button[aria-pressed="true"]{background:var(--brand);border-color:var(--brand);color:#fff}.trq button[aria-pressed="true"] small{color:#ffe1e1}
+.trr{display:flex;gap:8px;align-items:center}.trr input{flex:1;min-width:0;font:400 13px "Be Vietnam Pro",Arial,sans-serif;padding:7px 8px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--ink)}
+.trr .go{all:unset;cursor:pointer;background:linear-gradient(180deg,#d41d24,#a8121a);color:#fff;border-radius:8px;padding:8px 14px;font:700 13px "Be Vietnam Pro",Arial,sans-serif;white-space:nowrap}
+@media (max-width:1450px){.tbtn span{display:none}.tbtn{padding:0 9px}}
+@media (max-width:700px){.trq{grid-template-columns:repeat(2,1fr)}.trr{flex-wrap:wrap}.trr input{flex:1 1 40%}.tf .fld{min-width:100%}}
+@media (max-width:700px){.band .right{flex-wrap:wrap;row-gap:6px;justify-content:flex-start;min-width:0;max-width:100%}.tb-act{order:10;width:100%}.sfc{max-width:100%}}
+details.bcx{max-width:100%;min-width:0;contain:inline-size;overflow-x:auto}
+@media (max-width:900px){details.bcx .grid{grid-template-columns:minmax(0,1fr)!important}}
 </style>
 
 <div class="app">
@@ -530,7 +552,7 @@ details.bcx>summary{cursor:pointer;font-size:14px;color:var(--brand);padding:4px
     <header class="band"><div class="in">
       <div class="tb-brand"><b>DDC-Shipyard</b><span>Hệ thống quản trị chuỗi thép · SC Vũng Tàu</span></div>
       <label class="gs"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input id="gs" type="search" list="gs-l" placeholder="Tìm dự án, LSX, quy cách thép…"><datalist id="gs-l"></datalist></label>
-      <div class="right"><button class="bell" id="bell" title="Cảnh báo cần xử lý"><svg viewBox="0 0 24 24"><path d="M12 22a2.5 2.5 0 0 0 2.4-2h-4.8a2.5 2.5 0 0 0 2.4 2zM19 17v-6a7 7 0 0 0-5.5-6.8V3a1.5 1.5 0 0 0-3 0v1.2A7 7 0 0 0 5 11v6l-2 2v1h18v-1z"/></svg><b id="bell-n"></b></button><span class="sfc" id="sfc"></span><span class="chip-date" id="dchip"></span><button class="hdr-btn" id="theme">Sáng / Tối</button></div>
+      <div class="right"><div class="tb-act"><button class="tbtn" id="reload" title="Tải lại số liệu mới nhất"><svg viewBox="0 0 24 24" fill="none" stroke="#2a2020" stroke-width="2"><path d="M20 12a8 8 0 1 1-2.3-5.7M20 4v4h-4"/></svg><span>Làm mới</span></button><button class="tbtn" id="csv" title="Xuất các bảng đang hiển thị ra file Excel"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3" fill="#1d7a3e"/><path d="M8 8l8 8M16 8l-8 8" stroke="#fff" stroke-width="2.2"/></svg><span>Xuất Excel</span></button><button class="tbtn" id="prn" title="In / lưu PDF trang đang xem" hidden><svg viewBox="0 0 24 24"><path d="M6 2h9l5 5v15H6z" fill="#d7261e"/><text x="13" y="18" font-size="6.5" font-weight="800" fill="#fff" text-anchor="middle" font-family="Arial">PDF</text></svg><span>Xuất PDF</span></button></div><button class="bell" id="bell" title="Cảnh báo cần xử lý"><svg viewBox="0 0 24 24"><path d="M12 22a2.5 2.5 0 0 0 2.4-2h-4.8a2.5 2.5 0 0 0 2.4 2zM19 17v-6a7 7 0 0 0-5.5-6.8V3a1.5 1.5 0 0 0-3 0v1.2A7 7 0 0 0 5 11v6l-2 2v1h18v-1z"/></svg><b id="bell-n"></b></button><span class="sfc" id="sfc"></span><span class="chip-date" id="dchip"></span><button class="hdr-btn" id="theme">Sáng / Tối</button></div>
     </div></header>
     <section class="hero" id="hero"><div class="hero-ic"><svg id="hero-svg" viewBox="0 0 24 24"></svg></div><div class="hero-tx"><div class="crumb" id="crumb"></div><h1 id="title"></h1><div class="hero-s" id="hero-s"></div></div>
       <div class="hero-art"><svg viewBox="0 0 900 120" preserveAspectRatio="xMaxYMid slice"><defs>
@@ -545,7 +567,7 @@ details.bcx>summary{cursor:pointer;font-size:14px;color:var(--brand);padding:4px
 <path d="M430 74h330l-18 34H452z" fill="url(#hull)"/><rect x="470" y="58" width="120" height="16" fill="#6b2a1c"/><rect x="600" y="46" width="70" height="28" fill="#7a3322"/><rect x="615" y="34" width="20" height="12" fill="#5a2418"/>
 <g fill="#ffd27a" opacity=".8"><rect x="480" y="63" width="8" height="4"/><rect x="496" y="63" width="8" height="4"/><rect x="512" y="63" width="8" height="4"/><rect x="528" y="63" width="8" height="4"/><rect x="608" y="52" width="8" height="4"/><rect x="624" y="52" width="8" height="4"/><rect x="640" y="52" width="8" height="4"/></g>
 <rect y="108" width="900" height="12" fill="#6a3a24" opacity=".85"/><path d="M0 110h900" stroke="#f7c27a" stroke-width="1" opacity=".5"/></svg></div><div class="hero-tag">Chất lượng<br>tạo nên những con tàu<br>vượt thời gian</div>
-      <div class="hero-act"><button class="hbtn" id="reload"><svg viewBox="0 0 24 24" fill="none" stroke="#2a2020" stroke-width="2"><path d="M20 12a8 8 0 1 1-2.3-5.7M20 4v4h-4"/></svg>Làm mới</button><button class="hbtn" id="csv" title="Xuất các bảng đang hiển thị ra file Excel"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3" fill="#1d7a3e"/><path d="M8 8l8 8M16 8l-8 8" stroke="#fff" stroke-width="2.2"/></svg>Xuất Excel</button><button class="hbtn" id="prn" hidden><svg viewBox="0 0 24 24"><path d="M6 2h9l5 5v15H6z" fill="#d7261e"/><text x="13" y="18" font-size="6.5" font-weight="800" fill="#fff" text-anchor="middle" font-family="Arial">PDF</text></svg>Xuất PDF</button></div></section>
+</section>
     <main class="content" id="view"></main>
   </div>
 </div>
@@ -1542,9 +1564,8 @@ V.tt={name:'Tóm tắt điều hành',title:'Báo cáo điều hành chuỗi th�
   let h=`
   <div class="tf"><label>Dự án<select id="tf-p"><option value="">Tất cả</option>${pOpt}</select></label>
    <label>Giai đoạn / hạng mục<select id="tf-ph" ${pp?'':'disabled'}><option value="">${pp?'Tất cả ('+PHS.length+')':'Chọn dự án trước'}</option>${PHS.map(x=>`<option value="${esc(x.k)}" ${TF.ph===x.k?'selected':''}>${esc(x.k)} · ${T(x.kl)} t</option>`).join('')}</select></label>
-   <label>Thời gian<select id="tf-q">${qOpt}<option value="" ${TF.q===''?'selected':''}>Tùy chọn ngày…</option></select></label>
-   <label class="dt">Từ ngày<input type="date" id="tf-f" value="${isoD(f)}" min="${D.ev.d0}" max="${D.date}"></label><label class="dt">Đến ngày<input type="date" id="tf-t" value="${isoD(t2)}" min="${D.ev.d0}" max="${D.date}"></label>
-   <div class="btns"><button class="go" id="tf-go"><svg viewBox="0 0 24 24"><path d="M3 4h18l-7 8v6l-4 2v-8z"/></svg>Áp dụng lọc</button><button id="tf-rs"><svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 3-6.2M4 4v4h4"/></svg>Đặt lại</button></div></div>
+   <div class="fld">Thời gian${trcHtml('tf-tr',TF.q,f,t2)}</div>
+   <div class="btns"><button id="tf-rs" title="Bỏ lọc dự án, giai đoạn và về tháng này"><svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 3-6.2M4 4v4h4"/></svg>Đặt lại</button></div></div>
   <div class="kpis">${K.map(k=>`<div class="kpi">${kIco(k.l)}<div class="l">${k.l}</div><div class="v">${k.v}<small>${k.u}</small></div><div class="s">${k.s}</div>${k.pg!=null?`<div class="m"><i style="width:${Math.min(100,k.pg*100)}%"></i></div>`:(k.sp||'').replace('class="sp"','class="kspark"')}</div>`).join('')}</div>
   <div class="g3">
    <div class="cd"><div class="ch"><h3>${icoC('bar')}Sản lượng theo tháng${pp?' · '+esc(pp.name):''}</h3><span class="dd">12 tháng gần nhất</span></div>
@@ -1570,10 +1591,7 @@ V.tt={name:'Tóm tắt điều hành',title:'Báo cáo điều hành chuỗi th�
  after(){const re=()=>{$('view').innerHTML=V.tt.render();sortable($('view'));V.tt.after();if(typeof kDeco==='function')kDeco()};
   $('tf-p').onchange=e=>{TF.p=e.target.value;TF.ph='';re()};
   $('tf-ph').onchange=e=>{TF.ph=e.target.value;re()};
-  $('tf-q').onchange=e=>{const q=e.target.value;if(q){TF.q=q;re()}else{const[f,t]=QUICK[TF.q||'mtd'].f();TF.from=TF.from??f;TF.to=TF.to??t;TF.q='';re()}};
-  const dd=()=>{const a=parseD($('tf-f').value),b=parseD($('tf-t').value);if(a!=null&&b!=null&&a<=b){TF.from=Math.max(D0,a);TF.to=Math.min(DEND,b);TF.q='';return true}return false};
-  $('tf-f').onchange=$('tf-t').onchange=()=>{if(dd())re()};
-  $('tf-go').onclick=()=>{TF.p=$('tf-p').value;TF.ph=$('tf-ph').value;const q=$('tf-q').value;if(q)TF.q=q;else dd();re()};
+  trcBind('tf-tr',k=>{TF.q=k;re()},(a,b)=>{TF.from=a;TF.to=b;TF.q='';re()});
   $('tf-rs').onclick=()=>{Object.assign(TF,{p:'',ph:'',q:'mtd',from:null,to:null});re()};
   $('view').querySelectorAll('.tp tr[data-go]').forEach(tr=>tr.onclick=()=>show('p',tr.dataset.go));
   $('view').querySelectorAll('tr[data-ph]').forEach(tr=>tr.onclick=()=>{TF.ph=TF.ph===tr.dataset.ph?'':tr.dataset.ph;re()})}};
@@ -1826,17 +1844,13 @@ filterBar=function(){
   return `<div class="tf fb2">
    <label>Dự án<select id="f-p"><option value="">Tất cả dự án</option>${pOpt}</select></label>
    <label>Máy<select id="f-m"><option value="">Tất cả máy</option>${mOpt}</select></label>
-   <label>Thời gian<select id="f-q">${qOpt}<option value="" ${FS.q===''?'selected':''}>Tùy chọn ngày…</option></select></label>
-   <label class="dt">Từ ngày<input type="date" id="f-from" value="${isoD(FS.from)}" min="${D.ev.d0}" max="${D.date}"></label>
-   <label class="dt">Đến ngày<input type="date" id="f-to" value="${isoD(FS.to)}" min="${D.ev.d0}" max="${D.date}"></label>
+   <div class="fld">Thời gian${trcHtml('f-tr',FS.q,FS.from,FS.to)}</div>
    <label class="dt">Xem theo<select id="f-g">${Object.entries(GLAB).map(([k,n])=>`<option value="${k}" ${FS.g===k?'selected':''}>${n}</option>`).join('')}</select></label>
    <div class="btns"><button id="f-clear"><svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 3-6.2M4 4v4h4"/></svg>Đặt lại</button></div>
    <div class="fsum">${dmy(FS.from)} → ${dmy(FS.to)} · ${workdays(FS.from,FS.to)} ngày làm việc${FS.p!==''?' · '+esc(P[+FS.p].name):''}${FS.m!==''?' · '+esc(MACH[+FS.m]):''}</div></div>`};
 bindFilter=function(rerender){
-  $('f-q').onchange=e=>{const k=e.target.value;if(!k){FS.q='';saveFS();rerender();return}const q=QUICK[k];[FS.from,FS.to]=q.f();FS.from=Math.max(FS.from,D0);FS.g=q.g;FS.q=k;saveFS();rerender()};
-  $('f-g').onchange=e=>{FS.g=e.target.value;saveFS();rerender()};
-  const fd=()=>{const a=parseD($('f-from').value),b=parseD($('f-to').value);if(a!=null&&b!=null&&a<=b){FS.from=Math.max(a,D0);FS.to=Math.min(b,DEND);FS.q='';const n=(FS.to-FS.from)/DAY;FS.g=n<=45?'day':n<=150?'week':n<=500?'month':'quarter';saveFS();rerender()}};
-  $('f-from').onchange=fd;$('f-to').onchange=fd;
+  trcBind('f-tr',k=>{const q=QUICK[k];[FS.from,FS.to]=q.f();FS.from=Math.max(FS.from,D0);FS.g=q.g;FS.q=k;saveFS();rerender()},
+    (a,b)=>{FS.from=a;FS.to=b;FS.q='';const n=(b-a)/DAY;FS.g=n<=45?'day':n<=150?'week':n<=500?'month':'quarter';saveFS();rerender()});
   $('f-p').onchange=e=>{FS.p=e.target.value;saveFS();rerender()};
   $('f-m').onchange=e=>{FS.m=e.target.value;saveFS();rerender()};
   $('f-clear').onclick=()=>{FS.p='';FS.m='';FS.q='mtd';FS.from=MONTH0(DEND);FS.to=DEND;FS.g='day';saveFS();rerender()}};
@@ -1964,6 +1978,19 @@ const _kpiS0=kpiS;kpiS=function(l,...a){return _kpiS0(l,...a).replace('<div clas
     if(x.k==='p')show('p',x.v);else if(x.k==='l')drillOpen('lsx|'+x.v);else drillOpen('key|'+x.v);inp.value=''};
   inp.addEventListener('keydown',e=>{if(e.key==='Enter')go()});inp.addEventListener('change',go)})();
 (function(){const n=attention().filter(x=>x.s!=='info').length;if($('bell-n'))$('bell-n').textContent=n||'';if($('bell'))$('bell').onclick=()=>show('v','tt');if($('reload'))$('reload').onclick=()=>location.reload()})();
+
+/* ===== BỘ CHỌN THỜI GIAN GỌN: 1 ô · bấm mở bảng chọn nhanh + khoảng ngày ===== */
+function trcHtml(id,q,from,to){const lab=q&&QUICK[q]?QUICK[q].n:'Tùy chọn';
+  return `<div class="trc" id="${id}"><button type="button" class="trb" title="Chọn khoảng thời gian"><svg class="ic" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 10h18"/></svg><span class="trl"><b>${esc(lab)}</b><em>${dm(from)} – ${dm(to)}/${new Date(to).getUTCFullYear()}</em></span><svg class="cv" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>
+  <div class="trp" hidden><div class="trh">Chọn nhanh</div><div class="trq">${Object.entries(QUICK).map(([k,v])=>{const[a,b]=v.f();return `<button type="button" data-trq="${k}" aria-pressed="${q===k}"><b>${v.n}</b><small>${dm(Math.max(a,D0))} – ${dm(b)}</small></button>`}).join('')}</div>
+  <div class="trh">Hoặc chọn từ ngày – đến ngày</div><div class="trr"><input type="date" data-trf value="${isoD(from)}" min="${D.ev.d0}" max="${D.date}" aria-label="Từ ngày"><span>→</span><input type="date" data-trt value="${isoD(to)}" min="${D.ev.d0}" max="${D.date}" aria-label="Đến ngày"><button type="button" class="go" data-tra>Áp dụng</button></div></div></div>`}
+function trcBind(id,onQ,onR){const w=$(id);if(!w)return;const p=w.querySelector('.trp');
+  w.querySelector('.trb').onclick=e=>{e.stopPropagation();document.querySelectorAll('.trp').forEach(x=>{if(x!==p)x.hidden=true});p.hidden=!p.hidden};
+  p.onclick=e=>e.stopPropagation();
+  w.querySelectorAll('[data-trq]').forEach(b=>b.onclick=()=>{p.hidden=true;onQ(b.dataset.trq)});
+  w.querySelector('[data-tra]').onclick=()=>{const f=w.querySelector('[data-trf]'),t=w.querySelector('[data-trt]'),a=parseD(f.value),b=parseD(t.value);if(a==null||b==null||a>b){(a==null?f:t).focus();return}p.hidden=true;onR(Math.max(D0,a),Math.min(DEND,b))}}
+document.addEventListener('click',()=>document.querySelectorAll('.trp:not([hidden])').forEach(p=>p.hidden=true));
+document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.trp:not([hidden])').forEach(p=>p.hidden=true)});
 
 nav.addEventListener('click',e=>{const b=e.target.closest('button');if(b)show('v',b.dataset.v)});
 plist.addEventListener('click',e=>{const b=e.target.closest('button');if(b)show('p',b.dataset.p)});
