@@ -508,6 +508,8 @@ select.dd{font:600 12px "Be Vietnam Pro",Arial,sans-serif;border:1px solid var(-
 @media (max-width:700px){.vtabs{flex-wrap:nowrap;overflow-x:auto}.vtabs button{white-space:nowrap;padding:8px 12px}}
 details.bcx{margin-top:16px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 16px;box-shadow:var(--sh)}
 details.bcx>summary{cursor:pointer;font-size:14px;color:var(--brand);padding:4px 0}details.bcx>summary b{font-size:15px}details.bcx[open]>summary{margin-bottom:10px}
+.logo #logo-sub b.slg{display:block;white-space:nowrap;font:700 11px/1.4 "Be Vietnam Pro",Arial,sans-serif;color:#ffd76a;letter-spacing:.01em;opacity:1}.logo #logo-sub small{display:block;font-size:10.5px;opacity:.8;margin-top:2px}
+@media (max-width:1500px){.hero-tag{display:none}}
 </style>
 
 <div class="app">
@@ -1895,12 +1897,12 @@ V.cut={name:'Cutting',title:'Sản lượng cắt',ico:'<circle cx="6" cy="6" r=
 const VALIAS={dh:'cut',bc:'tt',sx:'lsx'};
 
 /* ================= KHUNG GIAO DIỆN DDC-SHIPYARD: dải tiêu đề, tìm kiếm, chuông cảnh báo ================= */
-const HERO={tt:['Tổng quan','điều hành','Chuỗi thép đầu vào','Kho → nesting → cắt → bàn giao · mục tiêu · báo cáo kỳ'],
+const HERO={tt:['Tổng quan','điều hành','Toàn cảnh chuỗi thép','Nắm trọn từ kho đến bàn giao'],
  ov:['Dự án','','Toàn bộ dự án','Tiến độ, rủi ro và thép của từng dự án'],
- lsx:['Nesting','(lệnh sản xuất)','Lệnh sản xuất','Tuổi lệnh · danh sách LSX · chi tiết cấu kiện'],ne:['Nesting','(lệnh sản xuất)','Nesting','Hiệu quả nesting · đối chiếu Cutting'],
- th:['Vật tư','thép','Tồn kho & cân đối','Nhập · xuất · tồn · phải mua'],
- cut:['Cutting','sản xuất','Sản lượng cắt','Trong kỳ · công đoạn · máy · cắt & bàn giao theo ngày'],kh:['Cutting','sản xuất','Kế hoạch tuần','Lịch sản xuất · tải máy · nghẽn công đoạn'],
- src:['Dữ liệu','& làm sạch','Nguồn dữ liệu','Cách tính và nhật ký làm sạch']};
+ lsx:['Nesting','(lệnh sản xuất)','Lệnh sản xuất','Không để lệnh nào bị bỏ quên'],ne:['Nesting','(lệnh sản xuất)','Nesting','Tối ưu từng tấm thép, giảm hao hụt'],
+ th:['Vật tư','thép','Tồn kho & cân đối','Đủ thép đúng lúc, biết trước phần phải mua'],
+ cut:['Cutting','sản xuất','Sản lượng cắt','Nhịp sản xuất từng ngày, từng máy'],kh:['Cutting','sản xuất','Kế hoạch tuần','Điều độ xưởng, cân bằng tải máy'],
+ src:['Dữ liệu','& làm sạch','Nguồn dữ liệu','Minh bạch cách tính, rõ từng con số']};
 function heroSet(kind,key){const t=$('title');let h,ico;
   if(kind==='p'){const p=P.find(x=>x.id===key)||P[0];h=['Dự án','',p.name,(p.code||'')+(p.code?' · ':'')+'Tiến độ · thép · nesting'];ico='<path d="M3 21V9l9-6 9 6v12M9 21v-6h6v6"/>'}
   else{const v=V[key]||V.dh;h=HERO[key]||[v.name,'',v.title,''];ico=v.ico}
@@ -2013,7 +2015,7 @@ $('csv').onclick=async()=>{
 };
 const dd=D.date.split('-').reverse().join('/');
 const fd=x=>x?x.split('-').reverse().slice(0,2).join('/'):'';const dateNote=(D.files.d_cut&&D.files.d_kho&&D.files.d_cut!==D.files.d_kho)?` · Cutting ${fd(D.files.d_cut)} · Tồn kho ${fd(D.files.d_kho)}`:'';
-$('asof').textContent=`Số liệu ngày ${dd}${dateNote}`;$('logo-sub').textContent=`Kho → Nesting → Cutting → Bàn giao | Cập nhật đến ${dd}`;document.title=`Báo cáo điều hành chuỗi thép – SC Vũng Tàu · ${dd}`;$('dchip').title=dateNote?`File Cutting ngày ${fd(D.files.d_cut)}, file tồn kho ngày ${fd(D.files.d_kho)}: phần kho tính theo ngày ${fd(D.files.d_kho)}`:'';$('dchip').textContent=`Số liệu ${dd}`;
+$('asof').textContent=`Số liệu ngày ${dd}${dateNote}`;$('logo-sub').innerHTML=`<b class="slg">Đúng thép · Đúng hạn · Đúng hẹn</b><small>Cập nhật đến ${dd}</small>`;document.title=`Báo cáo điều hành chuỗi thép – SC Vũng Tàu · ${dd}`;$('dchip').title=dateNote?`File Cutting ngày ${fd(D.files.d_cut)}, file tồn kho ngày ${fd(D.files.d_kho)}: phần kho tính theo ngày ${fd(D.files.d_kho)}`:'';$('dchip').textContent=`Số liệu ${dd}`;
 let st=null;try{st=JSON.parse(localStorage.getItem('chuoi-view2')||'null')}catch(e){}
 if(st&&st.kind==='p'&&P.some(p=>p.id===st.key))show('p',st.key);else if(st&&st.kind==='v'&&V[st.key])show('v',st.key);else show('v','tt');
 </script>
