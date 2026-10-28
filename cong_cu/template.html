@@ -508,7 +508,7 @@ select.dd{font:600 12px "Be Vietnam Pro",Arial,sans-serif;border:1px solid var(-
 @media (max-width:700px){.vtabs{flex-wrap:nowrap;overflow-x:auto}.vtabs button{white-space:nowrap;padding:8px 12px}}
 details.bcx{margin-top:16px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 16px;box-shadow:var(--sh)}
 details.bcx>summary{cursor:pointer;font-size:14px;color:var(--brand);padding:4px 0}details.bcx>summary b{font-size:15px}details.bcx[open]>summary{margin-bottom:10px}
-.logo #logo-sub b.slg{display:block;white-space:nowrap;font:700 11px/1.4 "Be Vietnam Pro",Arial,sans-serif;color:#ffd76a;letter-spacing:.01em;opacity:1}.logo #logo-sub small{display:block;font-size:10.5px;opacity:.8;margin-top:2px}
+.logo #logo-sub b.slg{display:block;font:800 12.5px/1.35 "Be Vietnam Pro",Arial,sans-serif;color:#ffd76a;letter-spacing:.01em;opacity:1}.logo #logo-sub small{display:block;font-size:10.5px;opacity:.8;margin-top:2px}
 @media (max-width:1500px){.hero-tag{display:none}}
 </style>
 
@@ -1897,7 +1897,7 @@ V.cut={name:'Cutting',title:'Sản lượng cắt',ico:'<circle cx="6" cy="6" r=
 const VALIAS={dh:'cut',bc:'tt',sx:'lsx'};
 
 /* ================= KHUNG GIAO DIỆN DDC-SHIPYARD: dải tiêu đề, tìm kiếm, chuông cảnh báo ================= */
-const HERO={tt:['Tổng quan','điều hành','Toàn cảnh chuỗi thép','Nắm trọn từ kho đến bàn giao'],
+const HERO={tt:['Tổng quan','điều hành','Kiểm soát đầu vào chuỗi thép','Phát hiện sớm – xử lý kịp thời'],
  ov:['Dự án','','Toàn bộ dự án','Tiến độ, rủi ro và thép của từng dự án'],
  lsx:['Nesting','(lệnh sản xuất)','Lệnh sản xuất','Không để lệnh nào bị bỏ quên'],ne:['Nesting','(lệnh sản xuất)','Nesting','Tối ưu từng tấm thép, giảm hao hụt'],
  th:['Vật tư','thép','Tồn kho & cân đối','Đủ thép đúng lúc, biết trước phần phải mua'],
@@ -2015,7 +2015,7 @@ $('csv').onclick=async()=>{
 };
 const dd=D.date.split('-').reverse().join('/');
 const fd=x=>x?x.split('-').reverse().slice(0,2).join('/'):'';const dateNote=(D.files.d_cut&&D.files.d_kho&&D.files.d_cut!==D.files.d_kho)?` · Cutting ${fd(D.files.d_cut)} · Tồn kho ${fd(D.files.d_kho)}`:'';
-$('asof').textContent=`Số liệu ngày ${dd}${dateNote}`;$('logo-sub').innerHTML=`<b class="slg">Đúng thép · Đúng hạn · Đúng hẹn</b><small>Cập nhật đến ${dd}</small>`;document.title=`Báo cáo điều hành chuỗi thép – SC Vũng Tàu · ${dd}`;$('dchip').title=dateNote?`File Cutting ngày ${fd(D.files.d_cut)}, file tồn kho ngày ${fd(D.files.d_kho)}: phần kho tính theo ngày ${fd(D.files.d_kho)}`:'';$('dchip').textContent=`Số liệu ${dd}`;
+$('asof').textContent=`Số liệu ngày ${dd}${dateNote}`;$('logo-sub').innerHTML=`<b class="slg">Kiểm soát đầu vào<br>Chủ động sản xuất</b><small>Cập nhật đến ${dd}</small>`;document.title=`Báo cáo điều hành chuỗi thép – SC Vũng Tàu · ${dd}`;$('dchip').title=dateNote?`File Cutting ngày ${fd(D.files.d_cut)}, file tồn kho ngày ${fd(D.files.d_kho)}: phần kho tính theo ngày ${fd(D.files.d_kho)}`:'';$('dchip').textContent=`Số liệu ${dd}`;
 let st=null;try{st=JSON.parse(localStorage.getItem('chuoi-view2')||'null')}catch(e){}
 if(st&&st.kind==='p'&&P.some(p=>p.id===st.key))show('p',st.key);else if(st&&st.kind==='v'&&V[st.key])show('v',st.key);else show('v','tt');
 </script>
