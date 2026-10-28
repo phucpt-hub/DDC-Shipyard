@@ -26,8 +26,25 @@ def _find(inc, exc=()):
         u=name.strip().upper()
         if all(w in u for w in inc) and not any(w in u for w in exc): return name
     raise KeyError('Không tìm thấy sheet có chữ ' + ' + '.join(inc) + ' trong file tồn kho. Các sheet: ' + ', '.join(d))
+def _kind(name):
+    # nhận loại bảng theo TIÊU ĐỀ CỘT (không tin tên file – từng bị đặt nhầm tên NHẬP/XUẤT)
+    try: hdr=[_norm(h) for h in d[name].attrs.get('hdr', d[name].columns)]
+    except Exception: return None
+    has=lambda *ks: any(any(k in h for k in ks) for h in hdr)
+    if has('K.LƯỢNG XUẤT','KL XUẤT') and has('NGÀY'): return 'XUẤT'
+    if has('K.LƯỢNG NHẬP','KL NHẬP'): return 'NHẬP'
+    if has('K.LƯỢNG TỒN','KHỐI LƯỢNG TỒN') or (has('PHÂN NHÓM') and has('BATCH')): return 'TỒN'
+    return None
+KIND={n:_kind(n) for n in d}
+_nk=lambda n:'NHẬP' if 'NHẬP' in n.upper() else 'XUẤT' if 'XUẤT' in n.upper() else 'TỒN' if 'TỒN' in n.upper() else None
+_doi=[(n,k) for n,k in KIND.items() if k and _nk(n)!=k]
+for n,k in _doi: print(f'!! File/sheet "{n}" có tiêu đề cột của bảng {k} – dùng theo nội dung, không theo tên')
 def _finds(inc, exc=()):
     # mọi sheet/file khớp từ khóa (vd thư mục ngày có 2 file Xuất: THÉP TẤM + THÉP HÌNH → gộp)
+    want=inc[0] if len(inc)==1 and inc[0] in ('NHẬP','XUẤT','TỒN') else None
+    if want and any(KIND.values()):
+        r=[n for n,k in KIND.items() if k==want]
+        if r: return r
     r=[name for name in d if all(w in name.strip().upper() for w in inc) and not any(w in name.strip().upper() for w in exc)]
     if not r: _find(inc, exc)          # báo lỗi rõ ràng như cũ
     return r
