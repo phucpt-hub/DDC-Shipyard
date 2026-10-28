@@ -1,5 +1,6 @@
 <title>Chuỗi Thép Sơ Chế Vũng Tàu</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800;900&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
 /* Layout: dark-red vertical rail (views + project list) | work area with red header band, KPI strip, chart grid, detail tables.
@@ -355,23 +356,194 @@ body.noscroll{overflow:hidden}
 }
 @media (max-width:600px){.hb{grid-template-columns:minmax(70px,110px) minmax(0,1fr) auto}.stage{grid-template-columns:80px minmax(0,1fr) 110px}.flow{grid-template-columns:1fr}}
 @media (prefers-reduced-motion:no-preference){.track i,.kpi .m i{transition:width .3s}}
+/* ===================== GIAO DIỆN DDC-SHIPYARD (theo bộ mẫu đỏ – vàng) ===================== */
+:root{--brand:#c8161d;--brand-d:#9d0f15;--brand-dd:#5c070b;--brand-soft:#fde6e6;--acc:#f5b800;--acc-d:#c98a00;--acc-soft:#fff3c9;--bg:#f4f2f0;--line:#ebe4e2;--ink:#231a1a;--muted:#706463;
+  --s0:#d32f2f;--s4:#f5b800;--rail-ink:#fbe5e6;--knum:#7a0b10;--thbg:#f7f3f2;--sh:0 1px 2px rgba(80,20,20,.06),0 1px 1px rgba(0,0,0,.02)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--brand:#ff5a5f;--brand-d:#6d0a10;--brand-dd:#3a0508;--brand-soft:#3b1a1b;--acc:#ffc531;--acc-d:#ffc531;--acc-soft:#3a2f12;--s4:#ffc531;--knum:#ff8a8f;--thbg:#262021;--sh:none}}
+:root[data-theme="dark"]{--brand:#ff5a5f;--brand-d:#6d0a10;--brand-dd:#3a0508;--brand-soft:#3b1a1b;--acc:#ffc531;--acc-d:#ffc531;--acc-soft:#3a2f12;--s4:#ffc531;--knum:#ff8a8f;--thbg:#262021;--sh:none}
+body{font-family:"Be Vietnam Pro","IBM Plex Sans",Arial,sans-serif}
+.app{grid-template-columns:232px minmax(0,1fr)}
+/* --- thanh menu trái --- */
+.rail{background:linear-gradient(180deg,#a8121a 0%,#800c12 55%,#5c080c 100%)!important;padding:14px 10px 18px!important;gap:10px!important}
+.logo{border-bottom:1px solid rgba(255,255,255,.16)!important;padding:4px 6px 12px!important}
+.lg-mark{display:flex;align-items:center;gap:8px}.lg-mark .t{line-height:.95}.lg-mark b{display:block;font:900 30px/0.95 "Be Vietnam Pro",Arial,sans-serif;color:var(--acc);letter-spacing:.02em;font-style:italic}
+.lg-mark span{display:block;font:800 15px/1.1 "Be Vietnam Pro",Arial,sans-serif;color:#fff;letter-spacing:.04em}.lg-mark svg{width:54px;height:34px;flex:none}
+.logo #logo-sub{display:block;font-size:11px;opacity:.75;margin-top:6px;color:#fff}
+.rail h4{color:#fff;opacity:.55!important}
+.nav button{border-radius:9px!important;padding:9px 12px!important;font-size:14px!important}
+.nav button[aria-current=true]{background:#fbe39b!important;color:#7a0b10!important;font-weight:700!important;box-shadow:inset 3px 0 0 var(--acc)}
+.nav button[aria-current=true] .cnt{background:#7a0b10!important;color:#fbe39b!important}
+.plist button[aria-current=true]{background:#fbe39b!important;color:#7a0b10!important}
+.rail-art{padding:8px 6px 0}.rail-art svg{width:100%;height:auto;display:block;opacity:.55}
+.rail-art p{margin:6px 0 0;font:800 13px/1.35 "Be Vietnam Pro",Arial,sans-serif;color:#fff;letter-spacing:.03em}.rail-art p i{display:block;width:120px;height:4px;background:var(--acc);margin-top:6px;border-radius:2px}
+/* --- thanh trên cùng --- */
+.band{background:var(--panel)!important;border-bottom:1px solid var(--line)!important;box-shadow:0 1px 0 rgba(0,0,0,.02)}
+.band .in{padding:8px 20px!important;gap:10px 18px!important;flex-wrap:nowrap!important}
+.tb-brand b{display:block;font:800 21px/1.1 "Be Vietnam Pro",Arial,sans-serif;color:var(--brand)}.tb-brand span{font-size:12px;color:var(--muted)}
+.gs{flex:1;max-width:460px;display:flex;align-items:center;gap:8px;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:7px 12px}
+.gs input{all:unset;flex:1;font-size:13.5px;color:var(--ink)}.gs svg{width:17px;height:17px;stroke:var(--muted);fill:none;stroke-width:2;flex:none}
+.bell{all:unset;cursor:pointer;position:relative;display:grid;place-items:center;width:36px;height:36px;border-radius:50%}.bell:hover{background:var(--bg)}
+.bell svg{width:21px;height:21px;fill:var(--ink)}.bell b{position:absolute;top:2px;right:1px;min-width:16px;height:16px;border-radius:8px;background:var(--brand);color:#fff;font:700 10px/16px Arial;text-align:center;padding:0 3px}
+.chip-date{background:var(--brand-soft)!important;color:var(--brand)!important;border-radius:20px!important;padding:6px 12px!important}
+/* --- dải tiêu đề trang --- */
+.hero{position:relative;display:flex;align-items:center;gap:14px;min-height:88px;padding:10px 20px;background:var(--panel);border-bottom:1px solid var(--line);overflow:hidden}
+.hero-ic{width:54px;height:54px;flex:none;display:grid;place-items:center;z-index:2}.hero-ic svg{width:46px;height:46px;stroke:var(--brand);fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.hero-tx{z-index:2;min-width:0}.hero .crumb{display:none}
+.hero h1{font:800 30px/1.1 "Be Vietnam Pro",Arial,sans-serif;color:var(--ink);letter-spacing:-.01em;margin:0}.hero h1 em{font-style:normal;color:var(--brand)}
+.hero-s{font-size:15px;color:#4a3d3d;margin-top:4px}.hero-s b{color:var(--brand);font-weight:700}.hero-s i{font-style:normal;color:var(--muted);margin:0 8px}
+.hero-art{position:absolute;right:0;top:0;bottom:0;width:66%;-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 22%);mask-image:linear-gradient(90deg,transparent 0,#000 22%)}
+.hero-art svg{width:100%;height:100%;display:block}
+.hero-tag{position:absolute;left:52%;top:50%;transform:translateY(-50%);font:600 12.5px/1.35 "Be Vietnam Pro",Arial,sans-serif;color:#3d2a1c;letter-spacing:.02em;z-index:2;text-transform:uppercase;text-shadow:0 0 6px rgba(255,240,215,.9)}
+.hero-act{margin-left:auto;display:flex;gap:10px;z-index:3}
+.hbtn{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:7px;background:#fff;border:1px solid #e7dfdc;border-radius:9px;padding:9px 15px;font:600 14px "Be Vietnam Pro",Arial,sans-serif;color:#2a2020;box-shadow:0 2px 6px rgba(0,0,0,.12)}
+.hbtn:hover{border-color:var(--brand)}.hbtn svg{width:19px;height:19px;flex:none}
+.band .right .hdr-btn{border-radius:8px}
+/* --- vùng nội dung --- */
+.content{padding:14px 20px 40px!important;max-width:none!important}
+.content>section,.content>div{margin-top:14px}.content>section:first-child{margin-top:0}
+.sec-h{border-left:0!important;padding-left:0!important}.sec-h h2{font:800 17px "Be Vietnam Pro",Arial,sans-serif;color:var(--brand);display:flex;align-items:center;gap:8px}
+.sec-h h2::before{content:"";width:22px;height:22px;flex:none;background:var(--brand);-webkit-mask:var(--ic-sec) center/contain no-repeat;mask:var(--ic-sec) center/contain no-repeat}
+:root{--ic-sec:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round'%3E%3Cpath d='M4 20V11M10 20V5M16 20v-6M21 20H3'/%3E%3C/svg%3E")}
+/* --- ô chỉ số --- */
+.kpis{grid-template-columns:repeat(auto-fit,minmax(178px,1fr))!important;gap:12px!important}
+.kpi{position:relative;background:var(--panel)!important;border:1px solid var(--line)!important;border-top:1px solid var(--line)!important;border-radius:12px!important;padding:14px 14px 10px 70px!important;min-height:96px;box-shadow:var(--sh);overflow:hidden}
+.kpi .kic{position:absolute;left:12px;top:14px;width:46px;height:46px;border-radius:50%;background:var(--brand-soft);display:grid;place-items:center}
+.kpi .kic svg{width:24px;height:24px;stroke:var(--brand);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.kpis>.kpi:nth-child(even) .kic{background:var(--acc-soft)}.kpis>.kpi:nth-child(even) .kic svg{stroke:var(--acc-d)}
+.kpi .l{font:600 13.5px/1.25 "Be Vietnam Pro",Arial,sans-serif!important;color:var(--ink)!important}
+.kpi .v{font:800 27px/1.15 "Be Vietnam Pro",Arial,sans-serif!important;color:var(--knum)!important;margin-top:3px!important;white-space:nowrap}
+.kpi .v small{font:600 15px "Be Vietnam Pro",Arial,sans-serif!important;color:var(--ink)!important;margin-left:6px!important}
+.kpi.good .v{color:#1d7a3e!important}.kpi.bad .v{color:var(--brand)!important}.kpi.dim .v{color:var(--knum)!important}
+.kpi .s{font-size:12.5px!important;color:var(--muted)!important}
+.kpi .m{height:9px!important;border-radius:5px!important;background:#ece6e5!important;margin:8px 0 2px!important}.kpi .m i{background:linear-gradient(90deg,#b5121b,#e2322a)!important;border-radius:5px}
+.kpi .kspark{display:block;margin:4px -14px -10px -70px;width:calc(100% + 84px);height:38px}
+.kpi.drillable{padding-bottom:26px!important}
+/* --- khung --- */
+.card,.cd{background:var(--panel)!important;border:1px solid var(--line)!important;border-radius:12px!important;box-shadow:var(--sh);padding:14px 16px!important}
+.card>h3,.card .cardh h3,.cd .ch h3{font:800 15.5px "Be Vietnam Pro",Arial,sans-serif!important;color:var(--brand)!important;text-transform:none!important;letter-spacing:0!important;display:flex;align-items:center;gap:8px}
+.card>h3::before,.card .cardh h3::before{content:"";width:21px;height:21px;flex:none;background:var(--brand);-webkit-mask:var(--ic-sec) center/contain no-repeat;mask:var(--ic-sec) center/contain no-repeat}
+.card h3 .sub{color:var(--muted);font-weight:500;font-size:12.5px}
+/* --- bảng --- */
+.tbl-wrap{border-radius:10px!important;border:1px solid var(--line)!important}
+th{background:var(--thbg)!important;color:#3a2c2c!important;font:700 12px "Be Vietnam Pro",Arial,sans-serif!important;letter-spacing:0!important;border-bottom:1px solid var(--line)!important}
+td{border-bottom:1px solid #f1ebea!important}tbody tr:hover td{background:#fff8ee}
+tfoot td{background:var(--thbg)!important;font-weight:700}
+/* --- nhãn trạng thái --- */
+.pill{border-radius:6px!important;padding:3px 10px!important;font-weight:700!important;font-size:11.5px!important}
+.p-bad{background:#d7261e!important;color:#fff!important}.p-warn{background:#f8cb3c!important;color:#4a2c00!important}.p-good{background:#d6f0dc!important;color:#18703a!important}.p-neu{background:#eee8e7!important;color:#6c5f5e!important}
+/* --- bộ lọc, nút chọn --- */
+.fbar,.th-l,.filters{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 14px;box-shadow:var(--sh)}
+.seg{border-radius:9px!important}.seg button[aria-pressed=true]{background:var(--brand)!important}
+.chip{border-radius:9px!important}.chip[aria-pressed=true]{background:var(--brand)!important;border-color:var(--brand)!important}
+select,input[type=search]{border-radius:8px}
+/* --- trang Tổng quan (mẫu 1) --- */
+.tf{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:flex-end;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 14px;box-shadow:var(--sh)}
+.tf label{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--ink);font-weight:700;min-width:150px;flex:1}
+.tf select{font:inherit;font-weight:400;font-size:13px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--ink)}
+.tf .btns{display:flex;gap:10px}.tf button{font:700 14px "Be Vietnam Pro",Arial,sans-serif;padding:9px 18px;border-radius:9px;cursor:pointer;border:1px solid var(--line);background:var(--panel);color:var(--ink);display:inline-flex;align-items:center;gap:7px}
+.tf button svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:2}
+.tf button.go{background:linear-gradient(180deg,#d41d24,#a8121a);border-color:#a8121a;color:#fff}
+.g3{display:grid;grid-template-columns:4.6fr 4.2fr 4.2fr;gap:14px}.g3b{display:grid;grid-template-columns:4fr 4.4fr 4.6fr;gap:14px}
+.cd{min-width:0;overflow:hidden}.cd .ch{display:flex;align-items:center;gap:8px;margin-bottom:8px}.cd .ch h3{flex:1}.cd .ch h3 i{display:grid;place-items:center}
+.cd .ch .lk{font:600 12.5px "Be Vietnam Pro",Arial,sans-serif;color:var(--ink);cursor:pointer;background:none;border:0;white-space:nowrap}.cd .ch .lk::after{content:" →"}
+.cd .ch .dd{font-size:12px;border:1px solid var(--line);border-radius:7px;padding:4px 8px;color:var(--ink);white-space:nowrap}
+.lg{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:12px;color:#4a3d3d;margin-bottom:4px}.lg i{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:5px;vertical-align:-1px}
+.ws{width:100%;height:auto;display:block}.tw{overflow-x:auto}
+.dnut{display:grid;grid-template-columns:150px minmax(0,1fr);gap:12px;align-items:center}.dnut svg{max-width:100%;height:auto}.dnut ul{list-style:none;margin:0;padding:0;font-size:13px}
+.dnut li{display:grid;grid-template-columns:14px 1fr auto auto;gap:6px;align-items:center;padding:6px 0;cursor:pointer}.dnut li i{width:12px;height:12px;border-radius:50%}.dnut li b{color:var(--brand);font-weight:700}.dnut li em{font-style:normal;color:var(--muted);font-size:12px;min-width:50px;text-align:right}
+.al,.tp{width:100%;border-collapse:collapse;font-size:12.5px}.al th,.tp th{position:static!important;cursor:default}.al td,.tp td{padding:6px 7px;vertical-align:middle}
+.al td:nth-child(2){white-space:normal}.lv{display:inline-block;padding:3px 9px;border-radius:5px;font-size:11.5px;font-weight:700;white-space:nowrap}
+.lv.bad{background:#d7261e;color:#fff}.lv.warn{background:#f8cb3c;color:#4a2c00}.lv.info{background:#fde9b0;color:#6b4a00}
+.al tr,.tp tr{cursor:pointer}.tp td.n{text-align:right}.tp .rk svg{width:20px;height:20px}
+.tp .mb{display:flex;align-items:center;gap:6px}.tp .mb span{flex:1;height:9px;border-radius:5px;background:#ece6e5;overflow:hidden;min-width:56px}.tp .mb span i{display:block;height:100%;border-radius:5px}
+.ms{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}.ms div{display:flex;gap:8px;align-items:center;font-size:11.5px;color:#4a3d3d}.ms svg{width:30px;height:30px;flex:none;stroke:var(--brand);fill:none;stroke-width:1.8}
+.ms b{display:block;font:800 17px "Be Vietnam Pro",Arial,sans-serif;color:var(--brand)}.ms em{font-style:normal;font-size:11px;color:#1d7a3e;font-weight:700}
+.mrow{display:grid;grid-template-columns:minmax(0,150px) 1fr 82px 46px;gap:8px;align-items:center;font-size:12.5px;padding:5px 0}
+.mrow .tr{height:13px;border-radius:3px;background:#ece6e5;overflow:hidden}.mrow .tr i{display:block;height:100%;background:#d32f2f}
+.mrow .vv{text-align:right;font-weight:600}.mrow .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.mrow .pc2{background:var(--brand-soft);color:var(--brand);border-radius:5px;font-weight:700;font-size:11.5px;text-align:center;padding:2px 0}
+.pvnote{background:var(--acc-soft);border:1px dashed var(--acc-d);border-radius:10px;padding:7px 12px;font-size:12.5px}
+@media (max-width:1250px){.g3,.g3b{grid-template-columns:1fr 1fr}.g3>.cd:last-child,.g3b>.cd:last-child{grid-column:1/-1}.hero-tag{display:none}}
+@media (max-width:900px){.app{grid-template-columns:1fr}.rail-art{display:none}.hero{flex-wrap:wrap}.hero-art{width:100%;opacity:.35}.hero-act{margin-left:0;width:100%}.gs{display:none}.band .in{flex-wrap:wrap!important}}
+@media (max-width:700px){.g3,.g3b{grid-template-columns:1fr}.hero h1{font-size:23px}.hero-s{font-size:13px}.dnut{grid-template-columns:130px 1fr}.tf label{min-width:130px}.tf .btns{width:100%}.tf .btns button{flex:1;justify-content:center}.hbtn{padding:7px 10px;font-size:13px}.kpi .v{font-size:22px!important}}
+
+.hero{margin:0!important}.dnut li span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.rail nav a,.rail .nav a{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+:root{--f-disp:"Be Vietnam Pro",Arial,sans-serif!important;--f-body:"Be Vietnam Pro",Arial,sans-serif!important;--f-mono:"Be Vietnam Pro",Arial,sans-serif!important}body{font-variant-numeric:tabular-nums}.hero-tag{left:47%}
+:root{--d1:#2e8b57;--d2:#f2c14e;--d3:#f7e2a6}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--d1:#56b87e;--d2:#d9a92c;--d3:#5a4a1e}}
+:root[data-theme="dark"]{--d1:#56b87e;--d2:#d9a92c;--d3:#5a4a1e}
+.kpi.kpx .v{white-space:normal!important}.kpi.kpx .v .bdg{display:inline-block;vertical-align:middle}
+.g2k{display:grid;grid-template-columns:minmax(0,8fr) minmax(0,4.2fr);gap:14px;margin-top:14px}
+.gtw{overflow-x:auto}.gt{width:100%;border-collapse:collapse;font-size:12.5px}.gt th{background:var(--thbg);font-weight:700;padding:6px 6px;text-align:left;white-space:nowrap;position:static!important}
+.gt th.wk{text-align:center;min-width:50px;font-size:12px}.gt th.wk small{display:block;font-weight:400;color:var(--muted);font-size:10.5px}.gt th.now{background:var(--acc-soft)}
+.gt td{padding:3px 6px;border-bottom:1px solid var(--line);white-space:nowrap}.gt td.n{text-align:right}.gt td.wk{padding:3px 0;text-align:center;border-left:1px dashed var(--line)}
+.gt tr.gp{cursor:pointer;background:color-mix(in srgb,var(--thbg) 60%,transparent)}.gt tr.gp:hover{background:var(--brand-soft)}.gt tr.gp td{padding-top:6px;padding-bottom:6px}.gt .tg{display:inline-block;width:14px;color:var(--brand)}
+.gt tr.gs2 td:nth-child(2){color:var(--ink)}.gb{display:block;height:17px;margin:0 3px;border-radius:9px;font:700 10px/17px "Be Vietnam Pro",Arial,sans-serif;font-style:normal;text-align:center;overflow:hidden}
+.gb.l{margin-left:0;border-top-left-radius:0;border-bottom-left-radius:0}.gb.r{margin-right:0;border-top-right-radius:0;border-bottom-right-radius:0}.gb.gw{background:repeating-linear-gradient(45deg,#d8d4d3 0 5px,#ebe8e7 5px 10px);color:#6b6262;font-weight:600}
+.gt .hs{font-size:10.5px;font-weight:700;color:var(--brand)}.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;vertical-align:0}
+.note{font-size:11.5px;color:var(--muted);margin:8px 0 0}
+.pa{display:grid;grid-template-columns:118px minmax(0,1fr) 58px;gap:8px;align-items:center;padding:5px 0;font-size:12.5px}.pa .nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.pa b{text-align:right}
+.pa .sb{display:flex;height:20px;border-radius:4px;overflow:hidden;background:var(--soft)}.pa .sb i{display:block;height:100%;font:700 10.5px/20px "Be Vietnam Pro",Arial,sans-serif;font-style:normal;text-align:center;overflow:hidden;white-space:nowrap}
+.lv.ok{background:#dff3e6;color:#1d7a3e}.lv.good{background:#dff3e6;color:#1d7a3e}.lv.p-vh{background:#c8161d;color:#fff}.lv.p-h{background:#fde0e0;color:#b3121a}.lv.p-m{background:#fff0c2;color:#8a6200}.lv.p-l{background:#eceae9;color:#5a5050}
+.al.pr td,.al.bn td{white-space:nowrap}.al.pr tr{cursor:pointer}.al.pr tr:hover td{background:var(--brand-soft)}
+select.dd{font:600 12px "Be Vietnam Pro",Arial,sans-serif;border:1px solid var(--line);border-radius:7px;padding:4px 8px;background:var(--panel);color:var(--ink)}
+@media (max-width:1250px){.g2k{grid-template-columns:1fr}}
+.g3.g3k{grid-template-columns:minmax(0,4.4fr) minmax(0,3.8fr) minmax(0,4.8fr)}.al.bn{font-size:12px}.al.bn td,.al.bn th{padding:5px 5px}.pa{grid-template-columns:132px minmax(0,1fr) 56px}
+@media (max-width:1250px){.g3.g3k{grid-template-columns:1fr 1fr}}@media (max-width:700px){.g3.g3k{grid-template-columns:1fr}}
+.gt th.wk{min-width:46px}.gt td:first-child{width:14px}
+.tf label.dt{flex:0 1 150px;min-width:140px}.tf input[type=date]{font:inherit;font-weight:400;font-size:13px;padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--ink)}.tf select:disabled{opacity:.55}
+.g2p{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:14px;margin-top:14px}.tp td.hm{max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.al tfoot td{font-weight:800;border-top:2px solid var(--line);padding:6px 7px;background:var(--thbg)}.gp2 tr:hover td{background:var(--brand-soft)}
+.ms.ms4{grid-template-columns:repeat(4,1fr);margin:0 0 10px}.ms.ms4>div{background:var(--thbg);border-radius:8px;padding:8px 10px}
+@media (max-width:1250px){.g2p{grid-template-columns:1fr}}@media (max-width:700px){.ms.ms4{grid-template-columns:1fr 1fr}}
+.fb2 .fsum{flex-basis:100%;font-size:12px;color:var(--muted);text-align:right;margin-top:-2px}.fb2 label{min-width:140px}
+.mv{display:flex;align-items:center;gap:12px;justify-content:space-between;margin-top:14px;padding:10px 14px;border:1px dashed var(--line);border-radius:10px;font-size:13px;color:var(--muted);background:var(--panel)}
+.card.ins li b.dn,.card.ins li b.up{display:inline!important}
+.sfc{display:inline-flex;align-items:center;gap:6px;max-width:340px;padding:5px 10px;border:1px solid var(--line);border-radius:18px;font-size:12px;color:var(--muted);background:var(--panel);white-space:nowrap}
+.sfc span{overflow:hidden;text-overflow:ellipsis}.sfc svg{width:14px;height:14px;flex:none;stroke:currentColor;fill:none;stroke-width:2}
+.sfc.on{border-color:var(--brand);color:var(--brand);background:var(--brand-soft)}.sfc.on b{color:var(--brand)}.sfc button{border:0;background:none;color:var(--brand);font-weight:800;cursor:pointer;padding:0 2px;font-size:13px}
+@media (max-width:700px){.sfc{max-width:100%;order:5}}
+.vtabs{display:flex;gap:4px;flex-wrap:wrap;margin:0 0 14px;border-bottom:2px solid var(--line)}
+.vtabs button{font:700 14px "Be Vietnam Pro",Arial,sans-serif;padding:9px 18px;border:0;background:none;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px}
+.vtabs button:hover{color:var(--brand)}.vtabs button[aria-pressed="true"]{color:var(--brand);border-bottom-color:var(--brand)}
+@media (max-width:700px){.vtabs{flex-wrap:nowrap;overflow-x:auto}.vtabs button{white-space:nowrap;padding:8px 12px}}
+details.bcx{margin-top:16px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 16px;box-shadow:var(--sh)}
+details.bcx>summary{cursor:pointer;font-size:14px;color:var(--brand);padding:4px 0}details.bcx>summary b{font-size:15px}details.bcx[open]>summary{margin-bottom:10px}
 </style>
 
 <div class="app">
   <aside class="rail" id="rail">
-    <div class="logo"><b>BÁO CÁO ĐIỀU HÀNH CHUỖI THÉP – SC VŨNG TÀU</b><span id="logo-sub">Kho → Nesting → Cutting → Bàn giao</span></div>
+    <div class="logo"><div class="lg-mark"><div class="t"><b>DDC</b><span>SHIPYARD</span></div><svg viewBox="0 0 64 40" fill="none" stroke="#fff" stroke-width="2" stroke-linejoin="round"><path d="M4 26h52l-6 9H12z" fill="#fff"/><path d="M16 26v-8h26v8M24 18v-6h10v6M38 12V6"/><path d="M2 38c5 0 5-2 10-2s5 2 10 2 5-2 10-2 5 2 10 2 5-2 10-2 5 2 10 2" stroke="#f5b800"/></svg></div><span id="logo-sub">Kho → Nesting → Cutting → Bàn giao</span></div>
     <button class="menu-btn" id="menu" aria-expanded="false">Menu</button>
     <div class="collapse">
       <div><h4>Chức năng</h4><nav class="nav" id="nav"></nav></div>
-      <div><h4>Dự án</h4><div class="plist" id="plist"></div></div>
+      <div class="plist-wrap" hidden><h4>Dự án</h4><div class="plist" id="plist"></div></div>
       <div class="foot"><span id="asof"></span><br><a href="lich_su/">Báo cáo các ngày trước</a><br><a href="#" id="lnk-src">Nguồn dữ liệu &amp; làm sạch</a></div>
     </div>
-  </aside>
+  <div class="rail-art"><svg viewBox="0 0 220 150" fill="none" stroke="#f3c7c9" stroke-width="1.3" stroke-linejoin="round" stroke-linecap="round">
+<path d="M20 120h170l-14 18H40z"/><path d="M40 120V98h110v22M60 98V84h60v14M70 84V74h22v10M128 98V88h14v10"/><path d="M48 108h8M64 108h8M80 108h8M96 108h8M112 108h8M128 108h8"/>
+<path d="M150 22v98M150 22h52M150 22l-30 6h30M196 22v34M192 56h8v8h-8zM150 40l18-18M150 60l18-18M150 80l18-18M150 100l18-18"/><path d="M168 22v98M160 120h-20"/>
+<path d="M30 58v62M24 58h40M30 58l-14 5h14M58 58v18"/><path d="M8 140c10 0 10-3 20-3s10 3 20 3 10-3 20-3 10 3 20 3 10-3 20-3 10 3 20 3 10-3 20-3 10 3 20 3 10-3 20-3"/></svg>
+<p>BUILD TODAY<br>FOR A STRONGER<br>TOMORROW<i></i></p></div></aside>
   <div class="main">
     <header class="band"><div class="in">
-      <div><div class="crumb" id="crumb">Tổng quan</div><h1 id="title">Toàn bộ dự án</h1></div>
-      <div class="right"><button class="hdr-btn" id="theme">Sáng / Tối</button><button class="hdr-btn" id="csv" title="Xuất các bảng đang hiển thị ra file Excel">Xuất Excel</button><button class="hdr-btn" id="prn" hidden>Xuất PDF</button><span class="chip-date" id="dchip"></span></div>
+      <div class="tb-brand"><b>DDC-Shipyard</b><span>Hệ thống quản trị chuỗi thép · SC Vũng Tàu</span></div>
+      <label class="gs"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input id="gs" type="search" list="gs-l" placeholder="Tìm dự án, LSX, quy cách thép…"><datalist id="gs-l"></datalist></label>
+      <div class="right"><button class="bell" id="bell" title="Cảnh báo cần xử lý"><svg viewBox="0 0 24 24"><path d="M12 22a2.5 2.5 0 0 0 2.4-2h-4.8a2.5 2.5 0 0 0 2.4 2zM19 17v-6a7 7 0 0 0-5.5-6.8V3a1.5 1.5 0 0 0-3 0v1.2A7 7 0 0 0 5 11v6l-2 2v1h18v-1z"/></svg><b id="bell-n"></b></button><span class="sfc" id="sfc"></span><span class="chip-date" id="dchip"></span><button class="hdr-btn" id="theme">Sáng / Tối</button></div>
     </div></header>
+    <section class="hero" id="hero"><div class="hero-ic"><svg id="hero-svg" viewBox="0 0 24 24"></svg></div><div class="hero-tx"><div class="crumb" id="crumb"></div><h1 id="title"></h1><div class="hero-s" id="hero-s"></div></div>
+      <div class="hero-art"><svg viewBox="0 0 900 120" preserveAspectRatio="xMaxYMid slice"><defs>
+<linearGradient id="hs" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f6e4c8"/><stop offset=".6" stop-color="#f2b46a"/><stop offset="1" stop-color="#d9772f"/></linearGradient>
+<radialGradient id="hg" cx=".78" cy=".55" r=".45"><stop offset="0" stop-color="#fff2c4" stop-opacity=".95"/><stop offset="1" stop-color="#fff2c4" stop-opacity="0"/></radialGradient>
+<linearGradient id="hull" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8e2a1c"/><stop offset="1" stop-color="#3b1610"/></linearGradient></defs>
+<rect width="900" height="120" fill="url(#hs)"/><rect width="900" height="120" fill="url(#hg)"/>
+<g fill="#b9723f" opacity=".55"><rect x="250" y="40" width="4" height="70"/><path d="M230 40h60v3h-60z"/><rect x="330" y="30" width="5" height="80"/><path d="M305 30h80v4h-80z"/><rect x="820" y="36" width="4" height="74"/><path d="M790 36h70v3h-70z"/><rect x="860" y="52" width="3" height="58"/></g>
+<g fill="#5a2a1a"><rect x="400" y="14" width="7" height="96"/><path d="M372 14h120v6H372z"/><path d="M403 20l-26 16h52z" opacity=".5"/><rect x="470" y="20" width="2" height="34"/><rect x="465" y="54" width="12" height="7"/>
+<rect x="700" y="8" width="8" height="102"/><path d="M660 8h140v7H660z"/><path d="M704 15l34 22h-68z" opacity=".5"/><rect x="780" y="15" width="2" height="40"/><rect x="775" y="55" width="12" height="8"/>
+<rect x="560" y="26" width="6" height="84"/><path d="M538 26h80v5h-80z"/></g>
+<path d="M430 74h330l-18 34H452z" fill="url(#hull)"/><rect x="470" y="58" width="120" height="16" fill="#6b2a1c"/><rect x="600" y="46" width="70" height="28" fill="#7a3322"/><rect x="615" y="34" width="20" height="12" fill="#5a2418"/>
+<g fill="#ffd27a" opacity=".8"><rect x="480" y="63" width="8" height="4"/><rect x="496" y="63" width="8" height="4"/><rect x="512" y="63" width="8" height="4"/><rect x="528" y="63" width="8" height="4"/><rect x="608" y="52" width="8" height="4"/><rect x="624" y="52" width="8" height="4"/><rect x="640" y="52" width="8" height="4"/></g>
+<rect y="108" width="900" height="12" fill="#6a3a24" opacity=".85"/><path d="M0 110h900" stroke="#f7c27a" stroke-width="1" opacity=".5"/></svg></div><div class="hero-tag">Chất lượng<br>tạo nên những con tàu<br>vượt thời gian</div>
+      <div class="hero-act"><button class="hbtn" id="reload"><svg viewBox="0 0 24 24" fill="none" stroke="#2a2020" stroke-width="2"><path d="M20 12a8 8 0 1 1-2.3-5.7M20 4v4h-4"/></svg>Làm mới</button><button class="hbtn" id="csv" title="Xuất các bảng đang hiển thị ra file Excel"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3" fill="#1d7a3e"/><path d="M8 8l8 8M16 8l-8 8" stroke="#fff" stroke-width="2.2"/></svg>Xuất Excel</button><button class="hbtn" id="prn" hidden><svg viewBox="0 0 24 24"><path d="M6 2h9l5 5v15H6z" fill="#d7261e"/><text x="13" y="18" font-size="6.5" font-weight="800" fill="#fff" text-anchor="middle" font-family="Arial">PDF</text></svg>Xuất PDF</button></div></section>
     <main class="content" id="view"></main>
   </div>
 </div>
@@ -1234,7 +1406,7 @@ function actions(){
   P.filter(p=>p.cut-p.bg>Math.max(20,p.kl*0.05)).sort((x,y)=>(y.cut-y.bg)-(x.cut-x.bg)).slice(0,2).forEach(p=>S.push({viec:`Bàn giao ${T(p.cut-p.bg)} t hàng đã cắt`,du_an:p.name,phu_trach:'Xưởng Cutting + đơn vị nhận'}));
   return {M,S:S.slice(0,8)}}
 
-V.tt={name:'Tóm tắt điều hành',title:'Báo cáo điều hành chuỗi thép – SC Vũng Tàu',ico:'<path d="M12 2l9 4v6c0 5-3.8 9.3-9 10-5.2-.7-9-5-9-10V6z"/><path d="M12 8v5M12 16h.01"/>',render(){
+const V_TT_OLD={name:'Tóm tắt điều hành',title:'Báo cáo điều hành chuỗi thép – SC Vũng Tàu',ico:'<path d="M12 2l9 4v6c0 5-3.8 9.3-9 10-5.2-.7-9-5-9-10V6z"/><path d="M12 8v5M12 16h.01"/>',render(){
   const t=D.tot,b=D.bal,pv=PRV,att=attention(),{M,S}=actions();
   const NP=P.filter(p=>p.nes),ntp=nesTp(NP);
   const ref=pv?`so với kỳ trước <b>${fdate(pv.date)}</b>`:'chưa có kỳ trước để so sánh';
@@ -1267,6 +1439,257 @@ V.tt={name:'Tóm tắt điều hành',title:'Báo cáo điều hành chuỗi th�
    ${!M.length&&!S.length?'<tr><td colspan="5" class="empty">Chưa có việc nào.</td></tr>':''}</tbody></table></div>
    <p class="note">Thêm / sửa việc, phụ trách, hạn trong sheet <b>VIEC_CAN_XU_LY</b> của file cấu hình (du_lieu/4_CAU_HINH/MAP_VA_QUY_TAC.xlsx) hoặc Google Sheet gắn qua secret NGUON_VIEC. Việc có trạng thái "Xong" sẽ tự ẩn.</p></section>`;
   return h}};
+/* ================= TÓM TẮT ĐIỀU HÀNH – GIAO DIỆN MỚI ================= */
+const TF={p:'',ph:'',q:'mtd',from:null,to:null};
+function phaseOf(hm){const s=String(hm||'').toUpperCase().trim();if(!s)return 'Chưa ghi hạng mục';
+  if(/TEST|QTHM|QUY TR[IÌ]NH|CWB|THỢ HÀN/.test(s))return 'Test / quy trình hàn';
+  if(/BI[EỆ]N PH[AÁ]P|BPGC|BP GC/.test(s))return 'Biện pháp gia công';
+  let m=s.match(/ZONE\s*(\d+)/);if(m)return 'Zone '+m[1];
+  m=s.match(/B[AÃ]I\s*(\d+)/);if(m)return 'Bãi '+m[1];
+  m=s.match(/\bBAY\s*(\d+)/);if(m)return 'Bay '+m[1];
+  let x=s.split(/\s*[(\[]|\s+-\s*|-(?=[A-Z]{2})|_|,/)[0].trim();if(x.length>34)x=x.slice(0,34)+'…';return x||s.slice(0,34)}
+function phases(p){const G={};(p.lsx||[]).forEach(l=>{if(!(l.kl>0))return;const k=phaseOf(l.hm);(G[k]=G[k]||[]).push(l)});
+  return Object.entries(G).map(([k,L])=>({k,L,kl:sum(L,l=>l.kl),cut:sum(L,l=>l.kl*(l.pc||0)),bg:sum(L,l=>l.kl*(l.pb||0)),open:L.filter(l=>(l.pc??0)<0.999),last:L.map(l=>l.last||'').sort().pop()})).sort((a,b)=>b.kl-a.kl)}
+const ICO={pie:'<path d="M12 3v9h9a9 9 0 1 1-9-9z"/><path d="M15 3.5A9 9 0 0 1 20.5 9H15z"/>',
+ proj:'<path d="M3 21V8l9-5 9 5v13M9 21v-6h6v6"/>',lsx:'<path d="M4 20h16M6 16l3-8 3 5 3-9 3 12"/>',cut:'<path d="M6 3l12 18M18 3L6 21"/><circle cx="6" cy="3" r="2"/><circle cx="18" cy="3" r="2"/>',
+ bg:'<path d="M3 7h11v9H3zM14 10h4l3 3v3h-7"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/>',pct:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/>',warn:'<path d="M12 3l10 18H2zM12 10v5M12 18h.01"/>',
+ bar:'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',pie:'<path d="M12 3v9h9a9 9 0 1 1-9-9z"/>',bell:'<path d="M6 16V11a6 6 0 0 1 12 0v5l2 2H4zM10 20h4"/>',mach:'<path d="M3 17h18M5 17V9h6v8M11 12h8v5M7 9V5"/>',star:'<path d="M12 3l2.8 5.8 6.2.9-4.5 4.4 1 6.2L12 17l-5.5 3.3 1-6.2L3 9.7l6.2-.9z"/>',ship:'<path d="M3 15h18l-2 5H5zM6 15V9h12v6M10 9V5h4v4"/>'};
+const svgI=(k,c='var(--brand)',s=20)=>`<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICO[k]}</svg>`;
+function spark(v,c='var(--brand)'){const n=v.length;if(n<2)return '';const mx=Math.max(1e-9,...v),W=200,H=34;const x=i=>i/(n-1)*W,y=a=>H-3-(a/mx)*(H-8);
+  const pts=v.map((a,i)=>`${x(i).toFixed(1)},${y(a).toFixed(1)}`).join(' ');
+  return `<svg class="sp" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none"><polygon points="0,${H} ${pts} ${W},${H}" fill="${c}" opacity=".13"/><polyline points="${pts}" fill="none" stroke="${c}" stroke-width="2" vector-effect="non-scaling-stroke"/></svg>`}
+function combo(labels,A,B,L,{la,lb,ll}){const W=520,H=230,pl=40,pr=14,pt=14,pb=28,n=labels.length,iw=(W-pl-pr)/n;
+  const mx=Math.max(1,...A,...B,...(L||[]).filter(x=>x!=null))*1.12,y=v=>pt+(H-pt-pb)*(1-v/mx);let g='';
+  for(let k=0;k<=4;k++){const v=mx*k/4,yy=y(v);g+=`<line x1="${pl}" x2="${W-pr}" y1="${yy}" y2="${yy}" stroke="var(--line)"/><text x="${pl-5}" y="${yy+4}" font-size="10" text-anchor="end" fill="var(--muted)">${T0(v)}</text>`}
+  const bw=Math.min(16,iw*0.32);let bars='';labels.forEach((lb2,i)=>{const cx=pl+iw*i+iw/2;
+    bars+=`<rect x="${cx-bw-1}" y="${y(A[i])}" width="${bw}" height="${Math.max(0,H-pb-y(A[i]))}" rx="2" fill="var(--s0)"><title>${lb2} · ${la}: ${T(A[i])} t</title></rect><rect x="${cx+1}" y="${y(B[i])}" width="${bw}" height="${Math.max(0,H-pb-y(B[i]))}" rx="2" fill="var(--acc)"><title>${lb2} · ${lb}: ${T(B[i])} t</title></rect><text x="${cx}" y="${H-10}" font-size="10" text-anchor="middle" fill="var(--muted)">${lb2}</text>`});
+  let ln='';if(L){const p=L.map((v,i)=>v==null?null:`${(pl+iw*i+iw/2).toFixed(1)},${y(v).toFixed(1)}`).filter(Boolean);ln=`<polyline points="${p.join(' ')}" fill="none" stroke="var(--ink)" stroke-width="1.6" stroke-dasharray="4 3"/>`+L.map((v,i)=>v==null?'':`<circle cx="${pl+iw*i+iw/2}" cy="${y(v)}" r="2.6" fill="var(--panel)" stroke="var(--ink)" stroke-width="1.4"><title>${labels[i]} · ${ll}: ${T(v)} t</title></circle>`).join('')}
+  return `<svg class="ws" viewBox="0 0 ${W} ${H}">${g}${bars}${ln}</svg>`}
+function tdonut(parts,center,sub){const tot=sum(parts,p=>p.v)||1,R=60,r=38,cx=75,cy=75;let a=-Math.PI/2,s='';
+  parts.forEach(p=>{if(p.v<=0)return;const a2=a+p.v/tot*Math.PI*2,lg=a2-a>Math.PI?1:0;const P1=[cx+R*Math.cos(a),cy+R*Math.sin(a)],P2=[cx+R*Math.cos(a2),cy+R*Math.sin(a2)],P3=[cx+r*Math.cos(a2),cy+r*Math.sin(a2)],P4=[cx+r*Math.cos(a),cy+r*Math.sin(a)];
+    s+=p.v>=tot?`<circle cx="${cx}" cy="${cy}" r="${(R+r)/2}" fill="none" stroke="${p.c}" stroke-width="${R-r}"/>`:`<path d="M${P1}A${R},${R} 0 ${lg} 1 ${P2}L${P3}A${r},${r} 0 ${lg} 0 ${P4}Z" fill="${p.c}"><title>${p.n}: ${p.v}</title></path>`;
+    const am=(a+a2)/2;if(p.v/tot>0.07)s+=`<text x="${cx+(R+r)/2*Math.cos(am)}" y="${cy+(R+r)/2*Math.sin(am)+4}" font-size="10.5" font-weight="700" text-anchor="middle" fill="#fff">${Math.round(p.v/tot*100)}%</text>`;a=a2});
+  return `<svg viewBox="0 0 150 150" width="150" height="150">${s}<text x="${cx}" y="${cy+2}" font-size="26" font-weight="800" text-anchor="middle" fill="var(--ink)">${center}</text><text x="${cx}" y="${cy+18}" font-size="10.5" text-anchor="middle" fill="var(--muted)">${sub}</text></svg>`}
+function cumu(labels,V){const W=420,H=170,pl=36,pr=40,pt=12,pb=24,n=labels.length,iw=(W-pl-pr)/n;const mx=Math.max(1,...V)*1.15,C=[];V.reduce((a,v,i)=>(C[i]=a+v,a+v),0);const mc=Math.max(1,...C)*1.08;
+  const y=v=>pt+(H-pt-pb)*(1-v/mx),yc=v=>pt+(H-pt-pb)*(1-v/mc);let s='';
+  for(let k=0;k<=3;k++){const yy=pt+(H-pt-pb)*k/3;s+=`<line x1="${pl}" x2="${W-pr}" y1="${yy}" y2="${yy}" stroke="var(--line)"/><text x="${pl-4}" y="${yy+4}" font-size="9.5" text-anchor="end" fill="var(--muted)">${T0(mx*(1-k/3))}</text><text x="${W-pr+4}" y="${yy+4}" font-size="9.5" fill="var(--brand)">${T0(mc*(1-k/3))}</text>`}
+  labels.forEach((l,i)=>{const cx=pl+iw*i+iw/2,bw=Math.min(18,iw*.55);s+=`<rect x="${cx-bw/2}" y="${y(V[i])}" width="${bw}" height="${Math.max(0,H-pb-y(V[i]))}" rx="2" fill="var(--acc)"><title>${l}: bàn giao ${T(V[i])} t</title></rect><text x="${cx}" y="${H-8}" font-size="9.5" text-anchor="middle" fill="var(--muted)">${l}</text>`});
+  s+=`<polyline points="${C.map((v,i)=>`${pl+iw*i+iw/2},${yc(v)}`).join(' ')}" fill="none" stroke="var(--brand)" stroke-width="2"/>`+C.map((v,i)=>`<circle cx="${pl+iw*i+iw/2}" cy="${yc(v)}" r="2.5" fill="var(--brand)"><title>${labels[i]}: lũy kế ${T(v)} t</title></circle>`).join('');
+  return `<svg class="ws" viewBox="0 0 ${W} ${H}">${s}</svg>`}
+const ART=`<svg viewBox="0 0 600 140" preserveAspectRatio="xMidYMax slice"><defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a0a12"/><stop offset=".55" stop-color="#a3201f"/><stop offset="1" stop-color="#f5a623"/></linearGradient></defs>
+ <rect width="600" height="140" fill="url(#sky)"/><circle cx="470" cy="104" r="26" fill="#ffd36a" opacity=".85"/>
+ <g fill="#1e0508" opacity=".92"><rect x="0" y="118" width="600" height="22"/>
+ <path d="M150 118h250l-18 16H168z"/><rect x="190" y="98" width="150" height="20"/><rect x="300" y="82" width="34" height="16"/><rect x="214" y="88" width="40" height="10"/>
+ <rect x="60" y="34" width="6" height="84"/><path d="M40 34h110v5H40z"/><path d="M63 34L120 39M63 34L44 39" stroke="#1e0508" stroke-width="2"/><rect x="130" y="39" width="2" height="34"/><rect x="126" y="73" width="10" height="6"/>
+ <rect x="430" y="20" width="7" height="98"/><path d="M400 20h130v6H400z"/><rect x="510" y="26" width="2" height="40"/><rect x="505" y="66" width="12" height="7"/><path d="M433 26l-28 20h56z" opacity=".6"/>
+ <rect x="545" y="70" width="5" height="48"/><path d="M528 70h50v4h-50z"/></g>
+ <g fill="#ffd36a" opacity=".55"><rect x="200" y="103" width="6" height="4"/><rect x="214" y="103" width="6" height="4"/><rect x="228" y="103" width="6" height="4"/><rect x="242" y="103" width="6" height="4"/><rect x="256" y="103" width="6" height="4"/><rect x="270" y="103" width="6" height="4"/></g></svg>`;
+const icoG=k=>`<i>${svgI(k,'var(--brand)',22)}</i>`;
+function TT_DN(hc,PS,tot5){const G=[['Đỏ – rủi ro',hc.bad,'#d32f2f'],['Cam – theo dõi',hc.warn,'#f5b800'],['Đang cắt đúng tiến độ',hc.run,'#5b8def'],['Đã cắt xong',hc.done,'#2e9e5b']];
+  return `<div class="cd"><div class="ch"><h3>${icoG('pie')}Cơ cấu trạng thái dự án</h3><button class="lk" data-view="ov">Xem</button></div>
+   <div class="dnut">${tdonut(G.map(x=>({n:x[0],v:x[1],c:x[2]})),PS.length,'dự án')}<ul>${G.map(x=>`<li data-view="ov"><i style="background:${x[2]}"></i>${x[0]}<b>${x[1]}</b><em>(${PC(x[1]/tot5)})</em></li>`).join('')}</ul></div></div>`}
+function TT_LS(pp,ph){const L=(ph?ph.L:pp.lsx).filter(l=>l.kl>0);
+  const G=[['Đã cắt xong',L.filter(l=>(l.pc??0)>=0.999),'#2e9e5b',l=>l.kl],['Đang cắt dở',L.filter(l=>(l.pc||0)>0&&(l.pc||0)<0.999),'#f2c14e',l=>l.kl*(1-l.pc)],['Chưa cắt',L.filter(l=>!(l.pc>0)),'#d32f2f',l=>l.kl]];
+  return `<div class="cd"><div class="ch"><h3>${icoG('pie')}Trạng thái LSX${ph?' · '+esc(ph.k):''}</h3><button class="lk" data-view="sx">Xem</button></div>
+   <div class="dnut">${tdonut(G.map(x=>({n:x[0],v:x[1].length,c:x[2]})),L.length,'LSX')}<ul>${G.map(x=>`<li data-view="sx"><i style="background:${x[2]}"></i>${x[0]}<b>${x[1].length}</b><em>${T(sum(x[1],x[3]))} t</em></li>`).join('')}</ul></div>
+   <p class="note">Số lệnh theo trạng thái cắt. Tấn: đã cắt xong = KL lệnh; đang cắt / chưa cắt = KL còn phải cắt.</p></div>`}
+function TT_TOPL(pp,ph){const L=(ph?ph.L:pp.lsx).filter(l=>l.kl>0&&(l.pc??0)<0.999).map(l=>({...l,rem:l.kl*(1-(l.pc||0)),age:l.bh?Math.round((DEND-Date.parse(l.bh+'T00:00:00Z'))/DAY):null})).sort((a,b)=>b.rem-a.rem).slice(0,6);
+  const pri=a=>a>60?['p-vh','Rất cao']:a>30?['p-h','Cao']:a>14?['p-m','Trung bình']:['p-l','Thấp'];
+  return `<div class="cd"><div class="ch"><h3>${icoG('star')}LSX trọng điểm${ph?' · '+esc(ph.k):''}</h3><button class="lk" data-view="sx">Xem tất cả</button></div>
+   <div class="tw"><table class="tp"><thead><tr><th>Lệnh</th><th>Hạng mục</th><th class="n">Còn cắt (t)</th><th>Tiến độ cắt</th><th>Ưu tiên</th></tr></thead><tbody>
+   ${L.map(l=>{const c=(l.pc||0)>=0.6?'#f2c14e':'#d32f2f',q=pri(l.age||0);return `<tr data-drill="lsx|${esc(l.lsx)}" style="cursor:pointer"><td><b>${esc(l.lsx)}</b></td><td class="hm" title="${esc(l.hm||'')}">${esc(l.hm||'–')}</td><td class="n" style="color:var(--brand);font-weight:700">${T(l.rem)}</td><td><div class="mb"><span><i style="width:${(l.pc||0)*100}%;background:${c}"></i></span>${Math.round((l.pc||0)*100)}%</div></td><td><span class="lv ${q[0]}" title="${l.age??'–'} ngày từ ban hành">${q[1]}</span></td></tr>`}).join('')||'<tr><td colspan="5" class="empty">Tất cả LSX đã cắt xong.</td></tr>'}</tbody></table></div></div>`}
+function TT_PROJ(pp,ph,PHS){
+  const G=ph?[ph]:PHS;
+  const t1=`<div class="cd"><div class="ch"><h3>${icoG('bar')}Tiến độ theo giai đoạn / hạng mục</h3><span class="dd">${G.length} nhóm</span></div>
+   <div class="tw" style="max-height:470px"><table class="al gp2"><thead><tr><th>Giai đoạn / hạng mục</th><th class="n">LSX</th><th class="n">KL (t)</th><th>% cắt</th><th class="n">% bàn giao</th><th class="n">Còn cắt (t)</th><th class="n">Cắt chờ giao (t)</th><th>Cắt gần nhất</th></tr></thead><tbody>
+   ${G.map(x=>{const pc=x.cut/(x.kl||1),pb=x.bg/(x.kl||1),c=pc>=0.999?'#2e9e5b':pc>=0.6?'#f2c14e':'#d32f2f';return `<tr data-ph="${esc(x.k)}" style="cursor:pointer"><td><b>${esc(x.k)}</b></td><td class="n">${x.L.length}${x.open.length?` <span class="muted">(${x.open.length} mở)</span>`:''}</td><td class="n">${T(x.kl)}</td><td><div class="mb"><span><i style="width:${pc*100}%;background:${c}"></i></span>${PC(pc)}</div></td><td class="n">${PC(pb)}</td><td class="n" style="${x.kl-x.cut>0.05?'color:var(--brand);font-weight:700':''}">${T(Math.max(0,x.kl-x.cut))}</td><td class="n">${T(Math.max(0,x.cut-x.bg))}</td><td>${x.last?fdate(x.last):'–'}</td></tr>`}).join('')}</tbody>
+   <tfoot><tr><td>Tổng</td><td class="n">${sum(G,x=>x.L.length)}</td><td class="n">${T(sum(G,x=>x.kl))}</td><td>${PC(sum(G,x=>x.cut)/(sum(G,x=>x.kl)||1))}</td><td class="n">${PC(sum(G,x=>x.bg)/(sum(G,x=>x.kl)||1))}</td><td class="n">${T(sum(G,x=>Math.max(0,x.kl-x.cut)))}</td><td class="n">${T(sum(G,x=>Math.max(0,x.cut-x.bg)))}</td><td></td></tr></tfoot></table></div>
+   <p class="note">Giai đoạn được gom tự động từ cột "Hạng mục" của LSX (Zone, Bãi, Bay, Biện pháp gia công, Test hàn…). Bấm một dòng để lọc theo giai đoạn đó.</p></div>`;
+  const k=pp.kho,bal=(k&&k.bal||[]).slice().sort((a,b)=>b.buy-a.buy||b.need-a.need),ns=pp.nes_st||{};
+  const t2=`<div class="cd"><div class="ch"><h3>${icoG('warn')}Thép &amp; vật tư của dự án</h3><button class="lk" data-view="th">Xem kho</button></div>
+   <div class="ms ms4"><div><span>Tồn kho dự án<b>${k?T(k.ton)+' t':'chưa map kho'}</b></span></div><div><span>Cần cho nesting chưa cắt<b>${k?T(k.need)+' t':'–'}</b></span></div><div><span>Lấy kho chung / BRAVO<b>${k?T(k.common)+' t':'–'}</b></span></div><div><span>Phải mua<b style="color:${k&&k.buy>0.05?'var(--brand)':'#1d7a3e'}">${k?T(k.buy)+' t':'–'}</b></span></div></div>
+   <div class="tw" style="max-height:330px"><table class="al"><thead><tr><th>Quy cách</th><th class="n">Cần (t)</th><th class="n">Tồn dự án</th><th class="n">Kho chung</th><th class="n">Phải mua (t)</th><th>Đánh giá</th></tr></thead><tbody>
+   ${bal.map(b=>`<tr data-drill="key|${esc(b.k)}" style="cursor:pointer"><td><b>${esc(b.k)}</b></td><td class="n">${T(b.need)}</td><td class="n">${T(b.fo)}</td><td class="n">${T(b.fc)}</td><td class="n" style="${b.buy>0.05?'color:var(--brand);font-weight:700':''}">${T(b.buy)}</td><td><span class="lv ${b.buy>0.05?'bad':b.fc>0.05?'warn':'ok'}">${b.buy>0.05?'Phải mua':b.fc>0.05?'Dùng kho chung':'Đủ'}</span></td></tr>`).join('')||'<tr><td colspan="6" class="empty">Không có nesting chưa cắt cần thép.</td></tr>'}</tbody></table></div>
+   <p class="note">Nesting: ${Object.entries(ns).map(([s,v])=>`${esc(s)} ${v.n} tấm (${T(v.t)} t)`).join(' · ')||'chưa có file nesting'}. Thứ tự cân đối: tồn dự án → kho chung/BRAVO → phải mua.</p></div>`;
+  return `<div class="g2p">${t1}${t2}</div>`}
+V.tt={name:'Tóm tắt điều hành',title:'Báo cáo điều hành chuỗi thép – SC Vũng Tàu',ico:'<path d="M12 2l9 4v6c0 5-3.8 9.3-9 10-5.2-.7-9-5-9-10V6z"/><path d="M12 8v5M12 16h.01"/>',render(){
+  const pi=TF.p,pp=pi===''?null:P[+pi],[f,t2]=TF.q?QUICK[TF.q].f():[TF.from,TF.to],len=t2-f,a=agg(f,t2,'day',{p:pi,m:''}),ap=agg(Math.max(D0,f-len-DAY),f-DAY,'day',{p:pi,m:''});
+  const qn=TF.q?QUICK[TF.q].n:`${dm(f)} – ${dm(t2)}`,PHS=pp?phases(pp):[],ph=pp&&TF.ph?PHS.find(x=>x.k===TF.ph):null,inPh=l=>!ph||phaseOf(l.hm)===TF.ph,whole=ph?' (cả dự án)':'';
+  const PS=pp?[pp]:P.filter(p=>p.kl>=1),att=pp?issues(pp).map(x=>({s:x.s==='neu'?'info':x.s,h:x.t,go:/thép/i.test(x.t)?'v:th':/nesting/i.test(x.t)?'v:ne':/bàn giao/i.test(x.t)?'v:dh':'v:sx'})):attention();
+  const nOpen=PS.filter(p=>(p.pc??1)<0.999).length,OL=openLsx.filter(l=>(!pp||l.p===pp)&&inPh(l)),OLc=OL.filter(l=>(l.pc||0)>0);
+  const req=ph?ph.kl:pp?pp.req:D.tot.req,cut=ph?ph.cut:pp?pp.cut:D.tot.cut,bg=ph?ph.bg:pp?pp.bg:D.tot.bg,kl=ph?ph.kl:pp?pp.kl:D.tot.kl;
+  const hc={bad:0,warn:0,run:0,done:0};PS.forEach(p=>{const h=health(p).c;if(h==='bad')hc.bad++;else if(h==='warn')hc.warn++;else if((p.pc??1)>=0.999)hc.done++;else hc.run++});
+  const dl=(c,p)=>{if(!p)return '<span class="muted">kỳ trước: –</span>';const d=(c-p)/p;return `<span style="color:${d>=0?'var(--good)':'var(--bad)'};font-weight:700">${d>=0?'▲':'▼'} ${PC(Math.abs(d))}</span> <span class="muted">so kỳ trước</span>`};
+  const mo=D.months.slice(-12),lab=mo.map(m=>'T'+(+m.slice(5))),mc=(pp?pp.m_cut:D.m_cut).slice(-12),mb=(pp?pp.m_bg:D.m_bg).slice(-12),tg=pp?null:mo.map(m=>{const g=getTarget(m);return g&&g.v?g.v:null});
+  const K=[
+   pp?{i:'lsx',l:ph?'Giai đoạn · '+ph.k:'Lệnh sản xuất của dự án',v:(ph?ph.L:pp.lsx.filter(l=>l.kl>0)).length,u:'LSX',s:`${T(kl)} t · ${ph?'đã cắt '+PC(cut/(kl||1)):PHS.length+' giai đoạn / hạng mục'}`,sp:spark(mc)}:{i:'proj',l:'Tổng dự án',v:PS.length,u:'dự án',s:`${nOpen} đang sản xuất · ${PS.length-nOpen} đã cắt xong`,sp:spark(mc.map((v,i)=>v>0?1:0).map((v,i,arr)=>arr.slice(0,i+1).reduce((a,b)=>a+b,0)))},
+   {i:'lsx',l:'LSX đang sản xuất',v:OL.length,u:'lệnh',s:`${OLc.length} đang cắt · còn ${T(sum(OL,l=>l.rem))} t`,sp:spark(a.S[5]),y:1},
+   {i:'cut',l:'Sản lượng cắt · '+(qn.toLowerCase()+whole),v:T(a.tot[0]),u:'t',s:dl(a.tot[0],ap.tot[0]),sp:spark(a.S[0])},
+   {i:'bg',l:'Bàn giao · '+(qn.toLowerCase()+whole),v:T(a.tot[4]),u:'t',s:dl(a.tot[4],ap.tot[4]),sp:spark(a.S[4],'var(--acc)'),y:1},
+   {i:'pct',l:'Tỷ lệ cắt hoàn thành',v:PC(cut/(req||1)),u:'',s:`đã cắt ${T(cut)} / ${T(req)} t`,pg:cut/(req||1)},
+   {i:'warn',l:'Cảnh báo cần xử lý',v:att.filter(x=>x.s!=='info').length+(pp?0:0),u:'mục',s:(pp?`trạng thái dự án: <b>${ST_NAME[health(pp).c]}</b>`:`<span style="color:var(--bad);font-weight:700">${hc.bad} dự án đỏ</span> · ${hc.warn} cam`),y:1}];
+  const pOpt=P.map((p,i)=>`<option value="${i}" ${TF.p===String(i)?'selected':''}>${esc(p.name)}</option>`).join('');
+  const qOpt=Object.entries(QUICK).map(([k,q])=>`<option value="${k}" ${TF.q===k?'selected':''}>${q.n} (${dm(q.f()[0])} – ${dm(q.f()[1])})</option>`).join('');
+  const byM=Object.entries(a.byM).map(([k,v])=>({n:MACH[k],v:v[0]})).filter(x=>x.v>0.05).sort((x,y)=>y.v-x.v),mxm=Math.max(1e-9,...byM.map(x=>x.v)),totm=sum(byM,x=>x.v)||1;
+  const TOP=(pp?[pp]:P.filter(p=>p.kl>=1&&(p.pc??1)<0.999)).sort((x,y)=>(y.req-y.cut)-(x.req-x.cut)).slice(0,6);
+  const lv={bad:['bad','Nghiêm trọng'],warn:['warn','Cần theo dõi'],info:['info','Thông tin']};
+  const strip=s=>String(s).replace(/<[^>]+>/g,'');
+  const icoC=(k,c)=>`<i>${svgI(k,c||'var(--brand)',22)}</i>`;
+  const cup=i=>`<svg viewBox="0 0 24 24" width="22" height="22"><path d="M7 4h10v4a5 5 0 0 1-10 0z" fill="${['#e9b300','#a9b1ba','#c98250'][i]}"/><path d="M7 6H4v1a3 3 0 0 0 3 3M17 6h3v1a3 3 0 0 1-3 3M10 14h4v3h-4zM8 20h8v-2H8z" fill="${['#e9b300','#a9b1ba','#c98250'][i]}"/></svg>`;
+  const tot5=sum([hc.bad,hc.warn,hc.run,hc.done],x=>x)||1;
+  let h=`
+  <div class="tf"><label>Dự án<select id="tf-p"><option value="">Tất cả</option>${pOpt}</select></label>
+   <label>Giai đoạn / hạng mục<select id="tf-ph" ${pp?'':'disabled'}><option value="">${pp?'Tất cả ('+PHS.length+')':'Chọn dự án trước'}</option>${PHS.map(x=>`<option value="${esc(x.k)}" ${TF.ph===x.k?'selected':''}>${esc(x.k)} · ${T(x.kl)} t</option>`).join('')}</select></label>
+   <label>Thời gian<select id="tf-q">${qOpt}<option value="" ${TF.q===''?'selected':''}>Tùy chọn ngày…</option></select></label>
+   <label class="dt">Từ ngày<input type="date" id="tf-f" value="${isoD(f)}" min="${D.ev.d0}" max="${D.date}"></label><label class="dt">Đến ngày<input type="date" id="tf-t" value="${isoD(t2)}" min="${D.ev.d0}" max="${D.date}"></label>
+   <div class="btns"><button class="go" id="tf-go"><svg viewBox="0 0 24 24"><path d="M3 4h18l-7 8v6l-4 2v-8z"/></svg>Áp dụng lọc</button><button id="tf-rs"><svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 3-6.2M4 4v4h4"/></svg>Đặt lại</button></div></div>
+  <div class="kpis">${K.map(k=>`<div class="kpi">${kIco(k.l)}<div class="l">${k.l}</div><div class="v">${k.v}<small>${k.u}</small></div><div class="s">${k.s}</div>${k.pg!=null?`<div class="m"><i style="width:${Math.min(100,k.pg*100)}%"></i></div>`:(k.sp||'').replace('class="sp"','class="kspark"')}</div>`).join('')}</div>
+  <div class="g3">
+   <div class="cd"><div class="ch"><h3>${icoC('bar')}Sản lượng theo tháng${pp?' · '+esc(pp.name):''}</h3><span class="dd">12 tháng gần nhất</span></div>
+     <div class="lg"><span><i style="background:var(--s0)"></i>Sản lượng cắt (tấn)</span><span><i style="background:var(--acc)"></i>Bàn giao (tấn)</span>${tg?'<span><i style="background:var(--ink);height:2px;border-radius:0;vertical-align:3px"></i>Mục tiêu cắt</span>':''}</div>
+     ${combo(lab,mc,mb,tg,{la:'Cắt',lb:'Bàn giao',ll:'Mục tiêu'})}</div>
+   ${pp?TT_LS(pp,ph):TT_DN(hc,PS,tot5)}
+   <div class="cd"><div class="ch"><h3>${icoC('warn')}Cảnh báo điều hành</h3><button class="lk" data-view="tt">Xem tất cả</button></div>
+     <div class="tw"><table class="al"><thead><tr><th>STT</th><th>Nội dung cảnh báo</th><th>Mức độ</th><th>Xem</th></tr></thead><tbody>${att.map((x,i)=>`<tr data-view="${x.go.slice(2)}"><td>${i+1}</td><td>${strip(x.h)}</td><td><span class="lv ${lv[x.s][0]}">${lv[x.s][1]}</span></td><td style="color:var(--brand);font-weight:700">›</td></tr>`).join('')}</tbody></table></div></div></div>
+  <div class="g3b">
+   <div class="cd"><div class="ch"><h3>${icoC('mach')}Sản lượng theo máy cắt</h3><span class="dd">${qn}</span></div>
+     <div class="lg"><span><i style="background:#d32f2f"></i>Sản lượng cắt (tấn)</span><span style="margin-left:auto">Tỷ trọng</span></div>
+     ${byM.length?byM.slice(0,8).map(x=>`<div class="mrow"><span class="nm" title="${esc(x.n)}">${esc(x.n)}</span><div class="tr"><i style="width:${x.v/mxm*100}%"></i></div><span class="vv">${T(x.v)}</span><span class="pc2">${Math.round(x.v/totm*100)}%</span></div>`).join(''):'<p class="empty">Không có sản lượng trong kỳ.</p>'}</div>
+   ${pp?TT_TOPL(pp,ph):`   <div class="cd"><div class="ch"><h3>${icoC('star')}Top dự án trọng điểm</h3><button class="lk" data-view="ov">Xem tất cả</button></div>
+     <div class="tw"><table class="tp"><thead><tr><th>#</th><th>Dự án</th><th class="n">Khối lượng (t)</th><th>Tiến độ cắt</th><th class="n">Bàn giao</th></tr></thead><tbody>
+     ${TOP.map((p,i)=>{const c=(p.pc||0)>=0.9?'#2e9e5b':(p.pc||0)>=0.6?'#f5b800':'#d32f2f';return `<tr data-go="${esc(p.id)}"><td class="rk">${i<3?cup(i):i+1}</td><td><b>${esc(p.name)}</b></td><td class="n">${T(p.kl)}</td><td><div class="mb"><span><i style="width:${(p.pc||0)*100}%;background:${c}"></i></span>${Math.round((p.pc||0)*100)}%</div></td><td class="n">${PC(p.pb)}</td></tr>`}).join('')||'<tr><td colspan="5" class="empty">Không có dự án đang cắt.</td></tr>'}</tbody></table></div></div>`}
+   <div class="cd"><div class="ch"><h3>${icoC('ship')}Tổng quan giao hàng</h3><span class="dd">Theo tháng</span></div>
+     <div class="lg"><span><i style="background:var(--acc)"></i>Khối lượng bàn giao (tấn)</span><span><i style="background:var(--brand)"></i>Lũy kế (trục phải)</span></div>
+     ${cumu(lab,mb)}
+     <div class="ms"><div><svg viewBox="0 0 24 24">${KIC.ship}</svg><span>Bàn giao kỳ<b>${T(a.tot[4])} t</b>${ap.tot[4]?`<em style="color:${a.tot[4]>=ap.tot[4]?'#1d7a3e':'var(--brand)'}">${a.tot[4]>=ap.tot[4]?'▲':'▼'} ${PC(Math.abs(a.tot[4]/ap.tot[4]-1))}</em>`:''}</span></div>
+      <div><svg viewBox="0 0 24 24">${KIC.box}</svg><span>Đã cắt chờ giao<b>${T(Math.max(0,cut-bg))} t</b></span></div><div><svg viewBox="0 0 24 24">${KIC.target}</svg><span>Đã giao / tổng KL<b>${PC(bg/(kl||1))}</b></span></div></div></div></div>`;
+  const old=V_TT_OLD.render(),k0=old.indexOf('<section><div class="sec-h"><h2>Sức khỏe dự án');
+  return h+(pp?TT_PROJ(pp,ph,PHS):(k0>=0?old.slice(k0):''))},
+ after(){const re=()=>{$('view').innerHTML=V.tt.render();sortable($('view'));V.tt.after();if(typeof kDeco==='function')kDeco()};
+  $('tf-p').onchange=e=>{TF.p=e.target.value;TF.ph='';re()};
+  $('tf-ph').onchange=e=>{TF.ph=e.target.value;re()};
+  $('tf-q').onchange=e=>{const q=e.target.value;if(q){TF.q=q;re()}else{const[f,t]=QUICK[TF.q||'mtd'].f();TF.from=TF.from??f;TF.to=TF.to??t;TF.q='';re()}};
+  const dd=()=>{const a=parseD($('tf-f').value),b=parseD($('tf-t').value);if(a!=null&&b!=null&&a<=b){TF.from=Math.max(D0,a);TF.to=Math.min(DEND,b);TF.q='';return true}return false};
+  $('tf-f').onchange=$('tf-t').onchange=()=>{if(dd())re()};
+  $('tf-go').onclick=()=>{TF.p=$('tf-p').value;TF.ph=$('tf-ph').value;const q=$('tf-q').value;if(q)TF.q=q;else dd();re()};
+  $('tf-rs').onclick=()=>{Object.assign(TF,{p:'',ph:'',q:'mtd',from:null,to:null});re()};
+  $('view').querySelectorAll('.tp tr[data-go]').forEach(tr=>tr.onclick=()=>show('p',tr.dataset.go));
+  $('view').querySelectorAll('tr[data-ph]').forEach(tr=>tr.onclick=()=>{TF.ph=TF.ph===tr.dataset.ph?'':tr.dataset.ph;re()})}};
+
+/* ================= KẾ HOẠCH SẢN XUẤT – điều độ xưởng theo tuần ================= */
+const KF={p:'',m:'',s:'',n:8,st:'',w:0,open:null};
+const KST={done:['Hoàn thành','#2e9e5b'],run:['Đang thực hiện','#f2c14e'],late:['Chậm tiến độ','#e05252'],wait:['Chưa bắt đầu','#c4c0bf']};
+const KSG=[{k:0,n:'Cắt',s:'cut'},{k:1,n:'Khoan',s:'khoan'},{k:2,n:'Chấn / lốc',s:'chan'},{k:3,n:'Vát mép',s:'vat'},{k:4,n:'Bàn giao',s:null}];
+function isoW(t){const d=new Date(t);const th=new Date(Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate()+3-((d.getUTCDay()+6)%7)));const y0=new Date(Date.UTC(th.getUTCFullYear(),0,4));return 1+Math.round(((th-y0)/DAY-3+((y0.getUTCDay()+6)%7))/7)}
+const ddmm=t=>{const d=new Date(t);return String(d.getUTCDate()).padStart(2,'0')+'/'+String(d.getUTCMonth()+1).padStart(2,'0')};
+function khCap(names,A,B,L){const W=460,H=250,pl=40,pr=12,pt=22,pb=58,n=names.length,iw=(W-pl-pr)/Math.max(1,n);
+  const mx=Math.max(1,...A,...B)*1.15,y=v=>pt+(H-pt-pb)*(1-v/mx);let s='';
+  for(let k=0;k<=4;k++){const yy=pt+(H-pt-pb)*k/4;s+=`<line x1="${pl}" x2="${W-pr}" y1="${yy}" y2="${yy}" stroke="var(--line)"/><text x="${pl-5}" y="${yy+4}" font-size="9.5" text-anchor="end" fill="var(--muted)">${T0(mx*(1-k/4))}</text>`}
+  const bw=Math.min(18,iw*.3);names.forEach((nm,i)=>{const cx=pl+iw*i+iw/2;
+    s+=`<rect x="${cx-bw-1}" y="${y(A[i])}" width="${bw}" height="${H-pb-y(A[i])}" rx="2" fill="#d32f2f"><title>${esc(nm)} · năng lực đã đạt: ${T(A[i])} t/tuần</title></rect><text x="${cx-bw/2-1}" y="${y(A[i])-3}" font-size="9" text-anchor="middle" fill="var(--ink)" font-weight="700">${T0(A[i])}</text>
+    <rect x="${cx+1}" y="${y(B[i])}" width="${bw}" height="${H-pb-y(B[i])}" rx="2" fill="var(--acc)"><title>${esc(nm)} · sản lượng tuần: ${T(B[i])} t</title></rect><text x="${cx+bw/2+1}" y="${y(B[i])-3}" font-size="9" text-anchor="middle" fill="var(--ink)">${T0(B[i])}</text>`;
+    const m=nm.match(/^(.*?)\s*(\(.*\))?$/),l1=m[1],l2=m[2]||'';
+    s+=`<text x="${cx}" y="${H-pb+13}" font-size="8.6" text-anchor="middle" fill="var(--ink)">${esc(l1.replace(/^MÁY /,''))}</text><text x="${cx}" y="${H-pb+24}" font-size="9" text-anchor="middle" fill="var(--muted)">${esc(l2)}</text>`;
+    const v=L[i],c=v>=0.8?'#c8161d':v>=0.5?'#a87400':'#6b6262',bg=v>=0.8?'#fde0e0':v>=0.5?'#fff0c2':'#eceae9';
+    s+=`<rect x="${cx-19}" y="${H-pb+31}" width="38" height="16" rx="8" fill="${bg}"/><text x="${cx}" y="${H-pb+43}" font-size="10" font-weight="700" text-anchor="middle" fill="${c}">${Math.round(v*100)}%</text>`});
+  return `<svg class="ws" viewBox="0 0 ${W} ${H}">${s}</svg>`}
+V.kh={name:'Kế hoạch sản xuất',title:'Kế hoạch sản xuất – điều độ xưởng',ico:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M7 14h3M14 14h3M7 17h3"/>',render(){
+  const W7=7*DAY,dow=(new Date(DEND).getUTCDay()+6)%7,WE=DEND-dow*DAY,n=KF.n,W0=WE-(n-1)*W7;
+  const pi=KF.p===''?-1:+KF.p,mi=KF.m===''?-1:+KF.m,si=KF.s===''?-1:+KF.s,mName=mi<0?'':MACH[mi];
+  const PS=(pi<0?P.map((p,i)=>[p,i]):[[P[pi],pi]]).filter(([p])=>p.kl>=1);
+  /* gom sản lượng: dự án × công đoạn × tuần; máy × tuần (12 tuần); lần làm cuối */
+  const G={},last={},M12={},C12=new Array(12).fill(0),L12=new Array(12).fill(0),WM0=WE-11*W7,PM={};
+  for(const r of D.ev.rows){const t=D0+r[0]*DAY;const k=r[1]+'|'+r[3];if(r[3]<=4&&(!last[k]||t>last[k]))last[k]=t;
+    if(pi>=0&&r[1]!==pi)continue;
+    if(t>=WM0&&r[3]<=3&&r[2]>=0){const w=Math.floor((t-WM0)/W7);(M12[r[2]]=M12[r[2]]||new Array(12).fill(0))[w]+=r[4]}
+    if(t>=WM0&&r[3]===0&&(mi<0||r[2]===mi))C12[Math.floor((t-WM0)/W7)]+=r[4];
+    if(t>=WM0&&r[3]===5)L12[Math.floor((t-WM0)/W7)]+=r[4];
+    if(t<W0||r[3]>4)continue;if(mi>=0&&r[3]<=3&&r[2]!==mi)continue;if(si>=0&&r[3]!==si)continue;
+    const w=Math.floor((t-W0)/W7);((G[r[1]]=G[r[1]]||{})[r[3]]=G[r[1]][r[3]]||new Array(n).fill(0))[w]+=r[4];
+    if(r[3]<=3&&r[2]>=0){const mk=r[2];(PM[mk]=PM[mk]||{})[r[1]]=(PM[mk][r[1]]||0)+r[4]}}
+  const stOf=(p,i,sg)=>{const rq=sg.s?p.stages[sg.s].req:p.cut,dn=sg.s?p.stages[sg.s].done:p.bg;if(!(rq>0.05))return null;
+    const rem=Math.max(0,rq-dn),lt=last[i+'|'+sg.k];let st=dn/rq>=0.995||rem<0.05?'done':!lt?'wait':(DEND-lt)>14*DAY?'late':'run';return {rq,dn,rem,st,lt}};
+  /* các dòng Gantt */
+  const PR=PS.map(([p,i])=>{const rows=KSG.filter(sg=>si<0||sg.k===si).map(sg=>{const o=stOf(p,i,sg);if(!o)return null;return {...o,sg,v:(G[i]||{})[sg.k]||new Array(n).fill(0)}}).filter(Boolean)
+      .filter(r=>!KF.st||r.st===KF.st);const act=sum(rows,r=>sum(r.v,x=>x));const open=sum(rows,r=>r.st!=='done'?1:0);return {p,i,rows,act,open,rem:sum(rows,r=>r.rem)}})
+    .filter(x=>x.rows.length&&(x.act>0.05||x.open)).sort((a,b)=>(b.open>0)-(a.open>0)||b.act-a.act);
+  if(KF.open==null)KF.open=new Set(PR.slice(0,3).map(x=>x.i));
+  const wk=[...Array(n)].map((_,w)=>W0+w*W7);
+  const bar=(v,w,st)=>{if(v<0.05)return '';const L=w>0&&false;return `<i class="gb" style="background:${KST[st][1]}" title="${T(v)} t">${v>=1?T0(v):''}</i>`};
+  const cell=(r,w)=>{const v=r.v[w];if(v>=0.05){const pv=w>0&&r.v[w-1]>=0.05,nx=w<n-1&&r.v[w+1]>=0.05;return `<td class="wk"><i class="gb ${pv?'l':''} ${nx?'r':''}" style="background:${KST[r.st][1]};color:${r.st==='run'?'#3d2a00':'#fff'}" title="${r.sg.n} tuần ${isoW(wk[w])}: ${T(v)} t">${v>=1?T0(v):''}</i></td>`}
+    if(w===n-1&&r.st==='wait')return `<td class="wk"><i class="gb gw" title="Chưa bắt đầu · còn ${T(r.rem)} t">chờ</i></td>`;return '<td class="wk"></td>'};
+  const gRows=PR.map(x=>{const op=KF.open.has(x.i),tw=wk.map((_,w)=>sum(x.rows,r=>r.v[w]));const mxw=Math.max(1e-9,...tw);
+    const worst=x.rows.some(r=>r.st==='late')?'late':x.rows.some(r=>r.st==='run')?'run':x.rows.some(r=>r.st==='wait')?'wait':'done';
+    let h=`<tr class="gp" data-gp="${x.i}"><td colspan="2"><span class="tg">${op?'▾':'▸'}</span><b>${esc(x.p.name)}</b> <span class="dot" style="background:${KST[worst][1]}" title="${KST[worst][0]}"></span></td><td class="n"><b>${T(x.p.kl)}</b></td><td class="n">${PC(x.p.pc??1)}</td>${tw.map(v=>`<td class="wk">${v>=0.05?`<span class="hs" style="opacity:${(.25+.75*v/mxw).toFixed(2)}" title="${T(v)} t">${T0(v)}</span>`:''}</td>`).join('')}</tr>`;
+    if(op)h+=x.rows.map(r=>`<tr class="gs2"><td></td><td>${r.sg.n}</td><td class="n">${T(r.rq)}</td><td class="n" style="color:${KST[r.st][1]==='#f2c14e'?'#a87400':KST[r.st][1]}">${PC(r.dn/r.rq)}</td>${wk.map((_,w)=>cell(r,w)).join('')}</tr>`).join('');return h}).join('');
+  /* KPI */
+  const mk=D.date.slice(0,7),tg=(getTarget(mk)||{}).v||D.target.base,M0=MONTH0(DEND),aM=agg(M0,DEND,'day',{p:pi<0?'':String(pi),m:mi<0?'':String(mi)});
+  const lmLen=DEND-M0,pm0=MONTH0(M0-DAY),aP=agg(pm0,pm0+lmLen,'day',{p:pi<0?'':String(pi),m:mi<0?'':String(mi)});
+  const OL=openLsx.filter(l=>(pi<0||l.p===P[pi])&&onMay(l,mName)),late=OL.filter(l=>l.age>30);
+  const reqS=pi<0?D.tot.req:P[pi].req,cutS=pi<0?D.tot.cut:P[pi].cut,pcS=cutS/(reqS||1);
+  const pv=D.prev&&D.prev.tot&&pi<0?D.prev.tot.cut/(D.prev.tot.req||1):null;
+  const wNow=C12[11],wPrev=C12[10],wMax=Math.max(1e-9,...C12);
+  const dl=(a,b,suf='so kỳ trước')=>!b?`<span class="muted">${suf}: –</span>`:`<span style="color:${a>=b?'var(--good)':'var(--bad)'};font-weight:700">${a>=b?'▲':'▼'} ${PC(Math.abs(a/b-1))}</span> <span class="muted">${suf}</span>`;
+  const K=[
+   {l:'Kế hoạch tháng',v:T0(tg),u:'tấn',s:`đã cắt ${T(aM.tot[0])} t · <b>${PC(aM.tot[0]/tg)}</b>`,pg:aM.tot[0]/tg},
+   {l:'Đã phát lệnh (tháng)',v:T(aM.tot[5]),u:'tấn',s:dl(aM.tot[5],aP.tot[5],'cùng kỳ tháng trước'),sp:spark(L12,'var(--acc)')},
+   {l:'Tỷ lệ hoàn thành cắt',v:PC(pcS),u:'',s:pv!=null?`<span style="color:${pcS>=pv?'var(--good)':'var(--bad)'};font-weight:700">${pcS>=pv?'▲':'▼'} ${(Math.abs(pcS-pv)*100).toFixed(1).replace('.',',')} điểm</span> <span class="muted">so ${fdate(D.prev.date)}</span>`:`${T(cutS)} / ${T(reqS)} t`,pg:pcS},
+   {l:'Số lệnh trễ (> 30 ngày)',v:late.length,u:'lệnh',s:`còn ${T(sum(late,l=>l.rem))} t · trong ${OL.length} lệnh đang mở`,sp:spark(BUCK.map((_,i)=>sum(OL.filter(l=>bucketOf(l.age)===i),l=>l.rem)))},
+   {l:'Tải cắt tuần này',v:PC(wNow/wMax),u:'',s:`so tuần cao nhất 12 tuần (${T(wMax)} t)`,sp:spark(C12.map(v=>v/wMax),'var(--acc)')},
+   {l:'Sản lượng cắt tuần',v:T(wNow),u:'tấn',s:dl(wNow,wPrev,'so tuần trước'),sp:spark(C12)}];
+  /* năng lực theo máy */
+  const wSel=11-KF.w,MC=Object.entries(M12).map(([k,v])=>({n:MACH[k],cap:Math.max(...v),v:v[wSel],a4:(v[8]+v[9]+v[10]+v[11])/4})).filter(x=>x.cap>1).sort((a,b)=>b.cap-a.cap).slice(0,6);
+  /* phân bổ theo máy */
+  const pTot={};Object.values(PM).forEach(o=>Object.entries(o).forEach(([k,v])=>pTot[k]=(pTot[k]||0)+v));
+  const top3=Object.entries(pTot).sort((a,b)=>b[1]-a[1]).slice(0,3).map(x=>+x[0]),PCOL=['#d32f2f','#f2c14e','#f3a6a6','#cfcac9'];
+  const PA=Object.entries(PM).map(([k,o])=>{const t=sum(Object.values(o),x=>x);return {n:MACH[k],t,seg:[...top3.map(i=>o[i]||0),t-sum(top3,i=>o[i]||0)]}}).filter(x=>x.t>0.5).sort((a,b)=>b.t-a.t).slice(0,7);
+  /* nghẽn công đoạn */
+  const PSx=PS.map(x=>x[0]),wk4=s=>{let c=0;const f=WE-3*W7;for(const r of D.ev.rows){const t=D0+r[0]*DAY;if(t<f||r[3]!==s)continue;if(pi>=0&&r[1]!==pi)continue;c+=r[4]}return c/4};
+  const BN=[{n:'Cắt',q:sum(OL,l=>l.rem),a:wk4(0)},{n:'Khoan',q:sum(PSx,p=>Math.max(0,p.stages.khoan.req-p.stages.khoan.done)),a:wk4(1)},{n:'Chấn / lốc',q:sum(PSx,p=>Math.max(0,p.stages.chan.req-p.stages.chan.done)),a:wk4(2)},
+    {n:'Vát mép',q:sum(PSx,p=>Math.max(0,p.stages.vat.req-p.stages.vat.done)),a:wk4(3)},{n:'Bàn giao',q:sum(PSx,p=>Math.max(0,p.cut-p.bg)),a:wk4(4)}].map(b=>{const wks=b.a>0.05?b.q/b.a:(b.q>0.5?Infinity:0);
+      return {...b,wks,lv:wks>6?['bad','Quá tải','Cần điều phối']:wks>3?['warn','Nguy cơ','Theo dõi']:['good','Bình thường','Ổn định']}});
+  /* LSX ưu tiên */
+  const pri=a=>a>60?['p-vh','Rất cao']:a>30?['p-h','Cao']:a>14?['p-m','Trung bình']:['p-l','Thấp'];
+  const PRI=[...OL].sort((a,b)=>(b.age||0)-(a.age||0)||b.rem-a.rem).slice(0,8);
+  const icoC=k=>`<i>${svgI(k,'var(--brand)',22)}</i>`;
+  const opt=(arr,cur)=>arr.map(([v,t])=>`<option value="${v}" ${String(cur)===String(v)?'selected':''}>${esc(t)}</option>`).join('');
+  let h=`<div class="tf"><label>Dự án<select id="kf-p"><option value="">Tất cả</option>${opt(P.map((p,i)=>[i,p.name]),KF.p)}</select></label>
+   <label>Máy<select id="kf-m"><option value="">Tất cả</option>${opt(MACH.map((m,i)=>[i,m]),KF.m)}</select></label>
+   <label>Công đoạn<select id="kf-s"><option value="">Tất cả</option>${opt(KSG.map(s=>[s.k,s.n]),KF.s)}</select></label>
+   <label>Tuần<select id="kf-n">${opt([[6,'6 tuần gần nhất'],[8,'8 tuần gần nhất'],[12,'12 tuần gần nhất'],[16,'16 tuần gần nhất']].map(([v,t])=>[v,`${t} (${ddmm(WE-(v-1)*W7)} – ${ddmm(DEND)})`]),KF.n)}</select></label>
+   <label>Trạng thái<select id="kf-st"><option value="">Tất cả</option>${opt(Object.entries(KST).map(([k,v])=>[k,v[0]]),KF.st)}</select></label>
+   <div class="btns"><button class="go" id="kf-go"><svg viewBox="0 0 24 24"><path d="M3 4h18l-7 8v6l-4 2v-8z"/></svg>Áp dụng lọc</button><button id="kf-rs"><svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 3-6.2M4 4v4h4"/></svg>Đặt lại</button></div></div>
+  <div class="kpis">${K.map(k=>`<div class="kpi">${kIco(k.l)}<div class="l">${k.l}</div><div class="v">${k.v}<small>${k.u}</small></div><div class="s">${k.s}</div>${k.pg!=null?`<div class="m"><i style="width:${Math.min(100,k.pg*100)}%"></i></div>`:(k.sp||'').replace('class="sp"','class="kspark"')}</div>`).join('')}</div>
+  <div class="g2k">
+   <div class="cd"><div class="ch"><h3>${icoC('lsx').replace('<i>','<i>')}Lịch sản xuất theo tuần</h3><div class="lg" style="margin:0">${Object.values(KST).map(v=>`<span><i style="background:${v[1]};border-radius:50%"></i>${v[0]}</span>`).join('')}</div></div>
+    <div class="tw gtw"><table class="gt"><thead><tr><th>Dự án</th><th>Công đoạn</th><th class="n">Tổng KL (t)</th><th class="n">% xong</th>${wk.map(t=>`<th class="wk${t===WE?' now':''}">T${isoW(t)}<small>${ddmm(t)}</small></th>`).join('')}</tr></thead>
+    <tbody>${gRows||`<tr><td colspan="${4+n}" class="empty">Không có công đoạn nào khớp bộ lọc.</td></tr>`}</tbody></table></div>
+    <p class="note">Ô màu = tuần có sản lượng (số trong ô là tấn). Màu theo trạng thái hiện tại của công đoạn: <b>chậm</b> = còn khối lượng nhưng 14 ngày qua không có sản lượng. Bấm tên dự án để mở / thu gọn.</p></div>
+   <div class="cd"><div class="ch"><h3>${icoC('mach')}Năng lực vs sản lượng theo máy</h3><select class="dd" id="kf-w"><option value="0" ${KF.w==0?'selected':''}>Tuần này</option><option value="1" ${KF.w==1?'selected':''}>Tuần trước</option></select></div>
+    <div class="lg"><span><i style="background:#d32f2f"></i>Năng lực đã đạt (t/tuần)</span><span><i style="background:var(--acc)"></i>Sản lượng (t)</span><span><i style="background:#fde0e0;border:1px solid #c8161d"></i>% sử dụng</span></div>
+    ${MC.length?khCap(MC.map(x=>x.n),MC.map(x=>x.cap),MC.map(x=>x.v),MC.map(x=>x.v/x.cap)):'<p class="empty">Chưa có sản lượng theo máy.</p>'}
+    ${MC.length?`<div class="tw"><table class="al bn" style="margin-top:6px"><thead><tr><th>Máy</th><th class="n">Năng lực (t/tuần)</th><th class="n">Sản lượng (t)</th><th class="n">TB 4 tuần</th></tr></thead><tbody>${MC.map(x=>`<tr><td>${esc(x.n)}</td><td class="n">${T(x.cap)}</td><td class="n"><b>${T(x.v)}</b></td><td class="n">${T(x.a4)}</td></tr>`).join('')}</tbody></table></div>`:''}
+    <p class="note">Năng lực = tuần cao nhất của máy trong 12 tuần gần nhất (chưa có số năng lực thiết kế).</p></div></div>
+  <div class="g3 g3k">
+   <div class="cd"><div class="ch"><h3>${icoC('pct')}Lệnh sản xuất cần ưu tiên</h3><button class="lk" data-view="sx">Xem tất cả</button></div>
+    <div class="tw"><table class="al pr"><thead><tr><th>STT</th><th>Mã lệnh</th><th>Dự án</th><th class="n">Còn (t)</th><th>Ban hành</th><th>Ưu tiên</th></tr></thead><tbody>
+    ${PRI.map((l,i)=>{const q=pri(l.age||0);return `<tr data-drill="lsx|${esc(l.lsx)}" title="${esc(l.hm||'')}"><td>${i+1}</td><td><b>${esc(l.lsx)}</b></td><td>${esc(l.p.name)}</td><td class="n" style="color:var(--brand);font-weight:700">${T(l.rem)}</td><td>${l.bh?ddmm(Date.parse(l.bh+'T00:00:00Z')):'–'} <span class="muted">· ${l.age} ng</span></td><td><span class="lv ${q[0]}">${q[1]}</span></td></tr>`}).join('')||'<tr><td colspan="6" class="empty">Không có lệnh đang mở.</td></tr>'}</tbody></table></div></div>
+   <div class="cd"><div class="ch"><h3>${icoC('pie')}Phân bổ khối lượng theo máy</h3><span class="dd">${n} tuần</span></div>
+    <div class="lg">${top3.map((i,j)=>`<span><i style="background:${PCOL[j]}"></i>${esc(P[i].name)}</span>`).join('')}<span><i style="background:${PCOL[3]}"></i>Khác</span><span style="margin-left:auto;font-weight:700">Tổng (t)</span></div>
+    ${PA.map(x=>`<div class="pa"><span class="nm" title="${esc(x.n)}">${esc(x.n)}</span><div class="sb">${x.seg.map((v,j)=>v/x.t>0.005?`<i style="width:${v/x.t*100}%;background:${PCOL[j]};color:${j===0?'#fff':'#3d2a1c'}" title="${j<3?esc(P[top3[j]].name):'Khác'}: ${T(v)} t">${v/x.t>=0.1?Math.round(v/x.t*100)+'%':''}</i>`:'').join('')}</div><b>${T(x.t)}</b></div>`).join('')||'<p class="empty">Không có sản lượng.</p>'}</div>
+   <div class="cd"><div class="ch"><h3>${icoC('warn')}Cảnh báo nghẽn công đoạn</h3><button class="lk" data-view="sx">Xem tất cả</button></div>
+    <div class="tw"><table class="al bn"><thead><tr><th>Công đoạn</th><th>Tình trạng</th><th class="n">Tồn chờ (t)</th><th class="n">TB / tuần</th><th class="n">Số tuần</th><th>Đánh giá</th></tr></thead><tbody>
+    ${BN.map(b=>`<tr><td><b>${b.n}</b></td><td><span class="dot" style="background:var(--${b.lv[0]})"></span>${b.lv[1]}</td><td class="n">${T(b.q)}</td><td class="n">${T(b.a)}</td><td class="n" style="font-weight:700;color:var(--${b.lv[0]})">${b.wks===Infinity?'đứng':b.wks.toFixed(1).replace('.',',')}</td><td><span class="lv ${b.lv[0]==='good'?'ok':b.lv[0]}">${b.lv[2]}</span></td></tr>`).join('')}</tbody></table></div>
+    <p class="note">Số tuần = tồn chờ ÷ sản lượng trung bình 4 tuần gần nhất. &gt; 6 tuần: cần điều phối · 3–6 tuần: theo dõi.</p></div></div>`;
+  return h},
+ after(){const re=()=>{$('view').innerHTML=V.kh.render();V.kh.after()};
+  $('kf-go').onclick=()=>{KF.p=$('kf-p').value;KF.m=$('kf-m').value;KF.s=$('kf-s').value;KF.n=+$('kf-n').value;KF.st=$('kf-st').value;KF.open=null;re()};
+  $('kf-rs').onclick=()=>{Object.assign(KF,{p:'',m:'',s:'',n:8,st:'',w:0,open:null});re()};
+  $('kf-w').onchange=e=>{KF.w=+e.target.value;re()};
+  $('view').querySelectorAll('tr[data-gp]').forEach(tr=>tr.onclick=()=>{const i=+tr.dataset.gp;KF.open.has(i)?KF.open.delete(i):KF.open.add(i);re()});
+  const g=$('view').querySelector('.gtw');if(g)g.scrollLeft=g.scrollWidth;
+  if(typeof kDeco==='function')kDeco()}};
+
 document.addEventListener('click',e=>{const b=e.target.closest('[data-view]');if(b)show('v',b.dataset.view)});
 
 /* bảng sức khỏe dự án (dùng ở trang Tóm tắt điều hành và Tổng quan dự án) */
@@ -1381,7 +1804,7 @@ V.bc={name:'Báo cáo kỳ',title:'Báo cáo ngày · tuần · tháng · quý �
 /* ---------- navigation ---------- */
 const nav=$('nav'),plist=$('plist');
 const cnt={ov:'',sx:openLsx.length,th:D.bal.buy>0.05?'!':'',ne:P.filter(p=>p.nes).length,src:''};
-const ORDER=['tt','dh','bc','ov','sx','th','ne'];cnt.dh='';cnt.bc='';cnt.tt=P.filter(p=>health(p).c==='bad'&&((p.pc??1)<0.999||(buyOf(p)||0)>0.5)).length||'';
+const ORDER=['tt','kh','dh','bc','ov','sx','th','ne'];cnt.dh='';cnt.bc='';cnt.tt=P.filter(p=>health(p).c==='bad'&&((p.pc??1)<0.999||(buyOf(p)||0)>0.5)).length||'';
 nav.innerHTML=ORDER.map((k,i)=>{const v=V[k];return `<button data-v="${k}"><svg viewBox="0 0 24 24" aria-hidden="true">${v.ico}</svg><span><small style="opacity:.6;font:600 10px var(--f-mono);margin-right:6px">${String(i+1).padStart(2,'0')}</small>${v.name}</span>${cnt[k]!==''&&cnt[k]!=null?`<span class="cnt">${cnt[k]}</span>`:''}</button>`}).join('');
 plist.innerHTML=P.slice().sort((a,b)=>{const g=p=>p.pc==null?2:p.pc>=0.999?1:0;return g(a)-g(b)||(a.pc??0)-(b.pc??0)||b.kl-a.kl}).map(p=>{const hs=health(p);return `<button data-p="${esc(p.id)}" title="${esc(p.name)} · ${hs.t}"><span class="dot dot-${hs.c}"></span><span class="nm">${esc(p.name)}</span><span class="pc">${p.pc==null?'–':Math.round(p.pc*100)+'%'}</span><span class="bar"><i style="width:${(p.pc||0)*100}%"></i></span></button>`}).join('');
 function show(kind,key){
@@ -1393,6 +1816,153 @@ function show(kind,key){
   $('rail').classList.remove('open');$('menu').setAttribute('aria-expanded','false');
   window.scrollTo({top:0});
 }
+/* ================= ĐIỀU HÀNH & BÁO CÁO KỲ: thanh lọc mới, chia vai trò ================= */
+filterBar=function(){
+  const pOpt=P.map((p,i)=>`<option value="${i}" ${FS.p===String(i)?'selected':''}>${esc(p.name)}</option>`).join('');
+  const mOpt=MACH.map((m,i)=>`<option value="${i}" ${FS.m===String(i)?'selected':''}>${esc(m)}</option>`).join('');
+  const qOpt=Object.entries(QUICK).map(([k,q])=>{const[a,b]=q.f();return `<option value="${k}" ${FS.q===k?'selected':''}>${q.n} (${dm(Math.max(a,D0))} – ${dm(b)})</option>`}).join('');
+  return `<div class="tf fb2">
+   <label>Dự án<select id="f-p"><option value="">Tất cả dự án</option>${pOpt}</select></label>
+   <label>Máy<select id="f-m"><option value="">Tất cả máy</option>${mOpt}</select></label>
+   <label>Thời gian<select id="f-q">${qOpt}<option value="" ${FS.q===''?'selected':''}>Tùy chọn ngày…</option></select></label>
+   <label class="dt">Từ ngày<input type="date" id="f-from" value="${isoD(FS.from)}" min="${D.ev.d0}" max="${D.date}"></label>
+   <label class="dt">Đến ngày<input type="date" id="f-to" value="${isoD(FS.to)}" min="${D.ev.d0}" max="${D.date}"></label>
+   <label class="dt">Xem theo<select id="f-g">${Object.entries(GLAB).map(([k,n])=>`<option value="${k}" ${FS.g===k?'selected':''}>${n}</option>`).join('')}</select></label>
+   <div class="btns"><button id="f-clear"><svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 3-6.2M4 4v4h4"/></svg>Đặt lại</button></div>
+   <div class="fsum">${dmy(FS.from)} → ${dmy(FS.to)} · ${workdays(FS.from,FS.to)} ngày làm việc${FS.p!==''?' · '+esc(P[+FS.p].name):''}${FS.m!==''?' · '+esc(MACH[+FS.m]):''}</div></div>`};
+bindFilter=function(rerender){
+  $('f-q').onchange=e=>{const k=e.target.value;if(!k){FS.q='';saveFS();rerender();return}const q=QUICK[k];[FS.from,FS.to]=q.f();FS.from=Math.max(FS.from,D0);FS.g=q.g;FS.q=k;saveFS();rerender()};
+  $('f-g').onchange=e=>{FS.g=e.target.value;saveFS();rerender()};
+  const fd=()=>{const a=parseD($('f-from').value),b=parseD($('f-to').value);if(a!=null&&b!=null&&a<=b){FS.from=Math.max(a,D0);FS.to=Math.min(b,DEND);FS.q='';const n=(FS.to-FS.from)/DAY;FS.g=n<=45?'day':n<=150?'week':n<=500?'month':'quarter';saveFS();rerender()}};
+  $('f-from').onchange=fd;$('f-to').onchange=fd;
+  $('f-p').onchange=e=>{FS.p=e.target.value;saveFS();rerender()};
+  $('f-m').onchange=e=>{FS.m=e.target.value;saveFS();rerender()};
+  $('f-clear').onclick=()=>{FS.p='';FS.m='';FS.q='mtd';FS.from=MONTH0(DEND);FS.to=DEND;FS.g='day';saveFS();rerender()}};
+/* Điều hành = theo dõi & biểu đồ; bảng số liệu chuyển sang Báo cáo kỳ */
+const _dhR=V.dh.render;
+function dhTables(){const s=_dhR.call(V.dh),i=s.lastIndexOf('<section class="grid">');return i<0?'':s.slice(i)}
+V.dh.render=function(){const s=_dhR.call(V.dh),i=s.lastIndexOf('<section class="grid">');
+  return (i<0?s:s.slice(0,i))+`<div class="mv"><span>Bảng cắt / bàn giao theo dự án và theo máy đã chuyển sang <b>Báo cáo kỳ</b>.</span><button class="lk" data-view="bc">Mở Báo cáo kỳ</button></div>`};
+const _bcR=V.bc.render;
+V.bc.render=function(){const s=_bcR.call(V.bc),g=dhTables().replace('<section class="grid">','<section class="grid bc2">');
+  const head=`<section>${secH('Tổng hợp theo dự án và theo máy',`${dmy(FS.from)} → ${dmy(FS.to)}`)}</section>`;
+  return s+head+g};
+
+/* ================= MENU 5 MỤC: Tổng quan · Dự án · Nesting (lệnh SX) · Vật tư · Cutting ================= */
+/* --- 1. TỔNG QUAN = Tóm tắt điều hành + Điều hành + Báo cáo kỳ (1 trang) --- */
+const TTG={g:'',open:false};
+const _ttR=V.tt.render,_ttA=V.tt.after;
+const ttPeriod=()=>TF.q?QUICK[TF.q].f():[TF.from,TF.to];
+const autoG=(f,t)=>{const n=(t-f)/DAY;return n<=45?'day':n<=150?'week':n<=500?'month':'quarter'};
+function ttSyncFS(){const[f,t]=ttPeriod();FS.p=TF.p;FS.m='';FS.q=TF.q||'';FS.from=Math.max(D0,f);FS.to=Math.min(DEND,t);FS.g=TTG.g||autoG(FS.from,FS.to)}
+V.tt.render=function(){
+  const tpl=document.createElement('template');tpl.innerHTML=_ttR.call(V.tt);const R=tpl.content;
+  /* "Sức khỏe dự án" đã có ở mục Dự án → bỏ khỏi Tổng quan, giữ "Việc cần xử lý" */
+  R.querySelectorAll('section').forEach(s=>{const h=s.querySelector('.sec-h h2,h2');if(h&&/^Sức khỏe dự án/.test(h.textContent.trim()))s.remove()});
+  ttSyncFS();
+  const dt=document.createElement('template');dt.innerHTML=_dhR.call(V.dh);const DH=dt.content;
+  const bt=document.createElement('template');bt.innerHTML=_bcR.call(V.bc);const BC=bt.content;
+  const k=R.querySelector('.kpis'),tg=DH.querySelector('section.tgt');if(k&&tg)k.after(tg);
+  const g3b=R.querySelector('.g3b'),ins=DH.querySelector('section.card.ins'),g21=DH.querySelector('section.g21');
+  if(g3b){if(g21)g3b.after(g21);if(ins)g3b.after(ins)}
+  const det=document.createElement('details');det.className='bcx';if(TTG.open)det.open=true;
+  det.innerHTML=`<summary><b>Báo cáo kỳ</b> – bảng số liệu ${GLAB[FS.g].toLowerCase()} · dự án × kỳ · theo dự án / theo máy <span class="muted">(${dmy(FS.from)} → ${dmy(FS.to)} · bấm để mở, dùng Xuất Excel)</span></summary>
+    <div class="filters"><span class="flab">Xem theo</span>${Object.entries(GLAB).map(([g,n])=>`<button class="chip" data-tg="${g}" aria-pressed="${FS.g===g}">${n}</button>`).join('')}</div>`;
+  [...BC.children].filter(e=>e.tagName==='SECTION').forEach(s=>det.appendChild(s));
+  const gr=DH.querySelector('section.grid');if(gr)det.appendChild(gr);
+  R.appendChild(det);
+  return tpl.innerHTML};
+V.tt.after=function(){_ttA.call(V.tt);
+  const re=()=>{const y=window.scrollY;$('view').innerHTML=V.tt.render();sortable($('view'));V.tt.after();if(typeof kDeco==='function')kDeco();window.scrollTo(0,y)};
+  const v=$('view');
+  v.querySelectorAll('[data-ser]').forEach(b=>b.onclick=()=>{const k=+b.dataset.ser;FS.ser=FS.ser.includes(k)?FS.ser.filter(x=>x!==k):[...FS.ser,k].sort();if(!FS.ser.length)FS.ser=[0];saveFS();re()});
+  v.querySelectorAll('[data-by]').forEach(b=>b.onclick=()=>{FS.by=b.dataset.by;saveFS();re()});
+  v.querySelectorAll('[data-piv]').forEach(b=>b.onclick=()=>{FS.piv=+b.dataset.piv;saveFS();re()});
+  v.querySelectorAll('[data-tg]').forEach(b=>b.onclick=()=>{TTG.g=b.dataset.tg;re()});
+  const d=v.querySelector('details.bcx');if(d)d.ontoggle=()=>{TTG.open=d.open};
+  const cp=$('bc-copy');if(cp)cp.onclick=()=>{navigator.clipboard.writeText(window._tsv).then(()=>$('bc-msg').textContent='Đã sao chép, dán vào Excel.').catch(()=>{$('bc-msg').textContent='Trình duyệt chặn sao chép.'})};
+  const te=$('tg-edit');if(te)te.onclick=()=>{const mk=pkey(FS.to,'month');const box=document.createElement('span');box.innerHTML=` <input id="tg-in" type="number" min="0" step="100" value="${getTarget(mk).v}" style="width:90px"> <button class="b" id="tg-ok">Lưu</button> <button class="b" id="tg-rs">Mặc định</button>`;te.replaceWith(box);
+    const st=o=>{try{localStorage.setItem('chuoi-target',JSON.stringify(o))}catch(e){}},gt=()=>{try{return JSON.parse(localStorage.getItem('chuoi-target')||'{}')}catch(e){return {}}};
+    $('tg-ok').onclick=()=>{const o=gt();o[mk]=+$('tg-in').value;st(o);re()};$('tg-rs').onclick=()=>{const o=gt();delete o[mk];st(o);re()}}};
+/* --- 3. NESTING (lệnh sản xuất) = Lệnh sản xuất (tuổi LSX + danh sách) | Nesting --- */
+const sxSplit=()=>{const s=V.sx.render.call(V.sx),i=s.indexOf('5. Tuổi LSX'),j=s.lastIndexOf('<section',i),k=s.indexOf('<section');return {bar:s.slice(0,k),cut:s.slice(k,j),lsx:s.slice(j)}};
+V.lsx={name:'Nesting (lệnh sản xuất)',title:'Lệnh sản xuất',ico:'<path d="M9 4h6v3H9zM7 5H5v16h14V5h-2M8 11h8M8 15h6"/>',
+  render(){const x=sxSplit();return x.bar+x.lsx.replace('5. Tuổi LSX','1. Tuổi LSX').replace('6. Danh sách LSX','2. Danh sách LSX')},
+  after(){V.sx.after.call(V.sx);bindFilter(()=>show('v','lsx'))}};
+/* --- 5. CUTTING = Sản lượng cắt (kỳ · công đoạn · máy · theo ngày) | Kế hoạch tuần --- */
+V.cut={name:'Cutting',title:'Sản lượng cắt',ico:'<circle cx="6" cy="6" r="2.5"/><circle cx="6" cy="18" r="2.5"/><path d="M8 7.5L20 18M8 16.5L20 6"/>',
+  render(){const x=sxSplit();return x.bar+x.cut},after(){bindFilter(()=>show('v','cut'))}};
+const VALIAS={dh:'cut',bc:'tt',sx:'lsx'};
+
+/* ================= KHUNG GIAO DIỆN DDC-SHIPYARD: dải tiêu đề, tìm kiếm, chuông cảnh báo ================= */
+const HERO={tt:['Tổng quan','điều hành','Chuỗi thép đầu vào','Kho → nesting → cắt → bàn giao · mục tiêu · báo cáo kỳ'],
+ ov:['Dự án','','Toàn bộ dự án','Tiến độ, rủi ro và thép của từng dự án'],
+ lsx:['Nesting','(lệnh sản xuất)','Lệnh sản xuất','Tuổi lệnh · danh sách LSX · chi tiết cấu kiện'],ne:['Nesting','(lệnh sản xuất)','Nesting','Hiệu quả nesting · đối chiếu Cutting'],
+ th:['Vật tư','thép','Tồn kho & cân đối','Nhập · xuất · tồn · phải mua'],
+ cut:['Cutting','sản xuất','Sản lượng cắt','Trong kỳ · công đoạn · máy · cắt & bàn giao theo ngày'],kh:['Cutting','sản xuất','Kế hoạch tuần','Lịch sản xuất · tải máy · nghẽn công đoạn'],
+ src:['Dữ liệu','& làm sạch','Nguồn dữ liệu','Cách tính và nhật ký làm sạch']};
+function heroSet(kind,key){const t=$('title');let h,ico;
+  if(kind==='p'){const p=P.find(x=>x.id===key)||P[0];h=['Dự án','',p.name,(p.code||'')+(p.code?' · ':'')+'Tiến độ · thép · nesting'];ico='<path d="M3 21V9l9-6 9 6v12M9 21v-6h6v6"/>'}
+  else{const v=V[key]||V.dh;h=HERO[key]||[v.name,'',v.title,''];ico=v.ico}
+  t.innerHTML=`${esc(h[0])} <em>${esc(h[1])}</em>`;$('hero-s').innerHTML=`<b>${esc(h[2])}</b>${h[3]?`<i>|</i>${esc(h[3])}`:''}`;$('hero-svg').innerHTML=ico}
+function kDeco(root){(root||document).querySelectorAll('.kpi').forEach(k=>{const l=k.querySelector('.l');if(!l)return;
+  const t=l.textContent.trim();l.childNodes.forEach(n=>{if(n.nodeType!==3)return;const x=n.nodeValue;if(x.trim()&&x===x.toUpperCase()&&/[A-ZÀ-Ỹ]/.test(x)){let lo=x.toLowerCase().replace(/\blsx\b/g,'LSX').replace(/\bkl\b/g,'KL').replace(/\(t\)/g,'(t)');const i=lo.search(/\S/);n.nodeValue=lo.slice(0,i)+lo.charAt(i).toUpperCase()+lo.slice(i+1)}});
+  if(!k.querySelector('.kic'))l.insertAdjacentHTML('beforebegin',kIco(t))})}
+/* ===== BỘ LỌC CHUNG: dự án · máy · thời gian đồng bộ giữa các trang ===== */
+const SF={p:FS.p||'',m:FS.m||'',q:FS.q,from:FS.from,to:FS.to};let CUR=null;
+function sfPull(c){if(!c||c.kind!=='v')return;const k=c.key;
+  if(k==='tt'){SF.p=TF.p;SF.q=TF.q;if(TF.q){const[a,b]=QUICK[TF.q].f();SF.from=a;SF.to=b}else if(TF.from!=null){SF.from=TF.from;SF.to=TF.to}}
+  else if(k==='dh'||k==='bc'||k==='sx'||k==='cut'||k==='lsx'){SF.p=FS.p;SF.m=FS.m;SF.q=FS.q;SF.from=FS.from;SF.to=FS.to}
+  else if(k==='kh'){SF.p=KF.p;SF.m=KF.m}
+  else if(k==='th'){const i=THF.p?P.findIndex(x=>x.id===THF.p):-1;SF.p=i>=0?String(i):(THF.k?SF.p:'')}}
+function sfPush(kind,key){if(kind!=='v')return;
+  if(key==='tt'){if(TF.p!==SF.p)TF.ph='';TF.p=SF.p;TF.q=SF.q||'';TF.from=SF.from;TF.to=SF.to}
+  else if(key==='dh'||key==='bc'||key==='sx'||key==='cut'||key==='lsx'){FS.p=SF.p;FS.m=SF.m;FS.q=SF.q||'';FS.from=Math.max(D0,SF.from);FS.to=Math.min(DEND,SF.to);
+    if(SF.q&&QUICK[SF.q])FS.g=QUICK[SF.q].g;else{const n=(FS.to-FS.from)/DAY;FS.g=n<=45?'day':n<=150?'week':n<=500?'month':'quarter'}saveFS()}
+  else if(key==='kh'){if(KF.p!==SF.p||KF.m!==SF.m)KF.open=null;KF.p=SF.p;KF.m=SF.m}
+  else if(key==='th'){const q=SF.p!==''?P[+SF.p]:null;const id=q&&q.kho?q.id:'';if(THF.p!==id){THF.p=id;THF.k=''}}}
+function sfChip(){const el=$('sfc');if(!el)return;sfPull(CUR);const parts=[];
+  if(SF.p!==''&&P[+SF.p])parts.push(`<b>${esc(P[+SF.p].name)}</b>`);if(SF.m!==''&&MACH[+SF.m])parts.push(esc(MACH[+SF.m]));
+  const tq=SF.q?QUICK[SF.q].n:`${dm(SF.from)} – ${dm(SF.to)}`;parts.push(tq);
+  const on=SF.p!==''||SF.m!==''||SF.q!=='mtd';el.className='sfc'+(on?' on':'');
+  el.innerHTML=`<svg viewBox="0 0 24 24"><path d="M3 4h18l-7 8v6l-4 2v-8z"/></svg><span title="Bộ lọc chung – áp dụng cho Tổng quan, Nesting (lệnh sản xuất), Vật tư, Cutting">${parts.join(' · ')}</span>${on?'<button id="sfc-x" title="Bỏ lọc ở mọi trang">✕</button>':''}`;
+  const x=$('sfc-x');if(x)x.onclick=()=>{Object.assign(SF,{p:'',m:'',q:'mtd',from:MONTH0(DEND),to:DEND});TF.ph='';KF.open=null;THF.k='';const c=CUR;CUR=null;show(c.kind,c.key)}}
+/* ===== MENU 4 MỤC TỔNG QUAN, mỗi mục có tab con ===== */
+const GRP=[{k:'tt',n:'Tổng quan',tabs:[['tt','Tổng quan']]},
+ {k:'ov',n:'Dự án',tabs:[['ov','Toàn bộ dự án']]},
+ {k:'lsx',n:'Nesting (lệnh sản xuất)',tabs:[['lsx','Lệnh sản xuất'],['ne','Nesting']]},
+ {k:'th',n:'Vật tư',tabs:[['th','Tồn kho & cân đối']]},
+ {k:'cut',n:'Cutting',tabs:[['cut','Sản lượng cắt'],['kh','Kế hoạch tuần']]}];
+const grpOf=(kind,key)=>kind==='p'?GRP[1]:GRP.find(g=>g.tabs.some(t=>t[0]===key))||null;
+(function(){const nRed=P.filter(p=>health(p).c==='bad').length,C={tt:cnt.tt,ov:nRed||'',th:D.bal.buy>0.05?'!':'',lsx:openLsx.length,cut:''};
+  nav.innerHTML=GRP.map((g,i)=>`<button data-v="${g.k}"><svg viewBox="0 0 24 24" aria-hidden="true">${V[g.k].ico}</svg><span><small style="opacity:.6;font:600 10px var(--f-mono);margin-right:6px">${String(i+1).padStart(2,'0')}</small>${g.n}</span>${C[g.k]!==''&&C[g.k]!=null?`<span class="cnt">${C[g.k]}</span>`:''}</button>`).join('')})();
+function tabsHtml(kind,key){const g=grpOf(kind,key);if(!g)return '';const pn=kind==='p'?(P.find(x=>x.id===key)||{}).name:null;if(g.tabs.length<2&&!pn)return '';
+  return `<div class="vtabs">${g.tabs.map(t=>`<button data-view="${t[0]}" aria-pressed="${kind==='v'&&t[0]===key}">${t[1]}</button>`).join('')}${pn?`<button aria-pressed="true">${esc(pn)}</button>`:''}</div>`}
+GRP.forEach(g=>g.tabs.forEach(([k])=>{const r=V[k].render;V[k].render=function(){return tabsHtml('v',k)+r.apply(this,arguments)}}));
+function tabsSet(kind,key){const g=grpOf(kind,key);nav.querySelectorAll('button').forEach(b=>b.setAttribute('aria-current',!!g&&b.dataset.v===g.k));if(kind==='p')$('view').insertAdjacentHTML('afterbegin',tabsHtml(kind,key))}
+const _show0=show;show=function(kind,key){if(kind==='v'&&VALIAS[key])key=VALIAS[key];sfPull(CUR);sfPush(kind,key);CUR={kind,key};_show0(kind,key);heroSet(kind,key);tabsSet(kind,key);kDeco();sfChip()};
+document.addEventListener('change',e=>{if(e.target.closest&&e.target.closest('#view'))setTimeout(sfChip,0)});
+document.addEventListener('click',e=>{if(e.target.closest&&e.target.closest('#view button'))setTimeout(sfChip,0)});
+const KIC={proj:'<path d="M6 3h9l4 4v14H6zM14 3v5h5M9 12h7M9 16h5"/>',clip:'<path d="M9 4h6v3H9zM7 5H5v16h14V5h-2M8 12l2 2 4-4"/>',cut:'<circle cx="6" cy="6" r="2.5"/><circle cx="6" cy="18" r="2.5"/><path d="M8 7.5L20 18M8 16.5L20 6"/>',
+ target:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/>',ship:'<path d="M3 15h18l-2.5 5h-13zM6 15v-5h12v5M10 10V6h4v4M2 21c2 0 2-1 4-1s2 1 4 1 2-1 4-1 2 1 4 1 2-1 4-1"/>',
+ inb:'<path d="M3 8l9-5 9 5v10l-9 5-9-5zM3 8l9 5 9-5M12 13v10"/>',truck:'<path d="M2 6h12v10H2zM14 9h4l4 4v3h-8"/><circle cx="6" cy="18" r="2"/><circle cx="18" cy="18" r="2"/>',
+ stack:'<path d="M3 7l9-4 9 4-9 4zM3 12l9 4 9-4M3 17l9 4 9-4"/>',cart:'<path d="M3 4h2l2.5 11h11L21 7H6.5"/><circle cx="9" cy="19" r="1.6"/><circle cx="18" cy="19" r="1.6"/>',
+ warn:'<path d="M12 3l10 18H2zM12 10v5M12 18h.01"/>',grid:'<path d="M4 4h7v7H4zM13 4h7v4h-7zM13 10h7v10h-7zM4 13h7v7H4z"/>',gear:'<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/>',
+ fac:'<path d="M3 21V10l6 4V10l6 4V6h6v15z"/>',box:'<path d="M12 2l9 5v10l-9 5-9-5V7zM12 12l9-5M12 12v10M12 12L3 7"/>',chart:'<path d="M4 20V11M10 20V5M16 20v-6M21 20H3"/>',clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'};
+function kIco(l){const s=String(l).toLowerCase();const r=[[/tỷ lệ|%|đúng hạn|hoàn thành|đáp ứng/,'target'],[/cảnh báo|chú ý|trễ|quá hạn|chậm/,'warn'],[/bàn giao|giao hàng/,'ship'],[/phải mua|thiếu|mua/,'cart'],[/nhập/,'inb'],[/xuất/,'truck'],
+  [/tồn|kho/,'stack'],[/lsx|lệnh/,'clip'],[/nesting|phôi|tấm/,'grid'],[/khoan|chấn|vát|gia công/,'gear'],[/máy/,'fac'],[/cắt/,'cut'],[/dự án/,'proj'],[/ngày|tuổi|tuần/,'clock'],[/khối lượng|kl|tấn|thành phẩm/,'box']];
+  const k=(r.find(x=>x[0].test(s))||[0,'chart'])[1];return `<i class="kic"><svg viewBox="0 0 24 24">${KIC[k]}</svg></i>`}
+const _kpi0=kpi;kpi=function(l,...a){return _kpi0(l,...a).replace('<div class="l">',kIco(l)+'<div class="l">')};
+const _kpiS0=kpiS;kpiS=function(l,...a){return _kpiS0(l,...a).replace('<div class="l">',kIco(l)+'<div class="l">')};
+/* tìm kiếm: dự án / LSX / quy cách thép */
+(function(){const inp=$('gs');if(!inp)return;const dl=$('gs-l');
+  const items=P.map(p=>({t:p.name,k:'p',v:p.id})).concat(Object.keys(typeof LSXI!=='undefined'?LSXI:{}).map(l=>({t:l,k:'l',v:l}))).concat((D.bykey||[]).map(r=>({t:r.k,k:'q',v:r.k})));
+  dl.innerHTML=items.slice(0,800).map(x=>`<option value="${esc(x.t)}">`).join('');
+  const go=()=>{const q=nv(inp.value).trim();if(!q)return;const x=items.find(i=>nv(i.t)===q)||items.find(i=>nv(i.t).includes(q));if(!x)return;
+    if(x.k==='p')show('p',x.v);else if(x.k==='l')drillOpen('lsx|'+x.v);else drillOpen('key|'+x.v);inp.value=''};
+  inp.addEventListener('keydown',e=>{if(e.key==='Enter')go()});inp.addEventListener('change',go)})();
+(function(){const n=attention().filter(x=>x.s!=='info').length;if($('bell-n'))$('bell-n').textContent=n||'';if($('bell'))$('bell').onclick=()=>show('v','tt');if($('reload'))$('reload').onclick=()=>location.reload()})();
+
 nav.addEventListener('click',e=>{const b=e.target.closest('button');if(b)show('v',b.dataset.v)});
 plist.addEventListener('click',e=>{const b=e.target.closest('button');if(b)show('p',b.dataset.p)});
 document.addEventListener('click',e=>{const g=e.target.closest('[data-go]');if(g)show('p',g.dataset.go)});
