@@ -33,15 +33,16 @@ def export_url(link, khoa=''):
         return f'https://docs.google.com/spreadsheets/d/{link}/export?format=xlsx', 'Google Sheets'
     return link, 'link trực tiếp'
 
-def tai(url, dich, lan=3):
+def tai(url, dich, lan=5):
     req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0 (bao-cao-chuoi-thep)'})
     for i in range(lan):
         try:
-            with urllib.request.urlopen(req, timeout=180) as r: data = r.read()
+            with urllib.request.urlopen(req, timeout=240) as r: data = r.read()
             break
         except Exception as e:
             if i == lan - 1: raise
-            log(f'  lỗi tải ({e}), thử lại sau 10 giây'); time.sleep(10)
+            cho = 20 * (i + 1)
+            log(f'  lỗi tải ({e}), thử lại sau {cho} giây'); time.sleep(cho)
     if data[:2] != b'PK' and data[:4] == b'UEsD':   # Apps Script trả file Excel dạng base64
         data = base64.b64decode(data)
     if data[:7] == b'LOI: sa':
@@ -56,6 +57,7 @@ def tai(url, dich, lan=3):
 def main():
     hom_nay = (datetime.datetime.utcnow() + datetime.timedelta(hours=7)).strftime('%d.%m.%Y')
     co_link = False
+    loi_cutting = False
     for bien, thu_muc, ten in NGUON:
         links = [x for x in re.split(r'[\n;]+', os.environ.get(bien, '')) if x.strip()]
         for i, link in enumerate(links):
@@ -71,7 +73,13 @@ def main():
                 # không dừng cả báo cáo: dùng file đã có sẵn trong thư mục (nếu có)
                 log(f'KHÔNG tải được {thu_muc} ({loai}): {e}. Dùng file đang có trong du_lieu/{thu_muc}.')
                 if os.path.exists(dich): os.remove(dich)
+                if bien == 'NGUON_CUTTING': loi_cutting = True
     if not co_link: log('Chưa khai báo link nguồn (NGUON_CUTTING / NGUON_KHO / NGUON_NESTING) – dùng file trong du_lieu/.')
+    if loi_cutting:
+        # Không dựng báo cáo từ file Cutting cũ trong repo (sẽ làm báo cáo lùi ngày, mất chi tiết LSX).
+        # Dừng lần chạy này: website giữ nguyên báo cáo gần nhất, lần chạy sau sẽ thử tải lại.
+        log('DỪNG: không tải được file Cutting từ link – giữ nguyên báo cáo đang có, không cập nhật lần này.')
+        sys.exit(1)
 
 if __name__ == '__main__':
     main()
