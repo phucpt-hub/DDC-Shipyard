@@ -152,6 +152,8 @@ def nesting_block(ct,files,pk):
         CLEAN_LOG.append(dict(file=r.srcfile,sheet='Phieu vat tu',row=int(r.xrow),obj=str(r.nesting),du_an=ct,cot='NESTING NO',cu=str(r.nesting),moi='coi là đã cắt',ma='N04',quy_tac='Số nesting không có trong Cutting nhưng LSX của nó đã cắt xong 100% → coi là đã cắt (không tính nhu cầu thép)',nhom='Đã chuẩn hóa',kl=float(r.weight or 0)))
     Pn['mac']=Pn.mac.astype(str).str.upper().str.replace(' ','')
     Pn['vao']=np.where(Pn.nguon=='NEWPLATE','Tấm mới',np.where(Pn.nguon=='TAN DUNG','Tận dụng','Remain'))
+    Pn['_l']=Pn.lsx.astype(str).where(Pn.lsx.notna(),'')
+    Pn['_h']=Pn.hang_muc.astype(str).str.replace('\\_','_',regex=False).str.replace('\\*','*',regex=False).str.strip().where(Pn.hang_muc.notna(),'') if 'hang_muc' in Pn else ''
     s=lambda c: float(Pn[c].fillna(0).sum())
     new=float(Pn.loc[Pn.vao=='Tấm mới','weight'].sum()); rin=float(Pn.loc[Pn.vao!='Tấm mới','weight'].sum())
     tp,trm,tpl,th=s('kl_tp'),s('thu_rm'),s('thu_pl'),s('tieu_hao')
@@ -164,6 +166,18 @@ def nesting_block(ct,files,pk):
     # LSX reconciliation
     lsx_n=set(Pn.lsx.dropna().astype(str)); lsx_c=set(Cc.lsx.dropna().astype(str))
     miss=Pn[Pn.cut_st=='Chưa nạp Cutting'].groupby('lsx').weight.sum().sort_values(ascending=False)
+    # theo LSX + hạng mục (cột Phase của Phiếu vật tư) → lọc trang Nesting theo hạng mục
+    # [lsx, hạng mục, số nesting, tấm mới t, remain/tận dụng t, thành phẩm t, thu remain t, phế t, tiêu hao t, [[n,t] Đã cắt hết, Cắt dở, Chưa cắt, Chưa nạp Cutting], {phân bổ tấm chưa cắt: [n,t]}]
+    BL=[]
+    try:
+        _sk=lambda g,c: t_(float(g[c].fillna(0).sum()))
+        for (l,h),g in Pn.groupby(['_l','_h'],sort=False):
+            nw=g.vao=='Tấm mới'
+            cs_=[[int((g.cut_st==k).sum()),t_(float(g.loc[g.cut_st==k,'weight'].sum()))] for k in ('Đã cắt hết','Cắt dở','Chưa cắt','Chưa nạp Cutting')]
+            pg=pend[(pend._l==l)&(pend._h==h)] if len(pend) else pend
+            al_={str(k):[int(len(x)),t_(float(x.weight.sum()))] for k,x in pg.groupby('alloc')} if len(pg) else {}
+            BL.append([l,h,int(g.nesting.nunique()),t_(float(g.loc[nw,'weight'].sum())),t_(float(g.loc[~nw,'weight'].sum())),_sk(g,'kl_tp'),_sk(g,'thu_rm'),_sk(g,'thu_pl'),_sk(g,'tieu_hao'),cs_,al_])
+    except Exception as e: print('Không tách được nesting theo hạng mục',fname,':',e); BL=[]
     return dict(file=fname,n_nesting=int(Pn.nesting.nunique()),n_lsx=len(lsx_n),
       flow=dict(new=t_(new),rin=t_(rin),tp=t_(tp),rm=t_(trm),pl=t_(tpl),th=t_(th)),
       pct=dict(remain=f(trm/(new+rin)) if new+rin else None,phe=f(tpl/(new+rin)) if new+rin else None,hh=f(tpl/tp) if tp else None,tp=f(tp/(new+rin)) if new+rin else None),
@@ -172,7 +186,7 @@ def nesting_block(ct,files,pk):
       alloc=[dict(k=k,n=int(v['size']),t=t_(v['sum'])) for k,v in al.iterrows()],
       buy=[dict(qc=f"PL{r.t:g}×{r.w:g}×{r.l:g}",mac=r.mac,n=int(r.n),t=t_(r.kg)) for r in buy.head(15).itertuples()],
       lsx_not_in_cut=[dict(lsx=k,t=t_(v)) for k,v in miss.items()][:15],
-      lsx_cut_not_in_nes=sorted(lsx_c-lsx_n)[:15],rev=REV)
+      lsx_cut_not_in_nes=sorted(lsx_c-lsx_n)[:15],rev=REV,by_lsx=BL)
 # ---------------- PER PROJECT ----------------
 V=CUT_V.reset_index(drop=True); V['m_cut']=V.d_cut_dt.dt.to_period('M').astype(str); V['m_bg']=V.d_bg_dt.dt.to_period('M').astype(str)
 # tên file chi tiết của từng LSX (chi_tiet/<tên>.json); không phân biệt hoa thường để chạy được trên Windows

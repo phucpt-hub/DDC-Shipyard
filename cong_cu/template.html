@@ -540,6 +540,14 @@ b.rvt{color:var(--brand)}.lsxp{margin:10px 0 0;padding:8px 12px;border-radius:9p
 .lsxp b{margin:0 2px}.lsxb{border:1px solid var(--brand);background:transparent;color:var(--brand);font:600 12.5px/1 "Be Vietnam Pro",Arial,sans-serif;padding:6px 12px;border-radius:7px;cursor:pointer}.lsxb:hover{background:var(--brand);color:#fff}
 .rvl{display:inline-block;white-space:normal;min-width:120px;font-size:12px}
 #t-revp td:first-child{white-space:normal}
+
+#sx-h{display:none}
+.nef label{flex:1 1 200px}.nef input[type=search]{font:inherit;font-weight:400;font-size:13px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--ink)}
+.nech{flex-basis:100%;display:flex;flex-wrap:wrap;gap:6px;align-items:center}.nech .flab{margin-right:4px}
+.nech .chip em{font-style:normal;font-weight:700;margin-left:6px;padding:1px 6px;border-radius:9px;background:rgba(0,0,0,.07);font-size:11px}
+.nech .chip[aria-pressed=true] em{background:rgba(255,255,255,.25)}.nech .chip.z{opacity:.55}
+@media (max-width:700px){.ncd h3{flex-wrap:wrap;row-gap:6px}.ncd h3 a{overflow-wrap:anywhere;min-width:0}}
+.tf .nech button.chip{font:600 12.5px/1.2 "Be Vietnam Pro",Arial,sans-serif;padding:6px 12px;border-radius:999px;gap:0}
 </style>
 
 <div class="app">
@@ -1858,9 +1866,10 @@ filterBar=function(){
 bindFilter=function(rerender){
   trcBind('f-tr',k=>{const q=QUICK[k];[FS.from,FS.to]=q.f();FS.from=Math.max(FS.from,D0);FS.g=q.g;FS.q=k;saveFS();rerender()},
     (a,b)=>{FS.from=a;FS.to=b;FS.q='';const n=(b-a)/DAY;FS.g=n<=45?'day':n<=150?'week':n<=500?'month':'quarter';saveFS();rerender()});
-  $('f-p').onchange=e=>{FS.p=e.target.value;saveFS();rerender()};
-  $('f-m').onchange=e=>{FS.m=e.target.value;saveFS();rerender()};
-  $('f-clear').onclick=()=>{FS.p='';FS.m='';FS.q='mtd';FS.from=MONTH0(DEND);FS.to=DEND;FS.g='day';saveFS();rerender()}};
+  const on=(id,ev,fn)=>{const el=$(id);if(el)el[ev]=fn};
+  on('f-p','onchange',e=>{FS.p=e.target.value;saveFS();rerender()});
+  on('f-m','onchange',e=>{FS.m=e.target.value;saveFS();rerender()});
+  if($('f-clear'))$('f-clear').onclick=()=>{FS.p='';FS.m='';FS.q='mtd';FS.from=MONTH0(DEND);FS.to=DEND;FS.g='day';saveFS();rerender()}};
 /* Điều hành = theo dõi & biểu đồ; bảng số liệu chuyển sang Báo cáo kỳ */
 const _dhR=V.dh.render;
 function dhTables(){const s=_dhR.call(V.dh),i=s.lastIndexOf('<section class="grid">');return i<0?'':s.slice(i)}
@@ -1933,34 +1942,114 @@ function ctRevSum(l,R){const H=R.filter(r=>r[12]!=null);
   if(!H.length)return REVI[l]?`<span>REV cao nhất <b>${rvTxt(REVI[l].mx)}</b></span>`:'';
   const by={};H.forEach(r=>{const k=r[12];by[k]=by[k]||[0,0];by[k][0]++;by[k][1]+=r[4]||0});
   return `<span>Bản vẽ: ${Object.keys(by).sort((a,b)=>a-b).map(k=>`<b class="${+k>0?'rvt':''}">${rvTxt(k)}</b> ${by[k][0]} ct · ${T(by[k][1]/1000)} t`).join(' · ')}</span>`}
-function revSection(){const N=P.filter(p=>p.nes),RS=Object.values(REVI),ON=RS.filter(r=>r.mx>0);
-  if(!N.length)return '';
-  const byP=N.map(p=>{const L=(p.nes.rev||[]),O=L.filter(r=>r.mx>0);return {p,n:(p.lsx||[]).filter(l=>l.kl>0).length,co:L.length,on:O.length,mx:L.length?Math.max(...L.map(r=>r.mx)):null,t:sum(O,r=>r.t),ct:sum(O,r=>r.nrev)}}).sort((a,b)=>b.on-a.on||b.t-a.t);
+function revSection(L){/* L = [{p, n}] các dự án đang lọc; n = số liệu nesting (đã tách theo hạng mục nếu có) */
+  if(!L.length)return '';
+  const rows=x=>((x.p.nes&&x.p.nes.rev)||[]).filter(r=>!x.n._lsx||x.n._lsx.has(r.lsx)).map(r=>({...r,p:x.p}));
+  const RS=L.flatMap(rows),ON=RS.filter(r=>r.mx>0);
+  const byP=L.map(x=>{const R=rows(x),O=R.filter(r=>r.mx>0);return {p:x.p,n:x.n._lsx?x.n._lsx.size:(x.p.lsx||[]).filter(l=>l.kl>0).length,co:R.length,on:O.length,mx:R.length?Math.max(...R.map(r=>r.mx)):null,t:sum(O,r=>r.t),ct:sum(O,r=>r.nrev)}}).sort((a,b)=>b.on-a.on||b.t-a.t);
   const top=ON.slice().sort((a,b)=>b.mx-a.mx||b.t-a.t).slice(0,10);
   return `<section>${secH('Sửa đổi bản vẽ (REV) theo lệnh sản xuất','Nguồn: cột REV01 / REV02 trong sheet List chi tiet của file nesting · bấm số LSX để xem chi tiết')}
-   <div class="kpis">${kpi('LSX có ghi REV',RS.length,'lệnh',`trong ${N.length} dự án có file nesting`,'dim')}${kpi('LSX đã sửa (REV ≥ 1)',ON.length,'lệnh',`${PC(ON.length/(RS.length||1))} số LSX có ghi REV`,ON.length?'bad':'good')}
+   <div class="kpis">${kpi('LSX có ghi REV',RS.length,'lệnh',`trong ${L.length} dự án đang lọc`,'dim')}${kpi('LSX đã sửa (REV ≥ 1)',ON.length,'lệnh',`${PC(ON.length/(RS.length||1))} số LSX có ghi REV`,ON.length?'bad':'good')}
     ${kpi('Chi tiết đã sửa',T0(sum(ON,r=>r.nrev)),'chi tiết','',`dim`)}${kpi('Khối lượng đã sửa',T(sum(ON,r=>r.t)),'t','chi tiết có REV ≥ 1')}${kpi('REV cao nhất',ON.length?rvTxt(Math.max(...ON.map(r=>r.mx))):'–','',top[0]?esc(top[0].lsx)+' · '+esc(top[0].p.name):'')}</div>
    <div class="grid"><div class="card"><h3>Top LSX sửa nhiều nhất <span class="sub">· xếp theo REV cao nhất, rồi khối lượng sửa</span></h3>
-    ${top.length?table('t-rev',[{h:'LSX',f:r=>lsxA(r.lsx),s:r=>r.lsx},{h:'Dự án',f:r=>esc(r.p.name),s:r=>r.p.name},{h:'REV cao nhất',f:r=>`<span class="rvb ${rvCls(r.mx)}">${rvTxt(r.mx)}</span>`,s:r=>r.mx},{h:'Chi tiết sửa',n:1,f:r=>`${T0(r.nrev)} / ${T0(r.co)}`,s:r=>r.nrev},{h:'KL sửa (t)',n:1,f:r=>T(r.t),s:r=>r.t},{h:'Các bản',f:r=>`<span class="rvl">${r.lv.map(x=>`<span title="${x[1]} chi tiết · ${T(x[2])} t">${rvTxt(x[0])}</span>`).join(' · ')}</span>`,s:r=>r.lv.length}],top):'<p class="empty">Chưa có LSX nào sửa đổi (REV ≥ 1).</p>'}</div>
+    ${top.length?table('t-rev',[{h:'LSX',f:r=>lsxA(r.lsx),s:r=>r.lsx},{h:'Dự án',f:r=>esc(r.p.name),s:r=>r.p.name},{h:'REV cao nhất',f:r=>`<span class="rvb ${rvCls(r.mx)}">${rvTxt(r.mx)}</span>`,s:r=>r.mx},{h:'Chi tiết sửa',n:1,f:r=>`${T0(r.nrev)} / ${T0(r.co)}`,s:r=>r.nrev},{h:'KL sửa (t)',n:1,f:r=>T(r.t),s:r=>r.t},{h:'Các bản',f:r=>`<span class="rvl">${r.lv.map(x=>`<span title="${x[1]} chi tiết · ${T(x[2])} t">${rvTxt(x[0])}</span>`).join(' · ')}</span>`,s:r=>r.lv.length}],top):'<p class="empty">Chưa có LSX nào sửa đổi (REV ≥ 1) trong phạm vi đang lọc.</p>'}</div>
     <div class="card"><h3>Theo dự án <span class="sub">· LSX đã sửa / LSX có ghi REV</span></h3>
     ${table('t-revp',[{h:'Dự án',f:x=>`<b>${esc(x.p.name)}</b>`,s:x=>x.p.name},{h:'LSX',n:1,f:x=>x.n,s:x=>x.n},{h:'Có ghi REV',n:1,f:x=>x.co?x.co:'<span class="muted">chưa điền</span>',s:x=>x.co},{h:'Đã sửa',n:1,f:x=>x.on?`<b style="color:var(--bad)">${x.on}</b> <span class="muted">(${PC(x.on/(x.co||1))})</span>`:'0',s:x=>x.on},{h:'REV cao nhất',f:x=>x.mx==null?'–':`<span class="rvb ${rvCls(x.mx)}">${rvTxt(x.mx)}</span>`,s:x=>x.mx??-1},{h:'KL sửa (t)',n:1,f:x=>T(x.t),s:x=>x.t}],byP)}
     <p class="note">"Chưa điền" = file nesting của dự án không ghi cột REV01 → chưa biết số lần sửa. LSX ghi "REV / bổ sung / cắt lại" ở hạng mục (file Cutting) được gắn nhãn <span class="bsb">Sửa/BS</span> trong danh sách LSX.</p></div></div></section>`}
-const _neR=V.ne.render;V.ne.render=function(){return _neR.apply(this,arguments)+revSection()};
-/* ---- Lệnh sản xuất: bộ lọc thời gian = lọc theo NGÀY BAN HÀNH LSX ---- */
-function withLsxPeriod(fn){const all=FS.q==='all'||(FS.from<=D0&&FS.to>=DEND);
-  if(all)return fn();
-  const inP=l=>{if(!l.bh)return false;const t=Date.parse(l.bh+'T00:00:00Z');return t>=FS.from&&t<=FS.to};
-  const o=openLsx.slice(),a=allLsx.slice();openLsx.length=0;o.filter(inP).forEach(x=>openLsx.push(x));allLsx.length=0;a.filter(inP).forEach(x=>allLsx.push(x));
-  try{return fn()}finally{openLsx.length=0;o.forEach(x=>openLsx.push(x));allLsx.length=0;a.forEach(x=>allLsx.push(x))}}
-V.lsx.render=function(){const all=FS.q==='all'||(FS.from<=D0&&FS.to>=DEND);
-  const pp=FS.p===''?null:P[+FS.p],mName=FS.m===''?'':MACH[+FS.m];
-  const base=openLsx.filter(l=>(!pp||l.p===pp)&&onMay(l,mName));
-  const x=withLsxPeriod(sxSplit);const n=withLsxPeriod(()=>openLsx.filter(l=>(!pp||l.p===pp)&&onMay(l,mName)).length);
-  const bar=x.bar.replace('<div class="fld">Thời gian','<div class="fld">Ngày ban hành LSX').replace('<label class="dt">Xem theo','<label class="dt" style="display:none">Xem theo');
-  const note=`<p class="lsxp"><span>${all?`Đang xem <b>tất cả ${base.length} LSX chưa cắt xong</b> (mọi ngày ban hành).`:`Thời gian lọc theo <b>ngày ban hành LSX</b>: <b>${n} / ${base.length}</b> lệnh chưa cắt xong được ban hành từ ${dmy(FS.from)} đến ${dmy(FS.to)}.`}</span>${all?'':'<button class="lsxb" data-lsxall>Xem tất cả thời gian</button>'}</p>`;
+/* ================= MỤC 3 – bộ lọc HẠNG MỤC dùng chung cho 2 tab Lệnh sản xuất / Nesting ================= */
+const H3={h:''};
+const hmG=l=>l.g??(l.g=hmGroup(l.hm));
+const NCS=['Đã cắt hết','Cắt dở','Chưa cắt','Chưa nạp Cutting'];
+const neHm=r=>r._g??(r._g=hmGroup(r[1]||((LSXI[r[0]]||{}).hm)||''));
+/* số liệu nesting của dự án, chỉ tính các tấm thuộc hạng mục h (từ nes.by_lsx) */
+function nesSub(p,h){const n=p.nes;if(!h)return n;const R=(n.by_lsx||[]).filter(r=>neHm(r)===h);if(!R.length)return null;
+  const S=i=>sum(R,r=>r[i]||0),nw=S(3),ri=S(4),tp=S(5),rm=S(6),pl=S(7),th=S(8),vin=nw+ri;
+  const cut_st=NCS.map((k,i)=>({k,n:sum(R,r=>r[9][i][0]),t:sum(R,r=>r[9][i][1])})).filter(x=>x.n>0);
+  const al={};R.forEach(r=>Object.entries(r[10]||{}).forEach(([k,v])=>{const a=al[k]=al[k]||{k,n:0,t:0};a.n+=v[0];a.t+=v[1]}));
+  const L=new Set(R.map(r=>r[0]).filter(Boolean));
+  return {...n,n_nesting:S(2),n_lsx:L.size,flow:{new:nw,rin:ri,tp,rm,pl,th},pct:{remain:vin?rm/vin:null,phe:vin?pl/vin:null,hh:tp?pl/tp:null,tp:vin?tp/vin:null},cut_st,alloc:Object.values(al),_h:h,_lsx:L}}
+const neCs=(n,k)=>(n.cut_st.find(c=>c.k===k)||{t:0}).t;
+const neBuy=n=>(n.alloc.find(a=>a.k==='Phải mua')||{t:0,n:0});
+const neRevOn=x=>((x.p.nes.rev)||[]).filter(r=>r.mx>0&&(!x.n._lsx||x.n._lsx.has(r.lsx)));
+const NEC=[['nap','Chưa nạp Cutting','Có tấm nesting mà LSX chưa có trong file Cutting → cần nạp lệnh vào Cutting'],
+  ['cho','Còn tấm chờ cắt','Tấm đã nạp Cutting nhưng chưa cắt hoặc cắt dở'],
+  ['kho','Khổ tấm chưa có trong kho','Tấm mới chưa cắt mà trong kho không có tấm đủ khổ (đối chiếu theo file nesting) → cần mua / đặt khổ'],
+  ['rev','Có sửa đổi (REV)','Có LSX sửa bản vẽ (REV ≥ 1)'],
+  ['hh','Hao hụt > 8%','Phế liệu / thành phẩm > 8%']];
+function neTest(x,c){const n=x.n;
+  if(c==='nap')return neCs(n,'Chưa nạp Cutting')>0.05;
+  if(c==='cho')return neCs(n,'Chưa cắt')+neCs(n,'Cắt dở')>0.05;
+  if(c==='kho')return neBuy(n).t>0.05;
+  if(c==='rev')return neRevOn(x).length>0;
+  if(c==='hh')return (n.pct.hh||0)>0.08;
+  return true}
+V.ne.render=function(){const N=P.filter(p=>p.nes);
+  if(!N.length)return `<p class="empty">Chưa có file nesting nào trong thư mục du_lieu/3_NESTING.</p>`;
+  if(!['',...NEC.map(c=>c[0])].includes(NF.c))NF.c='';
+  if(NF.p&&!N.some(p=>p.id===NF.p))NF.p='';
+  const NP=NF.p?N.filter(p=>p.id===NF.p):N,has=N.some(p=>p.nes.by_lsx);
+  const m={};NP.forEach(p=>(p.nes.by_lsx||[]).forEach(r=>{const g=neHm(r),o=m[g]=m[g]||{n:new Set(),t:0};o.n.add(p.id+'|'+r[0]);o.t+=(r[3]||0)+(r[4]||0)}));
+  if(H3.h&&!m[H3.h])H3.h='';
+  const hOpt=`<option value="">Tất cả hạng mục (${Object.keys(m).length})</option>`+Object.entries(m).sort((a,b)=>b[1].t-a[1].t).map(([g,v])=>`<option value="${esc(g)}"${g===H3.h?' selected':''}>${esc(g)} · ${v.n.size} LSX · ${T0(v.t)} t</option>`).join('');
+  return `<div class="tf fb2 nef">
+    <label>Dự án<select id="ne-p"><option value="">Tất cả dự án có nesting (${N.length})</option>${N.map(p=>`<option value="${esc(p.id)}"${NF.p===p.id?' selected':''}>${esc(p.name)}</option>`).join('')}</select></label>
+    <label>Hạng mục<select id="ne-h"${has?'':' disabled title="Có ở lần cập nhật số liệu tới"'}>${hOpt}</select></label>
+    <label>Tìm<input type="search" id="ne-q" placeholder="Tìm dự án, mã file…" value="${esc(NF.q)}"></label>
+    <div class="btns"><button id="ne-x"><svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 3-6.2M4 4v4h4"/></svg>Đặt lại</button></div>
+    <div class="nech"><span class="flab">Lọc nhanh</span><span id="ne-ch"></span></div>
+    <div class="fsum" id="ne-sum"></div></div><div id="ne-box"></div><div id="ne-rev"></div>`};
+V.ne.after=function(){const NALL=P.filter(p=>p.nes);if(!NALL.length)return;
+  const draw=()=>{
+    const base=NALL.filter(p=>(!NF.p||p.id===NF.p)&&(!NF.q||hit(p.name+' '+p.nes.file+' '+(p.code||''),NF.q))).map(p=>({p,n:nesSub(p,H3.h)})).filter(x=>x.n);
+    const cnt=k=>base.filter(x=>neTest(x,k)).length;
+    $('ne-ch').innerHTML=[['','Tất cả','Bỏ lọc nhanh'],...NEC].map(([k,nm,tt])=>{const c=k?cnt(k):base.length;return `<button class="chip${k&&!c?' z':''}" data-nef="${k}" aria-pressed="${NF.c===k}" title="${esc(tt)}">${nm}<em>${c}</em></button>`}).join('');
+    $('ne-ch').querySelectorAll('[data-nef]').forEach(b=>b.onclick=()=>{NF.c=b.dataset.nef;draw()});
+    const L=base.filter(x=>neTest(x,NF.c)),N=L.map(x=>({...x.p,nes:x.n,_id:x.p.id,_x:x}));
+    $('ne-sum').textContent=`${N.length} / ${NALL.length} dự án${H3.h?' · hạng mục '+H3.h:''} · thép vào ${T(sum(N,p=>p.nes.flow.new+p.nes.flow.rin))} t`;
+    $('ne-box').innerHTML=N.length?`<section>${secH('So sánh các file nesting',`${N.length} / ${NALL.length} dự án có file nesting${H3.h?' · chỉ tính tấm thuộc hạng mục '+esc(H3.h):''}`)}
+   ${table('t-nes',[{h:'Dự án',f:p=>`<b>${esc(p.name)}</b><br><span style="font-size:11.5px;color:var(--muted)">${esc(p.nes.file)}</span>`,s:p=>p.name},
+     {h:'Nesting',n:1,f:p=>T0(p.nes.n_nesting),s:p=>p.nes.n_nesting},{h:'Thép vào (t)',n:1,f:p=>T(p.nes.flow.new+p.nes.flow.rin),s:p=>p.nes.flow.new+p.nes.flow.rin},
+     {h:'Thành phẩm',n:1,f:p=>PC(p.nes.pct.tp),s:p=>p.nes.pct.tp},{h:'% Remain',n:1,f:p=>PC(p.nes.pct.remain),s:p=>p.nes.pct.remain},
+     {h:'% Phế',n:1,f:p=>PC(p.nes.pct.phe),s:p=>p.nes.pct.phe},{h:'Hao hụt',n:1,f:p=>`<b style="color:${p.nes.pct.hh>0.08?'var(--bad)':'var(--good)'}">${PC(p.nes.pct.hh)}</b>`,s:p=>p.nes.pct.hh},
+     {h:'Chưa nạp Cutting (t)',n:1,f:p=>{const v=neCs(p.nes,'Chưa nạp Cutting');return v>0.05?`<b style="color:var(--bad)">${T(v)}</b>`:'<span class="muted">–</span>'},s:p=>neCs(p.nes,'Chưa nạp Cutting')},
+     {h:'Chờ cắt (t)',n:1,f:p=>{const v=neCs(p.nes,'Chưa cắt')+neCs(p.nes,'Cắt dở');return v>0.05?`<b>${T(v)}</b>`:'<span class="muted">–</span>'},s:p=>neCs(p.nes,'Chưa cắt')+neCs(p.nes,'Cắt dở')},
+     {h:'Khổ tấm chưa có trong kho (t)',n:1,f:p=>{const x=neBuy(p.nes);return x.t>0.05?`<b style="color:var(--bad)">${T(x.t)}</b> · ${x.n} tấm`:'<span class="muted">–</span>'},s:p=>neBuy(p.nes).t},
+     {h:'LSX sửa (REV)',n:1,f:p=>{const v=neRevOn(p._x).length;return v?`<b style="color:var(--bad)">${v}</b>`:'<span class="muted">–</span>'},s:p=>neRevOn(p._x).length}],N,{click:1})}</section>
+  <section>${secH('Từng dự án','Thanh đậm = khối lượng, nền nhạt = tổng (100%) · % tính trên tổng của nhóm · bấm tên để xem chi tiết')}<div class="grid3">${N.slice().sort((a,b)=>{const q=p=>{const c=sum(p.nes.cut_st,x=>x.t);return c?neCs(p.nes,'Đã cắt hết')/c:1};return q(a)-q(b)}).map(nesCard).join('')}</div></section>`:'<p class="empty">Không có dự án nào khớp bộ lọc.</p>';
+    $('ne-rev').innerHTML=revSection(L);
+    sortable($('ne-box'));sortable($('ne-rev'));requestAnimationFrame(()=>fitLabels())};
+  $('ne-p').onchange=e=>{NF.p=e.target.value;if(!NF.p)SF.p='';show('v','ne')};
+  $('ne-h').onchange=e=>{H3.h=e.target.value;draw()};
+  $('ne-q').oninput=e=>{NF.q=e.target.value;draw()};
+  $('ne-x').onclick=()=>{NF.p='';NF.c='';NF.q='';H3.h='';SF.p='';show('v','ne')};
+  draw()};
+/* ---- Lệnh sản xuất: lọc Dự án · Hạng mục · Ngày ban hành LSX (không lọc theo máy) ---- */
+const lsxAll=()=>FS.q==='all'||(FS.from<=D0&&FS.to>=DEND);
+function withLsxPeriod(fn){const all=lsxAll(),m0=FS.m;FS.m='';
+  const inP=l=>{if(all)return true;if(!l.bh)return false;const t=Date.parse(l.bh+'T00:00:00Z');return t>=FS.from&&t<=FS.to};
+  const ok=l=>inP(l)&&(!H3.h||hmG(l)===H3.h);
+  const o=openLsx.slice(),a=allLsx.slice();openLsx.length=0;o.filter(ok).forEach(x=>openLsx.push(x));allLsx.length=0;a.filter(ok).forEach(x=>allLsx.push(x));
+  try{return fn()}finally{openLsx.length=0;o.forEach(x=>openLsx.push(x));allLsx.length=0;a.forEach(x=>allLsx.push(x));FS.m=m0}}
+function lsxBar(){const pp=FS.p===''?null:P[+FS.p],LP=openLsx.filter(l=>!pp||l.p===pp);
+  if(H3.h&&!LP.some(l=>hmG(l)===H3.h))H3.h='';
+  const pOpt=P.map((p,i)=>`<option value="${i}" ${FS.p===String(i)?'selected':''}>${esc(p.name)}</option>`).join('');
+  return `<div class="tf fb2">
+   <label>Dự án<select id="f-p"><option value="">Tất cả dự án</option>${pOpt}</select></label>
+   <label>Hạng mục<select id="f-h">${hmOpts(LP,H3.h)}</select></label>
+   <div class="fld">Ngày ban hành LSX${trcHtml('f-tr',FS.q,FS.from,FS.to)}</div>
+   <div class="btns"><button id="f-clear"><svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 3-6.2M4 4v4h4"/></svg>Đặt lại</button></div>
+   <div class="fsum">${lsxAll()?'Mọi ngày ban hành':`${dmy(FS.from)} → ${dmy(FS.to)}`}${pp?' · '+esc(pp.name):''}${H3.h?' · '+esc(H3.h):''}</div></div>`}
+V.lsx.render=function(){const all=lsxAll(),pp=FS.p===''?null:P[+FS.p],bar=lsxBar();
+  const base=openLsx.filter(l=>(!pp||l.p===pp)&&(!H3.h||hmG(l)===H3.h)).length;
+  const x=withLsxPeriod(sxSplit),n=withLsxPeriod(()=>openLsx.filter(l=>!pp||l.p===pp).length);
+  const hm=H3.h?` thuộc hạng mục <b>${esc(H3.h)}</b>`:'';
+  const note=`<p class="lsxp"><span>${all?`Đang xem <b>tất cả ${base} LSX chưa cắt xong</b>${hm} (mọi ngày ban hành).`:`Thời gian lọc theo <b>ngày ban hành LSX</b>: <b>${n} / ${base}</b> lệnh chưa cắt xong${hm} được ban hành từ ${dmy(FS.from)} đến ${dmy(FS.to)}.`}</span>${all?'':'<button class="lsxb" data-lsxall>Xem tất cả thời gian</button>'}</p>`;
   return bar+note+x.lsx.replace('5. Tuổi LSX','1. Tuổi LSX').replace('6. Danh sách LSX','2. Danh sách LSX')};
-V.lsx.after=function(){withLsxPeriod(()=>V.sx.after.call(V.sx));bindFilter(()=>show('v','lsx'));
-  const a=$('view').querySelector('[data-lsxall]');if(a)a.onclick=()=>{FS.q='all';FS.from=D0;FS.to=DEND;FS.g='month';saveFS();show('v','lsx')}};
+V.lsx.after=function(){const re=()=>show('v','lsx');withLsxPeriod(()=>V.sx.after.call(V.sx));bindFilter(re);
+  $('f-p').onchange=e=>{FS.p=e.target.value;saveFS();re()};
+  $('f-h').onchange=e=>{H3.h=e.target.value;re()};
+  $('f-clear').onclick=()=>{FS.p='';FS.m='';H3.h='';FS.q='mtd';FS.from=MONTH0(DEND);FS.to=DEND;FS.g='day';saveFS();re()};
+  const a=$('view').querySelector('[data-lsxall]');if(a)a.onclick=()=>{FS.q='all';FS.from=D0;FS.to=DEND;FS.g='month';saveFS();re()}};
 
 /* ================= KHUNG GIAO DIỆN DDC-SHIPYARD: dải tiêu đề, tìm kiếm, chuông cảnh báo ================= */
 const HERO={tt:['Tổng quan','điều hành','Kiểm soát đầu vào chuỗi thép','Phát hiện sớm – xử lý kịp thời'],
@@ -1982,19 +2071,21 @@ function sfPull(c){if(!c||c.kind!=='v')return;const k=c.key;
   if(k==='tt'){SF.p=TF.p;SF.q=TF.q;if(TF.q){const[a,b]=QUICK[TF.q].f();SF.from=a;SF.to=b}else if(TF.from!=null){SF.from=TF.from;SF.to=TF.to}}
   else if(k==='dh'||k==='bc'||k==='sx'||k==='cut'||k==='lsx'){SF.p=FS.p;SF.m=FS.m;SF.q=FS.q;SF.from=FS.from;SF.to=FS.to}
   else if(k==='kh'){SF.p=KF.p;SF.m=KF.m}
+  else if(k==='ne'){const i=NF.p?P.findIndex(x=>x.id===NF.p):-1;if(i>=0)SF.p=String(i);else if(!(SF.p!==''&&P[+SF.p]&&!P[+SF.p].nes))SF.p=''}
   else if(k==='th'){const i=THF.p?P.findIndex(x=>x.id===THF.p):-1;SF.p=i>=0?String(i):(THF.k?SF.p:'')}}
 function sfPush(kind,key){if(kind!=='v')return;
   if(key==='tt'){if(TF.p!==SF.p)TF.ph='';TF.p=SF.p;TF.q=SF.q||'';TF.from=SF.from;TF.to=SF.to}
   else if(key==='dh'||key==='bc'||key==='sx'||key==='cut'||key==='lsx'){FS.p=SF.p;FS.m=SF.m;FS.q=SF.q||'';FS.from=Math.max(D0,SF.from);FS.to=Math.min(DEND,SF.to);
     if(SF.q&&QUICK[SF.q])FS.g=QUICK[SF.q].g;else{const n=(FS.to-FS.from)/DAY;FS.g=n<=45?'day':n<=150?'week':n<=500?'month':'quarter'}saveFS()}
   else if(key==='kh'){if(KF.p!==SF.p||KF.m!==SF.m)KF.open=null;KF.p=SF.p;KF.m=SF.m}
+  else if(key==='ne'){const q=SF.p!==''?P[+SF.p]:null;NF.p=q&&q.nes?q.id:''}
   else if(key==='th'){const q=SF.p!==''?P[+SF.p]:null;const id=q&&q.kho?q.id:'';if(THF.p!==id){THF.p=id;THF.k=''}}}
 function sfChip(){const el=$('sfc');if(!el)return;sfPull(CUR);const parts=[];
-  if(SF.p!==''&&P[+SF.p])parts.push(`<b>${esc(P[+SF.p].name)}</b>`);if(SF.m!==''&&MACH[+SF.m])parts.push(esc(MACH[+SF.m]));
+  if(SF.p!==''&&P[+SF.p])parts.push(`<b>${esc(P[+SF.p].name)}</b>`);const m3=CUR&&CUR.kind==='v'&&(CUR.key==='lsx'||CUR.key==='ne');if(SF.m!==''&&MACH[+SF.m]&&!m3)parts.push(esc(MACH[+SF.m]));if(m3&&H3.h)parts.push(esc(H3.h));
   const tq=SF.q?QUICK[SF.q].n:`${dm(SF.from)} – ${dm(SF.to)}`;parts.push(tq);
-  const on=SF.p!==''||SF.m!==''||SF.q!=='mtd';el.className='sfc'+(on?' on':'');
+  const on=SF.p!==''||SF.m!==''||SF.q!=='mtd'||!!H3.h;el.className='sfc'+(on?' on':'');
   el.innerHTML=`<svg viewBox="0 0 24 24"><path d="M3 4h18l-7 8v6l-4 2v-8z"/></svg><span title="Bộ lọc chung – áp dụng cho Tổng quan, Nesting (lệnh sản xuất), Vật tư, Cutting">${parts.join(' · ')}</span>${on?'<button id="sfc-x" title="Bỏ lọc ở mọi trang">✕</button>':''}`;
-  const x=$('sfc-x');if(x)x.onclick=()=>{Object.assign(SF,{p:'',m:'',q:'mtd',from:MONTH0(DEND),to:DEND});TF.ph='';KF.open=null;THF.k='';const c=CUR;CUR=null;show(c.kind,c.key)}}
+  const x=$('sfc-x');if(x)x.onclick=()=>{Object.assign(SF,{p:'',m:'',q:'mtd',from:MONTH0(DEND),to:DEND});TF.ph='';KF.open=null;THF.k='';H3.h='';const c=CUR;CUR=null;show(c.kind,c.key)}}
 /* ===== MENU 4 MỤC TỔNG QUAN, mỗi mục có tab con ===== */
 const GRP=[{k:'tt',n:'Tổng quan',tabs:[['tt','Tổng quan']]},
  {k:'ov',n:'Dự án',tabs:[['ov','Toàn bộ dự án']]},
