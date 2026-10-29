@@ -98,8 +98,38 @@ def allocate(pend,pk):
             if len(idx): stock.loc[idx[0],'avail']-=1; lab=lb; break
         res.append(lab)
     return res
+REVMAP={}   # (nesting, tên chi tiết) -> số REV của chi tiết (từ sheet List chi tiet của file nesting)
+_rv1=lambda v: (lambda m: max(map(int,m)) if m else None)(re.findall(r'REV\s*0*(\d+)',str(v).upper()))
+_tkey=lambda s: re.sub(r'\s+','',str(s)).upper()
+def rev_block(Ln,Pn):
+    # số lần sửa (REV) theo LSX: lấy REV cao nhất của các chi tiết trong LSX (cột REV01/REV02 của List chi tiet)
+    if not len(Ln): return []
+    Ln=Ln.copy()
+    c1=Ln['rev01'] if 'rev01' in Ln else pd.Series([None]*len(Ln),index=Ln.index)
+    c2=Ln['rev02'] if 'rev02' in Ln else pd.Series([None]*len(Ln),index=Ln.index)
+    Ln['rev']=[max([x for x in (_rv1(a),_rv1(b)) if x is not None],default=None) for a,b in zip(c1,c2)]
+    n2l=dict(zip(norm(Pn.nesting),Pn['lsx'].astype(str))) if 'lsx' in Pn else {}
+    nk=norm(Ln.nesting)
+    pre=Ln.nesting.astype(str).str.extract(r'^([A-Za-z0-9]+(?:-[A-Za-z0-9]+){3})')[0]
+    Ln['lsx_r']=[n2l.get(k) if n2l.get(k) not in (None,'nan','NaN') else p2 for k,p2 in zip(nk,pre)]
+    for k,t,r,l in zip(nk,Ln.ten_ct,Ln.rev,Ln.lsx_r):
+        if r is None: continue
+        REVMAP[(k,_tkey(t))]=max(r,REVMAP.get((k,_tkey(t)),-1))
+        if l is not None and str(l) not in ('nan','NaN'): REVMAP[('L',str(l),_tkey(t))]=max(r,REVMAP.get(('L',str(l),_tkey(t)),-1))
+    out=[]
+    for l,g in Ln[Ln.lsx_r.notna()].groupby('lsx_r'):
+        h=g[g.rev.notna()]
+        if not len(h): continue
+        lv=h.groupby('rev').kl_tong.agg(['size','sum'])
+        out.append(dict(lsx=str(l),n=int(len(g)),co=int(len(h)),mx=int(h.rev.max()),nrev=int((h.rev>0).sum()),t=t_(float(h.loc[h.rev>0,'kl_tong'].sum())),
+                        lv=[[int(k),int(v['size']),t_(float(v['sum']))] for k,v in lv.iterrows()]))
+    return out
 def nesting_block(ct,files,pk):
-    Pn=pd.concat([load_nes(p)[1].assign(srcfile=f) for p,f in files]); fname=', '.join(f for _,f in files)
+    _LD=[load_nes(p) for p,f in files]
+    Pn=pd.concat([x[1].assign(srcfile=f) for x,(p,f) in zip(_LD,files)]); fname=', '.join(f for _,f in files)
+    Ln=pd.concat([x[0].assign(srcfile=f) for x,(p,f) in zip(_LD,files)])
+    try: REV=rev_block(Ln,Pn)
+    except Exception as e: print('Không đọc được REV của',fname,':',e); REV=[]
     Pn=Pn[Pn.t.notna()].copy()
     if not len(Pn): print('Nesting',fname,': không có tấm (thép hình) – bỏ qua phần cân đối tấm'); return None
     _d=Pn[Pn.duplicated('nesting',keep='last')]
@@ -142,7 +172,7 @@ def nesting_block(ct,files,pk):
       alloc=[dict(k=k,n=int(v['size']),t=t_(v['sum'])) for k,v in al.iterrows()],
       buy=[dict(qc=f"PL{r.t:g}×{r.w:g}×{r.l:g}",mac=r.mac,n=int(r.n),t=t_(r.kg)) for r in buy.head(15).itertuples()],
       lsx_not_in_cut=[dict(lsx=k,t=t_(v)) for k,v in miss.items()][:15],
-      lsx_cut_not_in_nes=sorted(lsx_c-lsx_n)[:15])
+      lsx_cut_not_in_nes=sorted(lsx_c-lsx_n)[:15],rev=REV)
 # ---------------- PER PROJECT ----------------
 V=CUT_V.reset_index(drop=True); V['m_cut']=V.d_cut_dt.dt.to_period('M').astype(str); V['m_bg']=V.d_bg_dt.dt.to_period('M').astype(str)
 # tên file chi tiết của từng LSX (chi_tiet/<tên>.json); không phân biệt hoa thường để chạy được trên Windows
@@ -278,7 +308,7 @@ def _drill(df):
     return out
 OUT['kho_ct']=dict(nhap=_drill(N),xuat=_drill(X),ton=_drill(T),map={p['kho']['name']:p['id'] for p in PR if p.get('kho')})
 # ---------------- CHI TIẾT TỪNG LSX: mỗi lệnh 1 file JSON, trang web tải khi bấm vào số LSX ----------------
-# dòng: [tên chi tiết, mác, quy cách, SL, KL tổng (kg), nesting, máy, cắt, khoan, chấn, vát, bàn giao]
+# dòng: [tên chi tiết, mác, quy cách, SL, KL tổng (kg), nesting, máy, cắt, khoan, chấn, vát, bàn giao, REV (từ file nesting, có thể null)]
 # ô công đoạn: null = không phải làm · "" = chưa làm · "dd/mm/yy" = ngày làm xong ("✓" nếu xong mà không rõ ngày)
 _od=os.environ.get('OUT_CT')
 if _od:
@@ -291,10 +321,11 @@ if _od:
         if not req: return None
         if pd.isna(raw): return ''
         return dt.strftime('%d/%m/%y') if pd.notna(dt) else '✓'
+    V['rvx']=[REVMAP.get((a,_tkey(t)),REVMAP.get(('L',str(l),_tkey(t)))) for a,t,l in zip(norm(V.nesting),V.ten_ct,V.lsx)]   # ưu tiên khớp số nesting, không có thì khớp theo LSX + tên chi tiết
     for _l,_g in V.groupby(V.lsx.astype(str),sort=False):
         _rows=[[_u(r.ten_ct),_u(r.mac),_u(r.qc_part),_n(r.qty),None if pd.isna(r.kl_tong) else round(float(r.kl_tong),1),_u(r.nesting),_u(r.may),
                 _st(pd.notna(r.x_cut),r.d_cut,r.d_cut_dt),_st(pd.notna(r.x_khoan),r.d_khoan,r.d_khoan_dt),_st(pd.notna(r.x_chan),r.d_chan,r.d_chan_dt),
-                _st(pd.notna(r.x_vat),r.d_vat,r.d_vat_dt),_st(True,r.d_bg,r.d_bg_dt)] for r in _g.itertuples()]
+                _st(pd.notna(r.x_vat),r.d_vat,r.d_vat_dt),_st(True,r.d_bg,r.d_bg_dt),(None if pd.isna(r.rvx) else int(r.rvx))] for r in _g.itertuples()]
         json.dump(dict(lsx=_l,ct=_u(_g.cong_trinh.iloc[0]),rows=_rows),open(os.path.join(_od,CF[_l]+'.json'),'w',encoding='utf-8'),ensure_ascii=False,separators=(',',':'))
     print('Chi tiết LSX:',len(CF),'file →',_od)
 pickle.dump(CLEAN_LOG,open(os.environ.get('OUT_LOG','clean_log.pkl'),'wb'))
