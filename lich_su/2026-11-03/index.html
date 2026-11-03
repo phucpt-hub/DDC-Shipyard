@@ -548,6 +548,22 @@ b.rvt{color:var(--brand)}.lsxp{margin:10px 0 0;padding:8px 12px;border-radius:9p
 .nech .chip[aria-pressed=true] em{background:rgba(255,255,255,.25)}.nech .chip.z{opacity:.55}
 @media (max-width:700px){.ncd h3{flex-wrap:wrap;row-gap:6px}.ncd h3 a{overflow-wrap:anywhere;min-width:0}}
 .tf .nech button.chip{font:600 12.5px/1.2 "Be Vietnam Pro",Arial,sans-serif;padding:6px 12px;border-radius:999px;gap:0}
+.lkh{display:flex;gap:10px;align-items:flex-start;flex-wrap:wrap}.lktabs{display:flex;flex-wrap:wrap;gap:8px;flex:1;min-width:0}
+.lkt{display:inline-flex;align-items:center;gap:7px;padding:8px 14px;border-radius:10px;border:1px solid var(--line);background:var(--panel);color:var(--ink);font:600 13.5px "Be Vietnam Pro",Arial,sans-serif;cursor:pointer;max-width:100%}
+.lkt img{width:16px;height:16px;border-radius:3px}.lkt em{font-style:normal;font-size:10.5px;font-weight:700;padding:1px 6px;border-radius:8px;background:var(--acc-soft);color:var(--muted)}
+.lkt[aria-pressed=true]{background:var(--brand);border-color:var(--brand);color:#fff}.lkt[aria-pressed=true] em{background:rgba(255,255,255,.25);color:#fff}
+.hdr-btn.go{background:var(--brand);border-color:var(--brand);color:#fff}
+.lkf{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:flex-end;margin-top:12px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.lkf label{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:700;flex:1 1 220px}.lkf label.w{flex:3 1 340px}
+.lkf input{font:inherit;font-weight:400;font-size:13.5px;padding:9px 11px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--ink)}
+.lkf[hidden]{display:none}.lkf .btns{display:flex;gap:8px}.lkf button{font:700 13.5px "Be Vietnam Pro",Arial,sans-serif;padding:9px 16px;border-radius:9px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer}
+.lkf button.go{background:var(--brand);border-color:var(--brand);color:#fff}.lkf .note{flex-basis:100%;margin:0}
+.lkb{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:14px 0 8px}.lkb .sp{flex:1}.lkb a.hdr-btn{text-decoration:none}
+.lku{font:600 12.5px var(--f-mono,monospace);color:var(--muted);max-width:340px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.lkm{display:inline-flex;gap:4px}
+.lkw{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff;height:calc(100vh - 230px);min-height:560px}
+.lkw iframe{width:100%;height:100%;border:0;display:block;background:#fff}.lkw:fullscreen{border-radius:0;height:100vh}
+.lke{margin-top:14px}.lkg{margin-top:10px}
+@media (max-width:700px){.lkw{height:70vh;min-height:420px}.lku{max-width:100%}.lkb .sp{display:none}}
 </style>
 
 <div class="app">
@@ -2057,7 +2073,8 @@ const HERO={tt:['Tổng quan','điều hành','Kiểm soát đầu vào chuỗi 
  lsx:['Nesting','(lệnh sản xuất)','Lệnh sản xuất','Không để lệnh nào bị bỏ quên'],ne:['Nesting','(lệnh sản xuất)','Nesting','Tối ưu từng tấm thép, giảm hao hụt'],
  th:['Vật tư','thép','Tồn kho & cân đối','Đủ thép đúng lúc, biết trước phần phải mua'],
  cut:['Cutting','sản xuất','Sản lượng cắt','Nhịp sản xuất từng ngày, từng máy'],kh:['Cutting','sản xuất','Kế hoạch tuần','Điều độ xưởng, cân bằng tải máy'],
- src:['Dữ liệu','& làm sạch','Nguồn dữ liệu','Minh bạch cách tính, rõ từng con số']};
+ src:['Dữ liệu','& làm sạch','Nguồn dữ liệu','Minh bạch cách tính, rõ từng con số'],
+ lk:['Liên kết','','Trang liên kết','Xem các trang khác ngay trong báo cáo']};
 function heroSet(kind,key){const t=$('title');let h,ico;
   if(kind==='p'){const p=P.find(x=>x.id===key)||P[0];h=['Dự án','',p.name,(p.code||'')+(p.code?' · ':'')+'Tiến độ · thép · nesting'];ico='<path d="M3 21V9l9-6 9 6v12M9 21v-6h6v6"/>'}
   else{const v=V[key]||V.dh;h=HERO[key]||[v.name,'',v.title,''];ico=v.ico}
@@ -2086,12 +2103,77 @@ function sfChip(){const el=$('sfc');if(!el)return;sfPull(CUR);const parts=[];
   const on=SF.p!==''||SF.m!==''||SF.q!=='mtd'||!!H3.h;el.className='sfc'+(on?' on':'');
   el.innerHTML=`<svg viewBox="0 0 24 24"><path d="M3 4h18l-7 8v6l-4 2v-8z"/></svg><span title="Bộ lọc chung – áp dụng cho Tổng quan, Nesting (lệnh sản xuất), Vật tư, Cutting">${parts.join(' · ')}</span>${on?'<button id="sfc-x" title="Bỏ lọc ở mọi trang">✕</button>':''}`;
   const x=$('sfc-x');if(x)x.onclick=()=>{Object.assign(SF,{p:'',m:'',q:'mtd',from:MONTH0(DEND),to:DEND});TF.ph='';KF.open=null;THF.k='';H3.h='';const c=CUR;CUR=null;show(c.kind,c.key)}}
+/* ================= LIÊN KẾT: gắn link trang khác và xem ngay trong báo cáo ================= */
+/* Link dùng chung: file lien_ket.txt ở thư mục gốc repo (mỗi dòng "Tên | link"); link riêng: lưu trong trình duyệt máy đang dùng */
+const LK_BASE=location.pathname.includes('/lich_su/')?location.pathname.split('/lich_su/')[0]+'/':'';
+const LK_REPO=(()=>{const h=location.hostname.match(/^([\w-]+)\.github\.io$/i),s=location.pathname.split('/').filter(Boolean)[0];return h&&s?`https://github.com/${h[1]}/${s}`:'https://github.com/phucpt-hub/DDC-Shipyard'})();
+const LK={shared:null,err:'',cur:null,add:false};
+const lkGet=(k,d)=>{try{return JSON.parse(localStorage.getItem(k)||'null')??d}catch(e){return d}};
+const lkPut=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
+const lkMine=()=>lkGet('chuoi-lk',[]);
+const lkHost=u=>{try{return new URL(u).hostname.replace(/^www\./,'')}catch(e){return u}};
+const lkFix=u=>{u=String(u||'').trim();if(u&&!/^https?:\/\//i.test(u)&&/^[\w-]+(\.[\w-]+)+/.test(u))u='https://'+u;return u};
+function lkParse(t){return String(t||'').split(/\r?\n/).map(s=>s.trim()).filter(s=>s&&!s.startsWith('#')).map(s=>{
+  const m=s.match(/^(.*?)\s*\|\s*(\S+)\s*$/),u=lkFix(m?m[2]:s);return {n:(m&&m[1].trim())||lkHost(u),u,s:1}}).filter(x=>/^https?:\/\//i.test(x.u))}
+function lkAll(){const a=(LK.shared||[]).map((x,i)=>({...x,id:'s'+i})),b=lkMine().map((x,i)=>({...x,id:'m'+i,s:0}));return a.concat(b)}
+/* đổi link sang dạng nhúng được; Google Sheets / Docs / Slides có 3 chế độ: đầy đủ · gọn · chỉ xem */
+const lkG=u=>u.match(/^https:\/\/docs\.google\.com\/(spreadsheets|document|presentation)\/d\/([\w-]+)/);
+function lkEmbed(u,mode){let m=lkG(u);
+  if(m){const gid=(u.match(/[#&?]gid=(\d+)/)||[])[1],g=gid?'#gid='+gid:'';
+    return mode==='view'?`https://docs.google.com/${m[1]}/d/${m[2]}/preview${g}`:mode==='min'?`https://docs.google.com/${m[1]}/d/${m[2]}/edit?rm=minimal${g}`:`https://docs.google.com/${m[1]}/d/${m[2]}/edit${g}`}
+  if(m=u.match(/^https:\/\/drive\.google\.com\/file\/d\/([\w-]+)/))return `https://drive.google.com/file/d/${m[1]}/preview`;
+  if(m=u.match(/^https:\/\/drive\.google\.com\/drive\/(?:u\/\d+\/)?folders\/([\w-]+)/))return `https://drive.google.com/embeddedfolderview?id=${m[1]}#list`;
+  if(m=u.match(/^https:\/\/lookerstudio\.google\.com\/(?:u\/\d+\/)?reporting\/(.+)$/))return `https://lookerstudio.google.com/embed/reporting/${m[1]}`;
+  if(m=u.match(/^https:\/\/(?:www\.)?youtube\.com\/watch\?v=([\w-]+)/)||u.match(/^https:\/\/youtu\.be\/([\w-]+)/))return `https://www.youtube.com/embed/${m[1]}`;
+  return u}
+function lkLoad(){if(LK.shared!==null)return Promise.resolve();
+  return fetch(LK_BASE+'lien_ket.txt',{cache:'no-cache'}).then(r=>r.ok?r.text():'').then(t=>{LK.shared=lkParse(t)}).catch(()=>{LK.shared=[];LK.err='Không đọc được danh sách link chung.'})}
+V.lk={name:'Liên kết',title:'Liên kết',ico:'<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>',
+ render(){return `<div id="lk-box"><p class="muted">Đang tải danh sách link…</p></div>`},
+ after(){lkLoad().then(()=>{if(CUR&&CUR.key==='lk')lkDraw()})}};
+function lkDraw(){const box=$('lk-box');if(!box)return;const A=lkAll();
+  if(!LK.cur||!A.some(x=>x.id===LK.cur))LK.cur=(A.find(x=>x.u===lkGet('chuoi-lk-cur',''))||A[0]||{}).id||null;
+  const c=A.find(x=>x.id===LK.cur),modes=lkGet('chuoi-lk-mode',{}),mode=c?(modes[c.u]||'full'):'full';
+  const tab=x=>`<button class="lkt" data-lk="${x.id}" aria-pressed="${x.id===LK.cur}" title="${esc(x.u)}"><img src="https://www.google.com/s2/favicons?sz=32&domain=${encodeURIComponent(lkHost(x.u))}" alt="" loading="lazy" onerror="this.remove()">${esc(x.n)}${x.s?'':'<em title="Chỉ lưu trên máy này">riêng</em>'}</button>`;
+  const form=`<form class="lkf" id="lk-f"${LK.add||!A.length?'':' hidden'}>
+     <label>Tên hiển thị<input id="lk-n" placeholder="vd: Theo dõi giao hàng, Kế hoạch xưởng…" maxlength="60"></label>
+     <label class="w">Đường link<input id="lk-u" placeholder="Dán link vào đây (Google Sheets, Google Drive, Looker Studio, trang web…)" required></label>
+     <div class="btns"><button type="submit" class="go">Thêm vào trang</button>${A.length?'<button type="button" id="lk-c">Hủy</button>':''}</div>
+     <p class="note">Link thêm ở đây lưu trên <b>trình duyệt máy này</b> và hiện ngay. Muốn mọi người mở báo cáo đều thấy: bấm <b>Lưu cho mọi người</b> trên thanh của link đó.</p></form>`;
+  const isG=c&&lkG(c.u);
+  const bar=c?`<div class="lkb"><span class="lku" title="${esc(c.u)}">${esc(lkHost(c.u))}</span>
+     ${isG?`<span class="lkm">${[['full','Đầy đủ'],['min','Gọn'],['view','Chỉ xem']].map(([k,n])=>`<button class="chip" data-lkm="${k}" aria-pressed="${mode===k}">${n}</button>`).join('')}</span>`:''}
+     <span class="sp"></span>
+     <button class="hdr-btn" id="lk-r" title="Tải lại trang đang xem">↻ Tải lại</button>
+     <button class="hdr-btn" id="lk-fs" title="Xem toàn màn hình (Esc để thoát)">⛶ Toàn màn hình</button>
+     <a class="hdr-btn" href="${esc(c.u)}" target="_blank" rel="noopener">↗ Mở tab mới</a>
+     ${c.s?'':`<button class="hdr-btn" id="lk-sh" title="Chép dòng link rồi mở file lien_ket.txt trên GitHub để dán vào">Lưu cho mọi người</button><button class="hdr-btn" id="lk-del" title="Xóa link này khỏi máy này">Xóa</button>`}</div>
+   <div class="lkw" id="lk-w"><iframe id="lk-if" src="${esc(lkEmbed(c.u,mode))}" allow="fullscreen; clipboard-read; clipboard-write" referrerpolicy="no-referrer-when-downgrade"></iframe></div>
+   <p class="note">Trang trắng hoặc báo “từ chối kết nối”: trang đó không cho nhúng vào trang khác (vd một số web app, trang đăng nhập) → bấm <b>Mở tab mới</b>. Google Sheets / Drive cần anh đang đăng nhập Google trên trình duyệt này và có quyền xem file.</p>`:
+   `<div class="card lke"><h3>Chưa có link nào</h3><p>Dán link một trang bất kỳ (Google Sheets, file trên Google Drive, báo cáo Looker Studio, trang web nội bộ…) vào ô ở trên để xem ngay trong báo cáo, không cần mở tab khác.</p></div>`;
+  box.innerHTML=`<div class="lkh"><div class="lktabs">${A.map(tab).join('')}</div><button class="hdr-btn go" id="lk-add">＋ Thêm link</button></div>${form}${LK.err?`<p class="note">${esc(LK.err)}</p>`:''}${bar}
+    <p class="note lkg">Link dùng chung cho mọi người nằm trong file <a href="${LK_REPO}/edit/main/lien_ket.txt" target="_blank" rel="noopener">lien_ket.txt</a> trên GitHub (mỗi dòng: <code>Tên | link</code>). Sửa file xong khoảng 1 phút trang tự có.</p>`;
+  box.querySelectorAll('[data-lk]').forEach(b=>b.onclick=()=>{LK.cur=b.dataset.lk;const x=lkAll().find(y=>y.id===LK.cur);if(x)lkPut('chuoi-lk-cur',x.u);lkDraw()});
+  $('lk-add').onclick=()=>{LK.add=!LK.add;lkDraw();if(LK.add)$('lk-u').focus()};
+  const f=$('lk-f');f.onsubmit=e=>{e.preventDefault();const u=lkFix($('lk-u').value);if(!/^https?:\/\/\S+$/i.test(u)){$('lk-u').setCustomValidity('Link phải bắt đầu bằng http:// hoặc https://');$('lk-u').reportValidity();return}
+    const n=$('lk-n').value.trim()||lkHost(u),M=lkMine();M.push({n,u});lkPut('chuoi-lk',M);lkPut('chuoi-lk-cur',u);LK.add=false;LK.cur='m'+(M.length-1);lkDraw()};
+  $('lk-u').oninput=e=>e.target.setCustomValidity('');
+  if($('lk-c'))$('lk-c').onclick=()=>{LK.add=false;lkDraw()};
+  if(!c)return;
+  box.querySelectorAll('[data-lkm]').forEach(b=>b.onclick=()=>{const m=lkGet('chuoi-lk-mode',{});m[c.u]=b.dataset.lkm;lkPut('chuoi-lk-mode',m);lkDraw()});
+  $('lk-r').onclick=()=>{const i=$('lk-if');i.src=i.src};
+  $('lk-fs').onclick=()=>{const w=$('lk-w');(w.requestFullscreen||w.webkitRequestFullscreen||(()=>{})).call(w)};
+  if($('lk-del'))$('lk-del').onclick=()=>{if(!confirm(`Xóa link "${c.n}" khỏi máy này?`))return;const M=lkMine();M.splice(+c.id.slice(1),1);lkPut('chuoi-lk',M);LK.cur=null;lkDraw()};
+  if($('lk-sh'))$('lk-sh').onclick=()=>{const line=`${c.n} | ${c.u}`;const go=()=>window.open(`${LK_REPO}/edit/main/lien_ket.txt`,'_blank','noopener');
+    (navigator.clipboard?navigator.clipboard.writeText(line):Promise.reject()).then(()=>{alert('Đã chép dòng:\n'+line+'\n\nTrang GitHub sẽ mở file lien_ket.txt: dán (Ctrl+V) xuống cuối file rồi bấm "Commit changes". Khoảng 1 phút sau mọi người mở báo cáo đều thấy link này.');go()})
+      .catch(()=>{prompt('Chép dòng này (Ctrl+C), rồi dán vào cuối file lien_ket.txt trên GitHub:',line);go()})}}
 /* ===== MENU 4 MỤC TỔNG QUAN, mỗi mục có tab con ===== */
 const GRP=[{k:'tt',n:'Tổng quan',tabs:[['tt','Tổng quan']]},
  {k:'ov',n:'Dự án',tabs:[['ov','Toàn bộ dự án']]},
  {k:'lsx',n:'Nesting (lệnh sản xuất)',tabs:[['lsx','Lệnh sản xuất'],['ne','Nesting']]},
  {k:'th',n:'Vật tư',tabs:[['th','Tồn kho & cân đối']]},
- {k:'cut',n:'Cutting',tabs:[['cut','Sản lượng cắt'],['kh','Kế hoạch tuần']]}];
+ {k:'cut',n:'Cutting',tabs:[['cut','Sản lượng cắt'],['kh','Kế hoạch tuần']]},
+ {k:'lk',n:'Liên kết',tabs:[['lk','Liên kết']]}];
 const grpOf=(kind,key)=>kind==='p'?GRP[1]:GRP.find(g=>g.tabs.some(t=>t[0]===key))||null;
 (function(){const nRed=P.filter(p=>health(p).c==='bad').length,C={tt:cnt.tt,ov:nRed||'',th:D.bal.buy>0.05?'!':'',lsx:openLsx.length,cut:''};
   nav.innerHTML=GRP.map((g,i)=>`<button data-v="${g.k}"><svg viewBox="0 0 24 24" aria-hidden="true">${V[g.k].ico}</svg><span><small style="opacity:.6;font:600 10px var(--f-mono);margin-right:6px">${String(i+1).padStart(2,'0')}</small>${g.n}</span>${C[g.k]!==''&&C[g.k]!=null?`<span class="cnt">${C[g.k]}</span>`:''}</button>`).join('')})();
