@@ -1,0 +1,6 @@
+# DANH SÁCH LINK HIỆN TRONG MỤC "06 LIÊN KẾT" CỦA BÁO CÁO (mọi người mở báo cáo đều thấy)
+# Mỗi dòng một link, dạng:   Tên hiển thị | đường link
+# Ví dụ:                     Theo dõi giao hàng | https://docs.google.com/spreadsheets/d/xxxxxxxx/edit
+# Dòng bắt đầu bằng dấu # là ghi chú, không hiện. Sửa xong bấm "Commit changes", khoảng 1 phút sau báo cáo có link mới.
+# Lưu ý: repo đang công khai nên link trong file này ai vào repo cũng xem được.
+
