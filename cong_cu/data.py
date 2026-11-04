@@ -98,6 +98,10 @@ def allocate(pend,pk):
             if len(idx): stock.loc[idx[0],'avail']-=1; lab=lb; break
         res.append(lab)
     return res
+def _nguon():
+    # thông tin file đã tải từ link (tai_du_lieu.py ghi): tên bảng tính gốc, mã rút gọn, dung lượng, lúc tải
+    try: return json.load(open(os.path.join('_tmp','nguon.json'),encoding='utf-8'))
+    except Exception: return {}
 REVMAP={}   # (nesting, tên chi tiết) -> số REV của chi tiết (từ sheet List chi tiet của file nesting)
 _rv1=lambda v: (lambda m: max(map(int,m)) if m else None)(re.findall(r'REV\s*0*(\d+)',str(v).upper()))
 _tkey=lambda s: re.sub(r'\s+','',str(s)).upper()
@@ -303,7 +307,7 @@ OUT=dict(date=REPORT_DATE,months=months,projects=PR,tot=tot,bal=bal,
   bykey=[dict(k=k,loai=_LK.get(k),need=t_(r.need),own=t_(r.from_own),fc=t_(r.from_common),buy=t_(r.buy)) for k,r in bykey.iterrows() if r.need>0.0005],
   kho_only=[dict(k=k,t=t_(v)) for k,v in kho_only.items()],nomap=nomap,kho_nomap=kho_nomap,
   fix=[dict(c=r.ma,d=r.quy_tac,g=r.nhom,n=int(r.n),t=t_(r.kl)) for r in errs.itertuples()],
-  files=dict(d_cut=os.environ.get('NGAY_CUTTING',''),d_kho=os.environ.get('NGAY_KHO',''),cutting=os.environ.get('FILE_CUTTING','DDC_SHIPYARD - KHGC - SC'),kho=os.environ.get('FILE_KHO','TỒN KHO'),nesting=[f for v in NES.values() for _,f in v],nes_skip=NES_SKIP))
+  files=dict(d_cut=os.environ.get('NGAY_CUTTING',''),d_kho=os.environ.get('NGAY_KHO',''),cutting=os.environ.get('FILE_CUTTING','DDC_SHIPYARD - KHGC - SC'),kho=os.environ.get('FILE_KHO','TỒN KHO'),nesting=[f for v in NES.values() for _,f in v],nes_skip=NES_SKIP,src=_nguon()))
 _CL=pd.DataFrame(CLEAN_LOG)
 if len(_CL):
     _g=_CL.groupby(['ma','quy_tac','nhom','file'],sort=False).agg(n=('row','size'),kl=('kl','sum')).reset_index()

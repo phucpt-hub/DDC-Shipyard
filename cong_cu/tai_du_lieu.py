@@ -42,11 +42,27 @@ def cac_url(url):
             f'https://docs.google.com/spreadsheets/export?id={i}&exportFormat=xlsx',
             f'https://docs.google.com/feeds/download/spreadsheets/Export?key={i}&exportFormat=xlsx']
 
+TEN = {}   # tên file gốc máy chủ trả về (Google Sheets: tên bảng tính)
+def ten_file(cd):
+    m = re.search(r"filename\*=UTF-8''([^;]+)", cd, re.I)
+    if m: return urllib.parse.unquote(m.group(1)).strip('"')
+    m = re.search(r'filename="?([^";]+)"?', cd, re.I)
+    if not m: return ''
+    t = m.group(1)
+    try: t = t.encode('latin-1').decode('utf-8')
+    except Exception: pass
+    return t
+
+def ma_rut_gon(url):
+    m = re.search(r'/d/([\w-]{10,})', url) or re.search(r'[?&](?:id|key)=([\w-]{10,})', url)
+    return (m.group(1)[:4] + '…' + m.group(1)[-4:]) if m else ''
+
 def tai_mot_lan(url, dich, cho_toi_da):
     req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0 (bao-cao-chuoi-thep)'})
     t0 = time.time(); n = 0; tmp = dich + '.part'
     with urllib.request.urlopen(req, timeout=cho_toi_da) as r, open(tmp, 'wb') as fh:
         log(f'  máy chủ bắt đầu trả file sau {time.time() - t0:.0f} giây')
+        TEN[dich] = ten_file(r.headers.get('Content-Disposition', ''))
         while True:
             b = r.read(1 << 20)
             if not b: break
@@ -93,6 +109,8 @@ def file_tay_hom_nay(thu_muc, ten_link):
             except ValueError: pass
     return None
 
+NGUON_DA_TAI = {}
+
 def main():
     hom_nay = (datetime.datetime.utcnow() + datetime.timedelta(hours=7)).strftime('%d.%m.%Y')
     co_link = False
@@ -107,12 +125,20 @@ def main():
             t0 = time.time()
             try:
                 n = tai(url, dich)
-                log(f'Tải {thu_muc} từ {loai}: {n / 1e6:.1f} MB trong {time.time() - t0:.0f} giây')
+                ten_goc = re.sub(r'\.xlsx?$', '', TEN.get(dich, ''), flags=re.I)
+                log(f'Tải {thu_muc} từ {loai}: {n / 1e6:.1f} MB trong {time.time() - t0:.0f} giây' + (f' – file: {ten_goc}' if ten_goc else '') + (f' (mã {ma_rut_gon(url)})' if ma_rut_gon(url) else ''))
+                NGUON_DA_TAI[thu_muc] = dict(ten=ten_goc, ma=ma_rut_gon(url), loai=loai, mb=round(n / 1e6, 1),
+                                             luc=(datetime.datetime.utcnow() + datetime.timedelta(hours=7)).strftime('%d/%m/%Y %H:%M'))
             except Exception as e:
                 # không dừng cả báo cáo: dùng file đã có sẵn trong thư mục (nếu có)
                 log(f'KHÔNG tải được {thu_muc} ({loai}): {e}. Dùng file đang có trong du_lieu/{thu_muc}.')
                 if os.path.exists(dich): os.remove(dich)
                 if bien == 'NGUON_CUTTING': loi_cutting = True
+    try:
+        os.makedirs(os.path.join(CC, '_tmp'), exist_ok=True)
+        import json
+        json.dump(NGUON_DA_TAI, open(os.path.join(CC, '_tmp', 'nguon.json'), 'w', encoding='utf-8'), ensure_ascii=False)
+    except Exception as e: log('Không ghi được thông tin nguồn:', e)
     if not co_link: log('Chưa khai báo link nguồn (NGUON_CUTTING / NGUON_KHO / NGUON_NESTING) – dùng file trong du_lieu/.')
     if loi_cutting:
         tay = file_tay_hom_nay('1_CUTTING', 'CUTTING_LINK')
