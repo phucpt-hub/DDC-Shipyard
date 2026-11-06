@@ -172,10 +172,35 @@ def gop(sheets_pkl, xlsx_moi, log=print):
         for l, x in li.items():
             if l in info: info[l]['sl'] += x['sl']; info[l]['kl'] += x['kl']
             else: info[l] = x
-    if allrows['tam']: d[k1] = _append(d[k1], allrows['tam'], LCT)
-    if allrows['hinh']: d[k2] = _append(d[k2], allrows['hinh'], LCT)
     # LSX chưa có trong sheet LỆNH SX của file cũ → thêm (ngày ban hành, công trình, hạng mục lấy từ file mới)
     co = {_txt(v) for v in d[kl].iloc[2:, 1]}
+    # Ngày bị Google Sheets hiểu ngược tháng/ngày (gõ 04/11 thành 11/04 = 11 tháng 4): chỉ sửa LSX MỚI (chưa có ở file cũ),
+    # khi ngày quá cũ so với hôm nay mà đảo lại thì rơi vào 60 ngày gần đây → đảo ngày/tháng.
+    nay = datetime.date.today()
+    def dao(sd):
+        if not sd: return sd
+        x = datetime.date.fromisoformat(sd[:10])
+        if x.day <= 12 and x < nay - datetime.timedelta(days=60):
+            try: y = datetime.date(x.year, x.day, x.month)
+            except ValueError: return sd
+            if nay - datetime.timedelta(days=60) <= y <= nay + datetime.timedelta(days=1): return y.strftime('%Y-%m-%d 00:00:00')
+        return sd
+    sua = []
+    for l, x in info.items():
+        if l in co: continue
+        for k in ('ngay_bh', 'ngay_mail'):
+            v = dao(x[k])
+            if v != x[k]:
+                if k == 'ngay_bh': sua.append(f'{l} {x[k][:10]}→{v[:10]}')
+                x[k] = v
+    if sua:
+        fx = {l: info[l]['ngay_bh'] for l in info if l not in co}
+        for kind in allrows:
+            for r in allrows[kind]:
+                if r['lsx'] in fx: r['ngay_bh'] = fx[r['lsx']]
+        log('  sửa ngày ban hành bị đảo ngày/tháng: ' + ', '.join(sua))
+    if allrows['tam']: d[k1] = _append(d[k1], allrows['tam'], LCT)
+    if allrows['hinh']: d[k2] = _append(d[k2], allrows['hinh'], LCT)
     moi = [dict(x, tong_sl=x['sl'], tong_kl=x['kl']) for l, x in info.items() if l not in co]
     if moi: d[kl] = _append(d[kl], moi, LSXC)
     pickle.dump(d, open(sheets_pkl, 'wb'))
