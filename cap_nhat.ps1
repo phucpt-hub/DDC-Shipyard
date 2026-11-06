@@ -1,7 +1,7 @@
 ﻿# Cap nhat bao cao chuoi thep len GitHub
 # Chay boi: luc mo may (Startup) + lich 11:45 / 17:15 (Task Scheduler) + chay tay: chay_ngay.bat
 # 1) Lay ban moi nhat tu GitHub (git pull)
-# 2) Quet o chung nesting (Z:\13-KTSX-BPGC\.NESTING-CNC-DDC): moi du an lay lenh nesting moi nhat
+# 2) Quet o chung nesting (Z:\13-BienPhap\Backup\.NESTING-CNC-DDC, du phong duong cu Z:\13-KTSX-BPGC\...): moi du an lay lenh nesting moi nhat
 #    (so lenh lon nhat, ban REV moi nhat; bo DELETE, file tam ~$, file do dang nho hon 1/2 ban dang dung)
 # 3) Don file cu: 1_CUTTING, 2_TON_KHO chi giu file moi nhat (file cu chuyen sang ..\LUU_TRU_FILE_CU, khong xoa)
 # 4) Day len GitHub -> GitHub tu dung bao cao
@@ -10,7 +10,10 @@ $ErrorActionPreference = 'Continue'
 $root = $PSScriptRoot
 $arch = Join-Path (Split-Path $root -Parent) 'LUU_TRU_FILE_CU'
 $logf = Join-Path $root 'nhat_ky_day_len.txt'
-$NES_GOC = 'Z:\13-KTSX-BPGC\.NESTING-CNC-DDC'
+# O nesting: lay thu muc dau tien vao duoc (duong moi truoc, duong cu de du phong)
+$NES_DS = @('Z:\13-BienPhap\Backup\.NESTING-CNC-DDC', 'Z:\13-KTSX-BPGC\.NESTING-CNC-DDC')
+$NES_GOC = ($NES_DS | Where-Object { Test-Path $_ } | Select-Object -First 1)
+if (-not $NES_GOC) { $NES_GOC = $NES_DS[0] }
 # Thu muc trong o nesting KHONG quet (du an da xong / thu muc phu). Them ten vao day neu can.
 $BO_QUA = @('0.KHO-REMAIN','00-DATA','DELETE','TOOL','O CHUNG','BPGC+C.TRINH NOI BO','GIA CONG CAT LOC-AH+LA+BC',
             '01- DU AN H1033','02-MOMBASA','03-APEC-S3','06-MOCKUP-HSC')
@@ -72,6 +75,7 @@ function Quet-Nesting {
 
 Set-Location $root
 Log '=== Bat dau ==='
+Log "O nesting dang dung: $NES_GOC"
 git pull --rebase --autostash origin main 2>&1 | ForEach-Object { Log $_ }
 try { Quet-Nesting } catch { Log "Loi khi quet nesting: $_" }
 foreach ($f in '1_CUTTING', '2_TON_KHO') {
