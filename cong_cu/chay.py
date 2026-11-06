@@ -202,6 +202,17 @@ def main():
     if d_cut and d_kho and d_cut != d_kho: log(f'Lưu ý: file Cutting ngày {d_cut:%d/%m}, file tồn kho ngày {d_kho:%d/%m} – phần kho tính theo ngày {d_kho:%d/%m}')
     log('Ngày báo cáo:', ngay)
     to_sheets(f_cut, os.path.join(CC, 'sheets.pkl'), SHEETS_CUTTING)
+    # file Cutting MỚI (từ 01/11/2026): đổi bố cục rồi nối vào dữ liệu file cũ
+    ten_cut = os.path.splitext(os.path.basename(f_cut))[0]
+    moi = files_in('1_CUTTING_MOI')
+    if moi:
+        log('File Cutting mới:', os.path.basename(moi[-1]))
+        try:
+            sys.path.insert(0, CC); import cutting_moi
+            cutting_moi.gop(os.path.join(CC, 'sheets.pkl'), moi[-1], log)
+            ten_cut += ' + ' + os.path.splitext(os.path.basename(moi[-1]))[0]
+        except Exception as e:
+            log('KHÔNG gộp được file Cutting mới:', repr(e))
     doc_kho(f_khos, os.path.join(CC, 'kho', 'sheets.pkl'))
     nfiles = []
     NES_OK = []
@@ -215,7 +226,7 @@ def main():
             log('Bỏ qua', os.path.basename(f), '- không có sheet "Phieu vat tu" (không phải file nesting)'); continue
         nfiles.append([p, os.path.splitext(os.path.basename(f))[0]])
     os.environ.update(NGAY_BAO_CAO=str(ngay), NESTING_FILES=json.dumps(nfiles, ensure_ascii=False),
-                      FILE_CUTTING=os.path.splitext(os.path.basename(f_cut))[0], FILE_KHO=ten_kho,
+                      FILE_CUTTING=ten_cut, FILE_KHO=ten_kho,
                       OUT_JSON=os.path.join(TMP, 'data.json'), OUT_LOG=os.path.join(TMP, 'clean_log.pkl'),
                       OUT_CT=os.path.join(ROOT, 'chi_tiet'))
     cfg_map = [f for f in cfg if not os.path.basename(f).upper().startswith('VIEC_LINK')]

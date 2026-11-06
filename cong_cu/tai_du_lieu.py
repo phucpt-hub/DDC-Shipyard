@@ -2,6 +2,7 @@
 # vào du_lieu/<thư mục>, đặt tên kèm ngày hôm nay để chay.py chọn làm file mới nhất.
 # Link lấy từ biến môi trường (GitHub Secrets), không ghi trong mã nguồn:
 #   NGUON_CUTTING -> du_lieu/1_CUTTING
+#   NGUON_CUTTING_MOI -> du_lieu/1_CUTTING_MOI (file Cutting mới, đọc thêm và gộp với file cũ)
 #   NGUON_KHO     -> du_lieu/2_TON_KHO
 #   NGUON_NESTING -> du_lieu/3_NESTING   (nhiều link, cách nhau bằng dấu xuống dòng hoặc dấu ;)
 #   NGUON_VIEC    -> du_lieu/4_CAU_HINH  (Google Sheet danh sách việc cần xử lý / cần quyết định)
@@ -12,6 +13,7 @@ import os, re, sys, time, base64, datetime, urllib.request, urllib.parse
 CC = os.path.dirname(os.path.abspath(__file__))
 DL = os.path.join(os.path.dirname(CC), 'du_lieu')
 NGUON = [('NGUON_CUTTING', '1_CUTTING', 'CUTTING_LINK'),
+         ('NGUON_CUTTING_MOI', '1_CUTTING_MOI', 'CUTTING_MOI_LINK'),   # file Cutting mới từ 01/11/2026 (SƠ CHẾ_THÉP TẤM / HÌNH), gộp với file cũ
          ('NGUON_KHO', '2_TON_KHO', 'TON_KHO_LINK'),
          ('NGUON_NESTING', '3_NESTING', 'NESTING_LINK'),
          ('NGUON_VIEC', '4_CAU_HINH', 'VIEC_LINK')]
@@ -80,6 +82,8 @@ def tai(url, dich, lan=6, cho_toi_da=420, tong_toi_da=36 * 60):
             data = tai_mot_lan(u, dich, cho_toi_da)
             break
         except Exception as e:
+            if getattr(e, 'code', None) in (401, 403, 404):   # không có quyền / không thấy file: thử lại cũng vô ích
+                raise RuntimeError(f'link đòi đăng nhập hoặc không có quyền xem (HTTP {e.code})')
             con = tong_toi_da - (time.time() - t_bd)
             if i == lan - 1 or con < cho_toi_da + 60: raise
             cho = 15 * (i + 1)
@@ -133,7 +137,13 @@ def main():
                 # không dừng cả báo cáo: dùng file đã có sẵn trong thư mục (nếu có)
                 log(f'KHÔNG tải được {thu_muc} ({loai}): {e}. Dùng file đang có trong du_lieu/{thu_muc}.')
                 if os.path.exists(dich): os.remove(dich)
+                NGUON_DA_TAI[thu_muc] = dict(loi=str(e)[:200], ma=ma_rut_gon(url), loai=loai,
+                                             luc=(datetime.datetime.utcnow() + datetime.timedelta(hours=7)).strftime('%d/%m/%Y %H:%M'))
                 if bien == 'NGUON_CUTTING': loi_cutting = True
+                if bien == 'NGUON_CUTTING_MOI':
+                    if 'đăng nhập' in str(e):   # file chưa mở chia sẻ: lỗi lâu dài, cần chủ file sửa → vẫn cập nhật phần file cũ
+                        log('  → File Cutting mới chưa mở chia sẻ "Bất kỳ ai có đường liên kết đều xem được": lần này chỉ dùng file cũ.')
+                    else: loi_cutting = True
     try:
         os.makedirs(os.path.join(CC, '_tmp'), exist_ok=True)
         import json
