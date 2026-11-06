@@ -40,6 +40,7 @@ jobs:
         env:
           TZ: Asia/Ho_Chi_Minh
           NGUON_CUTTING: ${{ secrets.NGUON_CUTTING }}
+          NGUON_CUTTING_MOI: ${{ secrets.NGUON_CUTTING_MOI }}
           NGUON_KHO: ${{ secrets.NGUON_KHO }}
           NGUON_KHO_KHOA: ${{ secrets.NGUON_KHO_KHOA }}
           NGUON_NESTING: ${{ secrets.NGUON_NESTING }}
