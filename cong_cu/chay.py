@@ -188,7 +188,12 @@ def doc_viec(cfg):
     return out
 
 def main():
-    cut = files_in('1_CUTTING'); kho = kho_sets(); nes = files_in('3_NESTING'); cfg = files_in('4_CAU_HINH')
+    cut = files_in('1_CUTTING'); kho = kho_sets()
+    # file Cutting dạng MỚI (sheet "SƠ CHẾ_THÉP TẤM") có thể được tải tay lên 1_CUTTING hoặc 1_CUTTING_MOI → tách riêng
+    def _la_moi(f):
+        try: return any(n.strip().upper() == 'SƠ CHẾ_THÉP TẤM' for n in sheet_names(f))
+        except Exception: return False
+    cut_moi = [f for f in cut if _la_moi(f)]; cut = [f for f in cut if f not in cut_moi]; nes = files_in('3_NESTING'); cfg = files_in('4_CAU_HINH')
     if not cut: sys.exit('THIẾU file Cutting trong du_lieu/1_CUTTING')
     if not kho: sys.exit('THIẾU file tồn kho trong du_lieu/2_TON_KHO')
     f_cut, (d_kho, _, f_khos, ten_kho) = cut[-1], kho[-1]
@@ -204,7 +209,7 @@ def main():
     to_sheets(f_cut, os.path.join(CC, 'sheets.pkl'), SHEETS_CUTTING)
     # file Cutting MỚI (từ 01/11/2026): đổi bố cục rồi nối vào dữ liệu file cũ
     ten_cut = os.path.splitext(os.path.basename(f_cut))[0]
-    moi = files_in('1_CUTTING_MOI')
+    moi = sorted(files_in('1_CUTTING_MOI') + cut_moi, key=lambda f: (name_date(f) or datetime.date(1900, 1, 1), commit_time(f)))
     if moi:
         log('File Cutting mới:', os.path.basename(moi[-1]))
         try:

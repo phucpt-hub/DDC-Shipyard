@@ -76,14 +76,20 @@ def _may(v):
 
 def _layout(raw):
     """Tìm hàng tiêu đề và vị trí các cột theo chữ trên tiêu đề (không cố định số cột)."""
-    hr = next(i for i in range(min(20, len(raw))) if any(_txt(x).upper() == 'LỆNH SẢN XUẤT' for x in raw.iloc[i]))
-    H = [_txt(x).upper() for x in raw.iloc[hr]]; H1 = [_txt(x).upper() for x in raw.iloc[hr + 1]]
-    find = lambda name, row=H: next(i for i, x in enumerate(row) if x.startswith(name))
+    nm = lambda x: ' '.join(_txt(x).split()).upper()
+    hr = next(i for i in range(min(20, len(raw))) if any(nm(x) == 'LỆNH SẢN XUẤT' for x in raw.iloc[i]))
+    H = [nm(x) for x in raw.iloc[hr]]; H1 = [nm(x) for x in raw.iloc[hr + 1]]
+    def find(name, row=H, default=None):
+        i = next((i for i, x in enumerate(row) if x.startswith(name)), None)
+        if i is None and default is None: raise KeyError(f'không thấy cột "{name}"')
+        return default if i is None else i
     c = dict(lsx=find('LỆNH SẢN XUẤT'), ma=find('MÃ CÔNG TRÌNH'), ten=find('TÊN CÔNG TRÌNH'), hm=find('HẠNG MỤC'),
-             part=find('PART NAME'), mac=find('MÁC THÉP'), nest=find('NESTING NO'), may=find('MÁY CẮT'), bg=find('BÀN GIAO', H1))
-    c['bh'], c['mail'] = c['lsx'] - 2, c['lsx'] - 1
-    c['day'], c['rong'], c['dai'], c['qty'] = c['part'] + 1, c['part'] + 2, c['part'] + 3, c['part'] + 4
-    c['kl_ct'], c['kl_tong'] = c['nest'] - 2, c['nest'] - 1
+             part=find('PART NAME'), mac=find('MÁC THÉP'), nest=find('NESTING NO'), may=find('MÁY CẮT'), bg=find('BÀN GIAO', H, -1))
+    if c['bg'] < 0: c['bg'] = find('BÀN GIAO', H1)
+    c['bh'] = find('NGÀY BAN HÀNH', default=c['lsx'] - 1); c['mail'] = find('NGÀY GỬI MAIL', default=c['lsx'] - 2)
+    c['day'] = find('DÀY', default=c['part'] + 1); c['rong'] = find('RỘNG', default=c['part'] + 2)
+    c['dai'] = find('DÀI', default=c['part'] + 3); c['qty'] = find('SỐ LƯỢNG', default=c['part'] + 4)
+    c['kl_ct'] = find('TRỌNG LƯỢNG RIÊNG', default=c['nest'] - 2); c['kl_tong'] = find('TỔNG KHỐI LƯỢNG', default=c['nest'] - 1)
     nk = find('PHÂN LOẠI NVL'); c['g_nk'], c['g_td'] = nk, nk + 2
     dg = find('ĐÁNH GIÁ CÔNG ĐOẠN')
     c['req'] = [(i, _stage(H1[i])) for i in range(dg, c['bg']) if _stage(H1[i])]           # cột đánh x công đoạn phải làm
