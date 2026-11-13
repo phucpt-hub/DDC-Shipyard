@@ -85,15 +85,17 @@ def _layout(raw):
         return default if i is None else i
     c = dict(lsx=find('LỆNH SẢN XUẤT'), ma=find('MÃ CÔNG TRÌNH'), ten=find('TÊN CÔNG TRÌNH'), hm=find('HẠNG MỤC'),
              part=find('PART NAME'), mac=find('MÁC THÉP'), nest=find('NESTING NO'), may=find('MÁY CẮT'), bg=find('BÀN GIAO', H, -1))
-    if c['bg'] < 0: c['bg'] = find('BÀN GIAO', H1)
+    if c['bg'] < 0: c['bg'] = find('BÀN GIAO', H1, -1)
+    if c['bg'] < 0: c['bg'] = None          # file có lúc bỏ cột BÀN GIAO → coi như chưa có ngày bàn giao
     c['bh'] = find('NGÀY BAN HÀNH', default=c['lsx'] - 1); c['mail'] = find('NGÀY GỬI MAIL', default=c['lsx'] - 2)
     c['day'] = find('DÀY', default=c['part'] + 1); c['rong'] = find('RỘNG', default=c['part'] + 2)
     c['dai'] = find('DÀI', default=c['part'] + 3); c['qty'] = find('SỐ LƯỢNG', default=c['part'] + 4)
     c['kl_ct'] = find('TRỌNG LƯỢNG RIÊNG', default=c['nest'] - 2); c['kl_tong'] = find('TỔNG KHỐI LƯỢNG', default=c['nest'] - 1)
     nk = find('PHÂN LOẠI NVL'); c['g_nk'], c['g_td'] = nk, nk + 2
     dg = find('ĐÁNH GIÁ CÔNG ĐOẠN')
-    c['req'] = [(i, _stage(H1[i])) for i in range(dg, c['bg']) if _stage(H1[i])]           # cột đánh x công đoạn phải làm
     c['blk'] = [(i, _stage(H[i])) for i, x in enumerate(H1) if x == 'CÔNG ĐOẠN']              # khối nhập công đoạn: (cột, công đoạn theo tiêu đề)
+    het = c['bg'] if c['bg'] is not None else min([i for i, _ in c['blk'] if i > dg] + [c['may'], dg + 9])
+    c['req'] = [(i, _stage(H1[i])) for i in range(dg, het) if _stage(H1[i])]                # cột đánh x công đoạn phải làm
     return hr, c
 
 def _rows(raw, kind, ct_map, log):
@@ -124,7 +126,7 @@ def _rows(raw, kind, ct_map, log):
                'x_cut': 'x' if 'cut' in req else None, 'x_khoan': 'x' if 'khoan' in req else None,
                'x_chan': 'x' if 'chan' in req else None, 'x_vat': 'x' if 'vat' in req else None,
                'd_cut': done.get('cut'), 'd_khoan': done.get('khoan'), 'd_chan': done.get('chan'), 'd_vat': done.get('vat'),
-               'd_bg': _date(r[c['bg']]), 'ngay_bh': bh, 'nha_may': 'VSC',
+               'd_bg': _date(r[c['bg']]) if c['bg'] is not None else None, 'ngay_bh': bh, 'nha_may': 'VSC',
                'g_nk': 'x' if _txt(r[c['g_nk']]).lower() == 'x' else None, 'g_td': 'x' if _txt(r[c['g_td']]).lower() == 'x' else None}
         # có ngày làm mà quên đánh x → vẫn tính là công đoạn phải làm (giống cách file cũ báo E05)
         for st in ('cut', 'khoan', 'chan', 'vat'):
