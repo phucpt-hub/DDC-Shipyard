@@ -128,6 +128,10 @@ def _rows(raw, kind, ct_map, log):
                'd_cut': done.get('cut'), 'd_khoan': done.get('khoan'), 'd_chan': done.get('chan'), 'd_vat': done.get('vat'),
                'd_bg': _date(r[c['bg']]) if c['bg'] is not None else None, 'ngay_bh': bh, 'nha_may': 'VSC',
                'g_nk': 'x' if _txt(r[c['g_nk']]).lower() == 'x' else None, 'g_td': 'x' if _txt(r[c['g_td']]).lower() == 'x' else None}
+        # File mới không còn cột BÀN GIAO: chi tiết làm xong HẾT các công đoạn phải làm (cắt, khoan, mài, vát, lốc…)
+        # thì coi là sẵn sàng bàn giao, ngày bàn giao = ngày xong công đoạn cuối cùng.
+        if not row['d_bg'] and req and all(st in done for st in req):
+            row['d_bg'] = max(done[st] for st in req)
         # có ngày làm mà quên đánh x → vẫn tính là công đoạn phải làm (giống cách file cũ báo E05)
         for st in ('cut', 'khoan', 'chan', 'vat'):
             if row['d_' + st] and not row['x_' + st]: row['x_' + st] = 'x'
