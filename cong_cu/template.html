@@ -564,6 +564,10 @@ b.rvt{color:var(--brand)}.lsxp{margin:10px 0 0;padding:8px 12px;border-radius:9p
 .lkw iframe{width:100%;height:100%;border:0;display:block;background:#fff}.lkw:fullscreen{border-radius:0;height:100vh}
 .lke{margin-top:14px}.lkg{margin-top:10px}
 @media (max-width:700px){.lkw{height:70vh;min-height:420px}.lku{max-width:100%}.lkb .sp{display:none}}
+.cdw{width:100%;height:auto;display:block}.cdl{font:700 11.5px "Be Vietnam Pro",Arial,sans-serif;fill:currentColor}.cdl2{font:500 10.5px "Be Vietnam Pro",Arial,sans-serif;fill:var(--muted)}.cdv{font:800 13px "Be Vietnam Pro",Arial,sans-serif}
+.cdleg{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:12px;color:var(--muted);margin-top:6px}.cdleg i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:middle}.cdleg b{color:var(--ink)}
+.cdb{display:inline-flex;width:90px;height:8px;border-radius:5px;background:var(--line);overflow:hidden;vertical-align:middle;margin-right:6px}.cdb i{display:block;height:100%}
+.cd .card{margin-top:14px}.cd .grid .card{margin-top:0}.cd .grid{margin-top:14px}
 </style>
 
 <div class="app">
@@ -1941,7 +1945,66 @@ V.lsx={name:'Nesting (lệnh sản xuất)',title:'Lệnh sản xuất',ico:'<pa
   after(){V.sx.after.call(V.sx);bindFilter(()=>show('v','lsx'))}};
 /* --- 5. CUTTING = Sản lượng cắt (kỳ · công đoạn · máy · theo ngày) | Kế hoạch tuần --- */
 V.cut={name:'Cutting',title:'Sản lượng cắt',ico:'<circle cx="6" cy="6" r="2.5"/><circle cx="6" cy="18" r="2.5"/><path d="M8 7.5L20 18M8 16.5L20 6"/>',
-  render(){const x=sxSplit();return x.bar+x.cut},after(){bindFilter(()=>show('v','cut'))}};
+  render(){const x=sxSplit();return x.bar+cdBlock()+x.cut},after(){bindFilter(()=>show('v','cut'))}};
+/* ================= CÂN ĐỐI LỆNH – CẮT TRONG KỲ: tồn kỳ trước + ban hành trong kỳ − đã cắt = còn phải cắt ================= */
+function cdCalc(){const LC=D.lc;if(!LC||!LC.lsx||!LC.lsx.length)return null;
+  const a=Math.round((FS.from-D0)/DAY),b=Math.round((FS.to-D0)/DAY),pi=FS.p===''?-1:+FS.p;
+  const N=LC.lsx.length,cb=new Float64Array(N),ci=new Float64Array(N),byDay={};   /* cắt trước kỳ / trong kỳ theo LSX */
+  const kind=LC.lsx.map(l=>(pi>=0&&l[1]!==pi)?0:(l[2]==null||l[2]<a)?1:l[2]<=b?2:0);       /* 1 = tồn kỳ trước, 2 = ban hành trong kỳ */
+  LC.rows.forEach(r=>{const k=kind[r[1]];if(!k)return;if(r[0]<a&&k===1)cb[r[1]]+=r[2];else if(r[0]<=b){ci[r[1]]+=r[2];const d=Math.max(r[0],a);(byDay[d]=byDay[d]||[0,0,0])[k-1]+=r[2]}});
+  const PJ={},T={ton:0,bh:0,c1:0,c2:0,n1:0,n2:0},LS=[];
+  LC.lsx.forEach((l,i)=>{const k=kind[i];if(!k)return;const p=PJ[l[1]]=PJ[l[1]]||{p:P[l[1]],ton:0,bh:0,c1:0,c2:0,n1:0,n2:0};
+    if(k===1){const t=Math.max(0,l[3]-cb[i]);if(t<0.0005&&ci[i]<0.0005)return;const c=Math.min(ci[i],t);p.ton+=t;p.c1+=c;p.n1++;T.ton+=t;T.c1+=c;T.n1++;LS.push({l:l[0],pj:l[1],k,need:t,cut:c,bh:l[2]})}
+    else{const c=Math.min(ci[i],l[3]);p.bh+=l[3];p.c2+=c;p.n2++;T.bh+=l[3];T.c2+=c;T.n2++;(byDay[l[2]]=byDay[l[2]]||[0,0,0])[2]+=l[3];LS.push({l:l[0],pj:l[1],k,need:l[3],cut:c,bh:l[2]})}});
+  T.cut=T.c1+T.c2;T.con=Math.max(0,T.ton+T.bh-T.cut);
+  const rows=Object.values(PJ).map(x=>({...x,cut:x.c1+x.c2,con:Math.max(0,x.ton+x.bh-x.c1-x.c2)})).filter(x=>x.ton+x.bh>0.005).sort((x,y)=>y.con-x.con||y.ton+y.bh-x.ton-x.bh);
+  return {a,b,T,rows,byDay,LS}}
+function cdWater(Q){const W=560,H=250,pl=44,pb=46,pt=22,top=Math.max(Q.ton+Q.bh,1e-6),y=v=>pt+(H-pt-pb)*(1-v/top),bw=92,gap=(W-pl-10-4*bw)/3;
+  const X=i=>pl+i*(bw+gap),lab=(i,t1,t2)=>`<text x="${X(i)+bw/2}" y="${H-28}" text-anchor="middle" class="cdl">${t1}</text><text x="${X(i)+bw/2}" y="${H-13}" text-anchor="middle" class="cdl2">${t2}</text>`;
+  const bar=(i,v0,v1,c,v,tip)=>`<rect x="${X(i)}" y="${y(Math.max(v0,v1))}" width="${bw}" height="${Math.max(1,Math.abs(y(v0)-y(v1)))}" rx="3" fill="${c}"><title>${tip}</title></rect>`;
+  const num=(i,vTop,t,c)=>`<text x="${X(i)+bw/2}" y="${y(vTop)-6}" text-anchor="middle" class="cdv" fill="${c||'currentColor'}">${t}</text>`;
+  const link=(i,v)=>`<path d="M${X(i)+bw} ${y(v)}H${X(i+1)}" stroke="var(--muted)" stroke-dasharray="3 3" stroke-width="1"/>`;
+  const s=Q.ton+Q.bh;
+  return `<svg viewBox="0 0 ${W} ${H}" class="cdw" role="img" aria-label="Cân đối lệnh và cắt trong kỳ">
+   <path d="M${pl} ${y(0)}H${W-6}" stroke="var(--line)"/>
+   ${bar(0,0,Q.ton,'#8a8f98',Q.ton,'Tồn kỳ trước '+T(Q.ton)+' t')}${num(0,Q.ton,T(Q.ton))}${link(0,Q.ton)}
+   ${bar(1,Q.ton,s,'#2f6fb5',Q.bh,'Ban hành trong kỳ '+T(Q.bh)+' t')}${num(1,s,'+'+T(Q.bh),'#2f6fb5')}${link(1,s)}
+   ${bar(2,s-Q.c1,s,'#1d7a3e',Q.c1,'Cắt cho lệnh tồn kỳ trước '+T(Q.c1)+' t')}${bar(2,s-Q.cut,s-Q.c1,'#6cc08b',Q.c2,'Cắt cho lệnh ban hành trong kỳ '+T(Q.c2)+' t')}${num(2,s,'−'+T(Q.cut),'#1d7a3e')}${link(2,Q.con)}
+   ${bar(3,0,Q.con,'var(--brand)',Q.con,'Còn phải cắt '+T(Q.con)+' t')}${num(3,Q.con,T(Q.con),'var(--brand)')}
+   ${lab(0,'Tồn kỳ trước',Q.n1+' LSX')}${lab(1,'Ban hành trong kỳ',Q.n2+' LSX')}${lab(2,'Đã cắt trong kỳ',PC(Q.cut/(s||1))+' phải cắt')}${lab(3,'Còn phải cắt','chuyển kỳ sau')}</svg>
+   <div class="cdleg"><span><i style="background:#1d7a3e"></i>Cắt cho lệnh tồn kỳ trước <b>${T(Q.c1)} t</b></span><span><i style="background:#6cc08b"></i>Cắt cho lệnh ban hành trong kỳ <b>${T(Q.c2)} t</b></span></div>`}
+function cdDaily(R){const n=R.b-R.a+1;if(n<2||n>400)return '';const W=560,H=250,pl=44,pr=44,pb=30,pt=14,days=[...Array(n)].map((_,i)=>R.a+i);
+  let rem=R.T.ton;const S=days.map(d=>{const v=R.byDay[d]||[0,0,0];rem+=v[2]-v[0]-v[1];return {d,c1:v[0],c2:v[1],bh:v[2],rem:Math.max(0,rem)}});
+  const mc=Math.max(1e-6,...S.map(s=>s.c1+s.c2)),mr=Math.max(1e-6,R.T.ton+R.T.bh),bw=(W-pl-pr)/n,yc=v=>pt+(H-pt-pb)*(1-v/mc),yr=v=>pt+(H-pt-pb)*(1-v/mr);
+  const dl=d=>{const t=new Date(D0+d*DAY);return String(t.getUTCDate()).padStart(2,'0')+'/'+String(t.getUTCMonth()+1).padStart(2,'0')},st=Math.ceil(n/10);
+  return `<svg viewBox="0 0 ${W} ${H}" class="cdw" role="img" aria-label="Cắt theo ngày và còn phải cắt">
+   <path d="M${pl} ${yc(0)}H${W-pr}" stroke="var(--line)"/>
+   ${S.map((s,i)=>{const x=pl+i*bw+bw*0.15,w=Math.max(1,bw*0.7);return `<g><title>${dl(s.d)}: cắt ${T(s.c1+s.c2)} t (tồn ${T(s.c1)} · mới ${T(s.c2)})${s.bh?' · ban hành '+T(s.bh)+' t':''} · còn phải cắt ${T(s.rem)} t</title><rect x="${x}" y="${yc(s.c1)}" width="${w}" height="${yc(0)-yc(s.c1)}" fill="#1d7a3e"/><rect x="${x}" y="${yc(s.c1+s.c2)}" width="${w}" height="${yc(s.c1)-yc(s.c1+s.c2)}" fill="#6cc08b"/>${s.bh>0.05?`<path d="M${x+w/2} ${pt+2}v6" stroke="#2f6fb5" stroke-width="2"/><circle cx="${x+w/2}" cy="${pt+2}" r="2.5" fill="#2f6fb5"/>`:''}</g>`}).join('')}
+   <path d="${S.map((s,i)=>(i?'L':'M')+(pl+i*bw+bw/2).toFixed(1)+' '+yr(s.rem).toFixed(1)).join('')}" fill="none" stroke="var(--brand)" stroke-width="2.2"/>
+   ${S.map((s,i)=>i%st===0?`<text x="${pl+i*bw+bw/2}" y="${H-10}" text-anchor="middle" class="cdl2">${dl(s.d)}</text>`:'').join('')}
+   <text x="${pl-6}" y="${yc(mc)+4}" text-anchor="end" class="cdl2">${T(mc)}</text><text x="${pl-6}" y="${yc(0)+4}" text-anchor="end" class="cdl2">0</text>
+   <text x="${W-pr+6}" y="${yr(mr)+4}" class="cdl2" fill="var(--brand)">${T0(mr)}</text><text x="${W-pr+6}" y="${yr(0)+4}" class="cdl2" fill="var(--brand)">0</text></svg>
+   <div class="cdleg"><span><i style="background:#1d7a3e"></i>Cắt lệnh tồn</span><span><i style="background:#6cc08b"></i>Cắt lệnh mới</span><span><i style="background:var(--brand);height:3px"></i>Còn phải cắt (trục phải)</span><span><i style="background:#2f6fb5;border-radius:50%"></i>Ngày có ban hành lệnh</span></div>`}
+function cdBlock(){const R=cdCalc();if(!R)return '';const X=R.T,s=X.ton+X.bh,pp=FS.p===''?null:P[+FS.p];
+  const bar=x=>{const t=x.ton+x.bh||1;return `<span class="cdb" title="Đã cắt ${PC((x.c1+x.c2)/t)}"><i style="width:${x.c1/t*100}%;background:#1d7a3e"></i><i style="width:${x.c2/t*100}%;background:#6cc08b"></i></span>`};
+  const z=v=>v>0.05?T(v):'<span class="muted">–</span>';
+  const LS=R.LS.filter(x=>x.need-x.cut>0.05).sort((x,y)=>(y.need-y.cut)-(x.need-x.cut)).slice(0,15);
+  const dl=d=>d==null?'–':(()=>{const t=new Date(D0+d*DAY);return String(t.getUTCDate()).padStart(2,'0')+'/'+String(t.getUTCMonth()+1).padStart(2,'0')+'/'+t.getUTCFullYear()})();
+  return `<section class="cd">${secH('Cân đối lệnh sản xuất – cắt trong kỳ',`${dmy(FS.from)} → ${dmy(FS.to)}${pp?' · '+esc(pp.name):''} · Tồn kỳ trước + Ban hành trong kỳ − Đã cắt = Còn phải cắt`)}
+   <div class="kpis cdk">${kpi('Tồn kỳ trước',T(X.ton),'t',`${X.n1} LSX ban hành trước ${dmy(FS.from)} chưa cắt xong`,'dim')}${kpi('Ban hành trong kỳ',T(X.bh),'t',`${X.n2} LSX mới`,'dim')}
+    ${kpi('Đã cắt trong kỳ',T(X.cut),'t',`${PC(X.cut/(s||1))} tổng phải cắt · lệnh tồn ${T(X.c1)} · lệnh mới ${T(X.c2)}`,'good',X.cut/(s||1))}${kpi('Còn phải cắt',T(X.con),'t',`chuyển kỳ sau · ${X.con>X.ton+0.05?'tồn đọng TĂNG '+T(X.con-X.ton)+' t':X.con<X.ton-0.05?'tồn đọng giảm '+T(X.ton-X.con)+' t':'tồn đọng không đổi'} so với đầu kỳ`,X.con>X.ton+0.05?'bad':'')}</div>
+   <div class="grid"><div class="card"><h3>Từ lệnh đến cắt <span class="sub">· tấn</span></h3>${cdWater(X)}</div>
+    <div class="card"><h3>Cắt theo ngày &amp; còn phải cắt <span class="sub">· tấn</span></h3>${cdDaily(R)||'<p class="empty">Kỳ quá dài hoặc chỉ 1 ngày – xem bảng bên dưới.</p>'}</div></div>
+   <div class="card"><h3>Theo dự án <span class="sub">· bấm tên dự án để xem chi tiết</span></h3>
+    ${table('t-cd',[{h:'Dự án',f:x=>`<a data-go="${esc(x.p.id)}"><b>${esc(x.p.name)}</b></a>`,s:x=>x.p.name},{h:'Tồn kỳ trước (t)',n:1,f:x=>z(x.ton),s:x=>x.ton},{h:'Ban hành trong kỳ (t)',n:1,f:x=>z(x.bh),s:x=>x.bh},
+      {h:'Tổng phải cắt (t)',n:1,f:x=>`<b>${T(x.ton+x.bh)}</b>`,s:x=>x.ton+x.bh},{h:'Đã cắt (t)',n:1,f:x=>z(x.cut),s:x=>x.cut},{h:'Tiến độ',f:x=>`${bar(x)} ${PC(x.cut/((x.ton+x.bh)||1))}`,s:x=>x.cut/((x.ton+x.bh)||1)},
+      {h:'Còn phải cắt (t)',n:1,f:x=>x.con>0.05?`<b style="color:var(--brand)">${T(x.con)}</b>`:'<span class="muted">xong</span>',s:x=>x.con}],R.rows,
+      {foot:['Tổng',T(X.ton),T(X.bh),T(s),T(X.cut),PC(X.cut/(s||1)),T(X.con)]})}</div>
+   <div class="card"><h3>LSX còn phải cắt nhiều nhất <span class="sub">· ${LS.length} lệnh đầu</span></h3>
+    ${LS.length?table('t-cdl',[{h:'LSX',f:x=>lsxA(x.l),s:x=>x.l},{h:'Dự án',f:x=>esc(P[x.pj].name),s:x=>P[x.pj].name},{h:'Loại',f:x=>x.k===1?'<span class="lv warn">Tồn kỳ trước</span>':'<span class="lv ok">Mới trong kỳ</span>',s:x=>x.k},
+      {h:'Ban hành',f:x=>dl(x.bh),s:x=>x.bh??-1},{h:'Phải cắt trong kỳ (t)',n:1,f:x=>T(x.need),s:x=>x.need},{h:'Đã cắt (t)',n:1,f:x=>z(x.cut),s:x=>x.cut},{h:'Còn phải cắt (t)',n:1,f:x=>`<b>${T(x.need-x.cut)}</b>`,s:x=>x.need-x.cut}],LS):'<p class="empty">Không còn lệnh nào phải cắt trong phạm vi đang lọc.</p>'}
+    <p class="note">Tính theo từng chi tiết có đánh dấu phải cắt. "Tồn kỳ trước" = phần chưa cắt, tính đến hết ngày trước kỳ, của các LSX ban hành trước kỳ. Bộ lọc Máy không áp dụng cho khối này.</p></div></section>`}
+
 const VALIAS={dh:'cut',bc:'tt',sx:'lsx'};
 /* ================= REV (sửa đổi bản vẽ) theo LSX – từ cột REV01/REV02 của file nesting ================= */
 const REVI={};P.forEach(p=>((p.nes&&p.nes.rev)||[]).forEach(r=>{REVI[r.lsx]={...r,p}}));
