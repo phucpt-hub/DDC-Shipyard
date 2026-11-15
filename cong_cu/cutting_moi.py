@@ -164,7 +164,7 @@ def gop(sheets_pkl, xlsx_moi, log=print):
     for k in (k1, k2):
         for v in d[k].iloc[3:, 0]:
             s = _txt(v).replace('\\_', '_')
-            m = re.match(r'^([\w.\-]+)\s', s)
+            m = re.match(r'^([\w.\-]+)(?:\s|$)', s)   # "A07N24DDCVT01" (chỉ có mã) cũng ghép được
             if m and m.group(1) not in ct_map and s != 'NaN': ct_map[m.group(1)] = s
     xl = pd.ExcelFile(xlsx_moi)
     names = {n.strip().upper(): n for n in xl.sheet_names}

@@ -35,7 +35,7 @@ def short(ct):
     s=re.sub(r'^[\w.]+-?\d+\s+','',ct) if re.match(r'^\d',ct) or ct.startswith('TCTN') else ct
     s=s.replace('\\_','').replace('DGRP ','').replace('DG XK ','').replace('DG TN ','').replace('DG ','').strip(' _')
     return s.title() if s.isupper() else s
-NAMES={'10626-051':'SVĐ Hùng Vương','10725-006':'Mombasa Port','10626-010':'Facade Sân bay Phú Quốc','10626-048':'APEC S2','10625-036':'APEC S3','10625-030':'Ga T2 Phú Quốc','10625-031':'Cầu đi bộ sông Sài Gòn','10726-141':'Shiplift Úc','10626-130':'Quảng trường TTTP & TTHC','10726-075':'RMG Crane','10626-022':'Núi Chứa Chan','TCTN.DNS.26.004':'Cao tốc VIN','10726-040':'BPI HO Redev','10726-049':'HSC Mockup Casing','TCTN.DVT.26.001':'ADAMAS','TCTN.DVT.26.002':'Tàu dầu H1033','10626-125':'Cầu Cỏ May','10626-155':'Núi Tuyết'}
+NAMES={'10626-051':'SVĐ Hùng Vương','10725-006':'Mombasa Port','10626-010':'Facade Sân bay Phú Quốc','10626-048':'APEC S2','10625-036':'APEC S3','10625-030':'Ga T2 Phú Quốc','10625-031':'Cầu đi bộ sông Sài Gòn','10726-141':'Shiplift Úc','10626-130':'Quảng trường TTTP & TTHC','10726-075':'RMG Crane','10626-022':'Núi Chứa Chan','TCTN.DNS.26.004':'Cao tốc VIN','10726-040':'BPI HO Redev','10726-049':'HSC Mockup Casing','TCTN.DVT.26.001':'ADAMAS','TCTN.DVT.26.002':'Tàu dầu H1033','10626-125':'Cầu Cỏ May','10626-155':'Núi Tuyết','A07N24DDCVT01':'Dự án nội bộ'}
 _short0=short
 def short(ct):
     c=ct.split(' ')[0]
@@ -314,6 +314,18 @@ if len(_CL):
     OUT['fix']=[dict(c=r.ma,d=r.quy_tac,g=r.nhom,f=r.file,n=int(r.n),t=t_(r.kl)) for r in _g.itertuples()]
 OUT['fix_file']='nhat_ky_lam_sach.xlsx'
 OUT['ev']=dict(d0=_d0.strftime('%Y-%m-%d'),mach=MACH,rows=EV)
+# Cân đối lệnh – cắt theo LSX (khối "Cân đối lệnh sản xuất – cắt trong kỳ" ở trang Cutting):
+#   lsx = [số LSX, dự án, ngày ban hành (số ngày từ d0; None = không rõ), tấn phải cắt];  rows = [ngày, vị trí LSX, tấn đã cắt]
+try:
+    _R=V[V.req_cut>0]; _lq=_R.groupby('lsx').agg(ct=('cong_trinh','first'),req=('req_cut','sum'))
+    _bh=CUT_LSXT.drop_duplicates('lsx').set_index('lsx').ngay_bh
+    _ln=[l for l in _lq.index if _lq.ct[l] in PIDX]; _li={l:i for i,l in enumerate(_ln)}
+    _LCL=[[str(l),PIDX[_lq.ct[l]],(int((pd.Timestamp(_bh[l]).normalize()-_d0).days) if l in _bh.index and pd.notna(_bh[l]) else None),round(float(_lq.req[l])/1000,4)] for l in _ln]
+    _c=_R[_R.d_cut_dt.notna()&(_R.d_cut_dt<=pd.Timestamp(REPORT_DATE))&_R.lsx.isin(_li)]
+    _LCR=[[int((dd-_d0).days),_li[l],round(float(v)/1000,4)] for (dd,l),v in _c.groupby([_c.d_cut_dt.dt.normalize(),'lsx']).done_cut.sum().items() if v]
+    OUT['lc']=dict(lsx=_LCL,rows=_LCR)
+except Exception as e: print('Không lập được bảng cân đối lệnh – cắt theo LSX:',repr(e))
+
 OUT['target']=dict(base=_base,by_month=_mt)
 # chi tiết kho để bấm xem: theo dự án kho -> vật tư (tên, quy cách, tấn, số lượng)
 def _drill(df):
