@@ -12,7 +12,7 @@ MAP={'DG TN SVĐ HÙNG VƯƠNG':'10626-051 DG SÂN VẬN ĐỘNG HÙNG VƯƠNG',
 'DG TN SÂN BAY PHÚ QUỐC':'10625-030 DGRP GA T2 CẢNG HÀNG KHÔNG QT PHÚ QUỐC; 10626-010 DGRP FACADE SÂN BAY PHÚ QUỐC','DG TN CẦU ĐI BỘ SÔNG SÀI GÒN - CẦU CHÍNH':'10625-031 DGRP CẦU ĐI BỘ SÔNG SÀI GÒN',
 'DG TN CẦU ĐI BỘ QUA SÔNG SÀI GÒN':'10625-031 DGRP CẦU ĐI BỘ SÔNG SÀI GÒN','DG XK MOMBASA PORT':'10725-006 DGRP MOMBASA PORT DEVELOPMENT PROJECT','DG XK THREE (3) SETS RMG GANTRY CRANE':'10726-075 RMG CRANE',
 'DG XK SHIPLIFT ÚC':'10726-141 DG XK SHIPLIFT ÚC','DG TN DU LỊCH SINH THÁI NÚI CHỨA CHAN ĐN':'10626-022 DU LỊCH SINH THÁI NGHỈ DƯỠNG GIẢI TRÍ NÚI CHỨA CHAN','DG TN QUẢNG TRƯỜNG TTTP & TTHC THÀNH PHỐ':'10626-130 DG TN QUẢNG TRƯỜNG TTTP & TTHC THÀNH PHỐ',
-'DG XK STRUCTURE HSC PROJECT':'10726-049 \\_ HSC Project \\_ Mockup Casing','DG XK BPI HO REDEV SUPPLY MATERIAL':'10726-040 DG XK BPI HO REDEV SUPPLY MATERIAL','CAO TỐC VIN':'TCTN.DNS.26.004 ĐƯỜNG CAO TỐC VIN','DG TN CẦU CỎ MAY':'10626-125 DG TN CẦU CỎ MAY'}
+'DG XK STRUCTURE HSC PROJECT':'10726-049 \\_ HSC Project \\_ Mockup Casing','DG XK BPI HO REDEV SUPPLY MATERIAL':'10726-040 DG XK BPI HO REDEV SUPPLY MATERIAL','CAO TỐC VIN':'TCTN.DNS.26.004 ĐƯỜNG CAO TỐC VIN','DG TN CẦU CỎ MAY':'10626-125 DG TN CẦU CỎ MAY','DG TN NÚI TUYẾT':'10626-155 DG TN NÚI TUYẾT'}
 C2I={}
 for k,v in MAP.items():
     for c in v.split('; '): C2I.setdefault(c,k)
@@ -35,7 +35,23 @@ _CANON={k.upper():k for k in list(MAP)+list(C2I.values())+['Kho Chung','TỒN BR
 for _df in (N,X,T): _df['du_an']=_df.du_an.map(lambda s: _CANON.get(s.upper(),s) if isinstance(s,str) else s)
 exec(open('kho/demand.py').read())
 C['proj_kho']=C.cong_trinh.map(C2I).fillna('(chưa map)')
-kk=C.apply(lambda r: demand_key(r.qc_part,r.qc_vt,r.day),axis=1); C['loai']=kk.str[0]; C['key']=kk.str[1]
+kk=C.apply(lambda r: demand_key(r.qc_part,r.qc_vt,r.day),axis=1)
+# Ống ghi dạng "DxTxL" không có tiền tố CHS (vd Núi Tuyết "508X20X12000", RMG "324X12.7X330") → khớp với ống có trong kho (sai lệch đường kính ≤1,5 mm)
+_CHS=[]
+for _df in (N,X,T):
+    for _k in set(_df.key[_df.loai=='ỐNG'].dropna()):
+        _m=re.match(r'^CHS([\d.]+)x([\d.]+)$',_k)
+        if _m: _CHS.append((float(_m.group(1)),float(_m.group(2)),_k))
+def _ong(r):
+    if r[0]!='KHÁC': return r
+    _m=re.match(r'^([\d.]+)X([\d.]+)X([\d.]+)$',str(r[1]))
+    if not _m: return r
+    a,b=float(_m.group(1)),float(_m.group(2))
+    if not (a>b*3): return r
+    c=[(abs(D-a),k) for D,t,k in _CHS if abs(t-b)<0.01 and abs(D-a)<=1.5]
+    return ('ỐNG',min(c)[1]) if c else r
+kk=kk.map(_ong)
+C['loai']=kk.str[0]; C['key']=kk.str[1]
 C['fam']=C.mac.map(grade_family); C['Lbar']=pd.to_numeric(C.qc_vt,errors='coerce'); C['used']=C.dai*C.qty
 G=C.groupby(['cong_trinh','nesting'],dropna=False).agg(proj_kho=('proj_kho','first'),lsx=('lsx','first'),n=('qty','size'),ncut=('cut','sum'),loai=('loai','first'),key=('key','first'),mac=('mac','first'),fam=('fam','first'),
    nguon=('nguon','first'),qc_vt=('qc_vt','first'),is_pl=('is_pl','first'),pt=('pt','first'),pw=('pw','first'),pl=('pl','first'),kl=('kl_tong','sum'),Lbar=('Lbar','first'),used=('used','sum'),
