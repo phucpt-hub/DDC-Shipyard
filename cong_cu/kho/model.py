@@ -30,6 +30,9 @@ if _cfg and os.path.exists(_cfg):
                 for k in (a,a2): C2I[k]=b.strip()
         print('Đã đọc MAP_DU_AN từ file cấu hình:',len(_m),'dòng')
     except Exception as e: print('Không đọc được file cấu hình:',e)
+# Tên dự án trong file kho đổi hoa/thường giữa các kỳ (vd "(Tổng Hợp)" → "(TỔNG HỢP)") → đưa về đúng tên đang dùng trong bảng map
+_CANON={k.upper():k for k in list(MAP)+list(C2I.values())+['Kho Chung','TỒN BRAVO']}
+for _df in (N,X,T): _df['du_an']=_df.du_an.map(lambda s: _CANON.get(s.upper(),s) if isinstance(s,str) else s)
 exec(open('kho/demand.py').read())
 C['proj_kho']=C.cong_trinh.map(C2I).fillna('(chưa map)')
 kk=C.apply(lambda r: demand_key(r.qc_part,r.qc_vt,r.day),axis=1); C['loai']=kk.str[0]; C['key']=kk.str[1]

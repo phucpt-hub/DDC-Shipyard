@@ -126,8 +126,9 @@ KHO_ALIAS={'XK THREE (3) SETS RMG GANTRY CRANE':'DG XK THREE (3) SETS RMG GANTRY
 def kho_alias(s):
     if not isinstance(s,str): return s
     s=re.sub(r'\s+',' ',s.replace('\\_','_')).strip()
-    m=re.match(r'^(?:VT|NS) (TN|XK) (.+)$',s)                 # "VT TN ..." / "NS TN ..." = cùng dự án với "DG TN ..."
+    m=re.match(r'^(?:VT|NS|DA) (TN|XK) (.+)$',s)              # "VT TN ..." / "NS TN ..." / "DA TN ..." (file kho từ 13/11) = cùng dự án với "DG TN ..."
     if m: s=f'DG {m.group(1)} {m.group(2)}'
+    if s.upper()=='KHO CHUNG': s='Kho Chung'                     # từ 13/11 file kho ghi "KHO CHUNG"
     return KHO_ALIAS.get(s,s)
 _nhap0,_xuat0,_ton0=nhap,xuat,ton
 def _al(df): df['du_an']=df.du_an.map(kho_alias); return df
