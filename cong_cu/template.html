@@ -1022,7 +1022,12 @@ function drillRender(){
   $('drw-t').innerHTML=t;$('drw-body').innerHTML=h;$('drw-body').scrollTop=0;sortable($('drw-body'));
   $('drw-body').querySelectorAll('tr[data-drill]').forEach(tr=>tr.classList.add('click'));
   if(kind==='lsx')ctBind();
-  const q=$('drw-body').querySelector('[data-drq]');if(q)q.oninput=()=>{const s=q.value;$('drw-body').querySelectorAll('#t-drill tbody tr').forEach(tr=>tr.hidden=!hit(tr.textContent,s))};
+  const q=$('drw-body').querySelector('[data-drq]');if(q){const tb=$('t-drill'),ft=tb&&tb.querySelector('tfoot tr'),f0=ft?ft.innerHTML:'';
+    q.oninput=()=>{const s=q.value,rs=[...tb.querySelectorAll('tbody tr')];let n=0;const sm=[0,0,0,0,0,0,0];
+      rs.forEach(tr=>{const ok=hit(tr.textContent,s);tr.hidden=!ok;if(ok){n++;[...tr.children].forEach((td,i)=>{const v=parseFloat(td.dataset.s);if(!isNaN(v))sm[i]+=v})}});
+      if(!ft)return;if(!s.trim()){ft.innerHTML=f0;return}
+      const all=sum(rs,tr=>parseFloat(tr.children[2].dataset.s)||0),c=ft.children;
+      c[0].innerHTML=`<b>Tổng lọc</b> <span class="muted">(${n}/${rs.length} dòng)</span>`;if(c[2])c[2].innerHTML=`<b>${T(sm[2])}</b>`;if(c[3])c[3].textContent=PC(sm[2]/(all||1));if(c[4])c[4].textContent=T0(sm[4]);if(c[5])c[5].textContent=sm[5]}}
 }
 document.addEventListener('click',e=>{
   if(e.target.closest('[data-drw-back]')){drillBack();return}
