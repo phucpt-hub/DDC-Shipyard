@@ -519,16 +519,17 @@ details.bcx>summary{cursor:pointer;font-size:14px;color:var(--brand);padding:4px
 .trb:hover,.trb:focus-visible{border-color:var(--brand)}.trb .ic{width:18px;height:18px;stroke:var(--brand);fill:none;stroke-width:2;flex:none}
 .trl{display:flex;gap:8px;align-items:baseline;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.trl b{color:var(--brand);font-weight:700}.trl em{font-style:normal;color:var(--muted)}
 .trb .cv{width:16px;height:16px;stroke:var(--muted);fill:none;stroke-width:2;flex:none}
-.trp{position:absolute;z-index:60;top:calc(100% + 6px);left:0;width:min(470px,92vw);background:var(--panel);border:1px solid var(--line);border-radius:12px;box-shadow:0 14px 34px rgba(60,10,10,.2);padding:12px 14px;font-weight:400}
+.trp{position:absolute;z-index:60;top:calc(100% + 6px);left:0;width:min(560px,92vw);background:var(--panel);border:1px solid var(--line);border-radius:12px;box-shadow:0 14px 34px rgba(60,10,10,.2);padding:12px 14px;font-weight:400}
 .trh{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin:2px 0 7px}
-.trq{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:12px}
+.trq{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:10px}
+.trs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:12px}.trs label{display:flex;flex-direction:column;gap:3px;font-size:11px;color:var(--muted);font-weight:600}.trs select{font:400 12.5px "Be Vietnam Pro",Arial,sans-serif;padding:6px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--ink);min-width:0}
 .trq button{all:unset;box-sizing:border-box;cursor:pointer;border:1px solid var(--line);border-radius:8px;padding:6px 6px;text-align:center;font:600 12.5px "Be Vietnam Pro",Arial,sans-serif;color:var(--ink);display:flex;flex-direction:column;gap:1px}
 .trq button small{color:var(--muted);font-size:10.5px;font-weight:400}.trq button:hover{border-color:var(--brand)}
 .trq button[aria-pressed="true"]{background:var(--brand);border-color:var(--brand);color:#fff}.trq button[aria-pressed="true"] small{color:#ffe1e1}
 .trr{display:flex;gap:8px;align-items:center}.trr input{flex:1;min-width:0;font:400 13px "Be Vietnam Pro",Arial,sans-serif;padding:7px 8px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--ink)}
 .trr .go{all:unset;cursor:pointer;background:linear-gradient(180deg,#d41d24,#a8121a);color:#fff;border-radius:8px;padding:8px 14px;font:700 13px "Be Vietnam Pro",Arial,sans-serif;white-space:nowrap}
 @media (max-width:1450px){.tbtn span{display:none}.tbtn{padding:0 9px}}
-@media (max-width:700px){.trq{grid-template-columns:repeat(2,1fr)}.trr{flex-wrap:wrap}.trr input{flex:1 1 40%}.tf .fld{min-width:100%}}
+@media (max-width:700px){.trq{grid-template-columns:repeat(2,1fr)}.trs{grid-template-columns:1fr}.trr{flex-wrap:wrap}.trr input{flex:1 1 40%}.tf .fld{min-width:100%}}
 @media (max-width:700px){.band .right{flex-wrap:wrap;row-gap:6px;justify-content:flex-start;min-width:0;max-width:100%}.tb-act{order:10;width:100%}.sfc{max-width:100%}}
 details.bcx{max-width:100%;min-width:0;contain:inline-size;overflow-x:auto}
 @media (max-width:900px){details.bcx .grid{grid-template-columns:minmax(0,1fr)!important}}
@@ -1319,18 +1320,26 @@ function periods(from,to,g){const ks=[];let last=null;for(let t=from;t<=to;t+=DA
 const workdays=(from,to)=>{let n=0;for(let t=from;t<=to;t+=DAY){if(new Date(t).getUTCDay()!==0)n++}return n};
 const GLAB={day:'Ngày',week:'Tuần',month:'Tháng',quarter:'Quý',year:'Năm'};
 const MONTH0=t=>{const d=new Date(t);return Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),1)};
+const YR0=new Date(DEND).getUTCFullYear(),MO0=new Date(DEND).getUTCMonth(),QR=['I','II','III','IV'];
+// ngày có số liệu gần nhất: hôm nay nếu đã nhập, chưa có thì lùi về ngày trước đó
+const DLAST=(()=>{let m=-1;for(const r of D.ev.rows)if(r[3]<=4&&r[0]>m&&D0+r[0]*DAY<=DEND)m=r[0];return m<0?DEND:D0+m*DAY})();
+const _clip=(a,b)=>[Math.max(a,D0),Math.min(b,DEND)];
+// tuần trong tháng: Thứ 2 → Chủ nhật, cắt theo ranh giới tháng
+function weeksOfMonth(y,m){const a=Date.UTC(y,m,1),b=Math.min(Date.UTC(y,m+1,0),DEND),r=[];let s=a;while(s<=b){const wd=(new Date(s).getUTCDay()+6)%7,e=Math.min(s+(6-wd)*DAY,b);r.push([s,e]);s=e+DAY}return r}
+const WKS=weeksOfMonth(YR0,MO0),WK0=WKS.findIndex(w=>w[0]<=DEND&&DEND<=w[1]);
 const QUICK={
-  d1:{n:'Ngày số liệu',f:()=>[DEND,DEND],g:'day'},
-  d7:{n:'7 ngày',f:()=>[DEND-6*DAY,DEND],g:'day'},
-  d30:{n:'30 ngày',f:()=>[DEND-29*DAY,DEND],g:'day'},
-  mtd:{n:'Tháng này',f:()=>[MONTH0(DEND),DEND],g:'day'},
-  m3:{n:'3 tháng',f:()=>{const d=new Date(DEND);return[Date.UTC(d.getUTCFullYear(),d.getUTCMonth()-2,1),DEND]},g:'week'},
-  qtd:{n:'Quý này',f:()=>{const d=new Date(DEND);return[Date.UTC(d.getUTCFullYear(),Math.floor(d.getUTCMonth()/3)*3,1),DEND]},g:'week'},
-  ytd:{n:'Năm nay',f:()=>[Date.UTC(new Date(DEND).getUTCFullYear(),0,1),DEND],g:'month'},
-  all:{n:'Tất cả',f:()=>[D0,DEND],g:'month'}};
-const _early=new Date(DEND).getUTCDate()<8;
-const FS={q:_early?'d30':'mtd',g:'day',from:_early?DEND-29*DAY:MONTH0(DEND),to:DEND,p:'',m:'',ser:[0,4],piv:0,by:'p'};
-try{const s=JSON.parse(localStorage.getItem('chuoi-fs')||'null');if(s&&s.from>=D0&&s.to<=DEND)Object.assign(FS,s)}catch(e){}
+  d1:{n:'Ngày số liệu',f:()=>[DLAST,DLAST],g:'day'},
+  wk:{n:'Tuần '+(WK0+1)+' · T'+(MO0+1),f:()=>_clip(...WKS[WK0]),g:'day'},
+  mtd:{n:'Tháng '+(MO0+1),f:()=>_clip(MONTH0(DEND),DEND),g:'day'},
+  qtd:{n:'Quý '+QR[Math.floor(MO0/3)],f:()=>_clip(Date.UTC(YR0,Math.floor(MO0/3)*3,1),DEND),g:'week'},
+  ytd:{n:'Năm '+YR0,f:()=>_clip(Date.UTC(YR0,0,1),DEND),g:'month'},
+  all:{n:'Tất cả',f:()=>[D0,DEND],g:'month',h:1}};
+WKS.forEach((w,i)=>QUICK['w'+(i+1)]={n:'Tuần '+(i+1)+' · T'+(MO0+1),f:()=>_clip(...w),g:'day',h:1,s:'w'});
+for(let m=0;m<=MO0;m++)QUICK['m'+(m+1)]={n:'Tháng '+(m+1)+'/'+YR0,f:()=>_clip(Date.UTC(YR0,m,1),Date.UTC(YR0,m+1,0)),g:'day',h:1,s:'m'};
+for(let q=0;q<=Math.floor(MO0/3);q++)QUICK['q'+(q+1)]={n:'Quý '+QR[q]+'/'+YR0,f:()=>_clip(Date.UTC(YR0,q*3,1),Date.UTC(YR0,q*3+3,0)),g:'week',h:1,s:'q'};
+const QE=()=>Object.keys(QUICK).map(k=>[k,QUICK[k]]).filter(([k,v])=>!v.h);
+const FS={q:'d1',g:'day',from:DLAST,to:DLAST,p:'',m:'',ser:[0,4],piv:0,by:'p'};
+try{const s=JSON.parse(localStorage.getItem('chuoi-fs')||'null');if(s){delete s.q;delete s.from;delete s.to;delete s.g;Object.assign(FS,s)}}catch(e){}
 const saveFS=()=>{try{localStorage.setItem('chuoi-fs',JSON.stringify(FS))}catch(e){}};
 function getTarget(monthKey){let v=null;try{v=JSON.parse(localStorage.getItem('chuoi-target')||'{}')[monthKey]}catch(e){}
   const cfg=D.target.by_month[monthKey];return v!=null?{v:+v,src:'nhập tay'}:cfg&&cfg.cut?{v:cfg.cut,src:'file cấu hình'}:{v:D.target.base,src:'TB 3 tháng gần nhất'}}
@@ -1355,12 +1364,12 @@ function filterBar(){
   const mOpt=MACH.map((m,i)=>`<option value="${i}" ${FS.m===String(i)?'selected':''}>${esc(m)}</option>`).join('');
   return `<div class="fbar">
    <div class="frow"><span class="flab">Kỳ</span><div class="seg">${Object.entries(GLAB).map(([k,n])=>`<button data-g="${k}" aria-pressed="${FS.g===k}">${n}</button>`).join('')}</div>
-    <span class="flab">Nhanh</span>${Object.entries(QUICK).map(([k,q])=>`<button class="chip" data-q="${k}" aria-pressed="${FS.q===k}">${q.n}</button>`).join('')}
+    <span class="flab">Nhanh</span>${QE().map(([k,q])=>`<button class="chip" data-q="${k}" aria-pressed="${FS.q===k}">${q.n}</button>`).join('')}
 </div>
    <div class="frow"><span class="flab">Từ</span><input type="date" id="f-from" value="${isoD(FS.from)}" min="${D.ev.d0}" max="${D.date}"><span class="flab">đến</span><input type="date" id="f-to" value="${isoD(FS.to)}" min="${D.ev.d0}" max="${D.date}">
     <span class="flab">Dự án</span><select id="f-p" style="max-width:240px"><option value="">Tất cả dự án</option>${pOpt}</select>
     <span class="flab">Máy</span><select id="f-m" style="max-width:220px"><option value="">Tất cả máy</option>${mOpt}</select>
-    ${(FS.p!==''||FS.m!==''||FS.q!=='mtd')?`<button class="chip xoa" id="f-clear">✕ Xóa lọc</button>`:''}
+    ${(FS.p!==''||FS.m!==''||FS.q!=='d1')?`<button class="chip xoa" id="f-clear">✕ Xóa lọc</button>`:''}
     <span class="fsum">${dmy(FS.from)} → ${dmy(FS.to)} · ${workdays(FS.from,FS.to)} ngày làm việc</span></div></div>`}
 function bindFilter(rerender){
   const root=$('view');
@@ -1370,7 +1379,7 @@ function bindFilter(rerender){
   $('f-from').onchange=fd;$('f-to').onchange=fd;
   $('f-p').onchange=e=>{FS.p=e.target.value;saveFS();rerender()};
   $('f-m').onchange=e=>{FS.m=e.target.value;saveFS();rerender()};
-  const c=$('f-clear');if(c)c.onclick=()=>{FS.p='';FS.m='';FS.q='mtd';FS.from=MONTH0(DEND);FS.to=DEND;FS.g='day';saveFS();rerender()};
+  const c=$('f-clear');if(c)c.onclick=()=>{FS.p='';FS.m='';FS.q='d1';FS.from=DLAST;FS.to=DLAST;FS.g='day';saveFS();rerender()};
 }
 
 /* ---- charts ---- */
@@ -1502,7 +1511,7 @@ const V_TT_OLD={name:'Tóm tắt điều hành',title:'Báo cáo điều hành c
    <p class="note">Thêm / sửa việc, phụ trách, hạn trong sheet <b>VIEC_CAN_XU_LY</b> của file cấu hình (du_lieu/4_CAU_HINH/MAP_VA_QUY_TAC.xlsx) hoặc Google Sheet gắn qua secret NGUON_VIEC. Việc có trạng thái "Xong" sẽ tự ẩn.</p></section>`;
   return h}};
 /* ================= TÓM TẮT ĐIỀU HÀNH – GIAO DIỆN MỚI ================= */
-const TF={p:'',ph:'',q:'mtd',from:null,to:null};
+const TF={p:'',ph:'',q:'d1',from:null,to:null};
 function phaseOf(hm){const s=String(hm||'').toUpperCase().trim();if(!s)return 'Chưa ghi hạng mục';
   if(/TEST|QTHM|QUY TR[IÌ]NH|CWB|THỢ HÀN/.test(s))return 'Test / quy trình hàn';
   if(/BI[EỆ]N PH[AÁ]P|BPGC|BP GC/.test(s))return 'Biện pháp gia công';
@@ -1591,7 +1600,7 @@ V.tt={name:'Tóm tắt điều hành',title:'Báo cáo điều hành chuỗi th�
    {i:'pct',l:'Tỷ lệ cắt hoàn thành',v:PC(cut/(req||1)),u:'',s:`đã cắt ${T(cut)} / ${T(req)} t`,pg:cut/(req||1)},
    {i:'warn',l:'Cảnh báo cần xử lý',v:att.filter(x=>x.s!=='info').length+(pp?0:0),u:'mục',s:(pp?`trạng thái dự án: <b>${ST_NAME[health(pp).c]}</b>`:`<span style="color:var(--bad);font-weight:700">${hc.bad} dự án đỏ</span> · ${hc.warn} cam`),y:1}];
   const pOpt=P.map((p,i)=>`<option value="${i}" ${TF.p===String(i)?'selected':''}>${esc(p.name)}</option>`).join('');
-  const qOpt=Object.entries(QUICK).map(([k,q])=>`<option value="${k}" ${TF.q===k?'selected':''}>${q.n} (${dm(q.f()[0])} – ${dm(q.f()[1])})</option>`).join('');
+  const qOpt=QE().map(([k,q])=>`<option value="${k}" ${TF.q===k?'selected':''}>${q.n} (${dm(q.f()[0])} – ${dm(q.f()[1])})</option>`).join('');
   const byM=Object.entries(a.byM).map(([k,v])=>({n:MACH[k],v:v[0]})).filter(x=>x.v>0.05).sort((x,y)=>y.v-x.v),mxm=Math.max(1e-9,...byM.map(x=>x.v)),totm=sum(byM,x=>x.v)||1;
   const TOP=(pp?[pp]:P.filter(p=>p.kl>=1&&(p.pc??1)<0.999)).sort((x,y)=>(y.req-y.cut)-(x.req-x.cut)).slice(0,6);
   const lv={bad:['bad','Nghiêm trọng'],warn:['warn','Cần theo dõi'],info:['info','Thông tin']};
@@ -1629,7 +1638,7 @@ V.tt={name:'Tóm tắt điều hành',title:'Báo cáo điều hành chuỗi th�
   $('tf-p').onchange=e=>{TF.p=e.target.value;TF.ph='';re()};
   $('tf-ph').onchange=e=>{TF.ph=e.target.value;re()};
   trcBind('tf-tr',k=>{TF.q=k;re()},(a,b)=>{TF.from=a;TF.to=b;TF.q='';re()});
-  $('tf-rs').onclick=()=>{Object.assign(TF,{p:'',ph:'',q:'mtd',from:null,to:null});re()};
+  $('tf-rs').onclick=()=>{Object.assign(TF,{p:'',ph:'',q:'d1',from:null,to:null});re()};
   $('view').querySelectorAll('.tp tr[data-go]').forEach(tr=>tr.onclick=()=>show('p',tr.dataset.go));
   $('view').querySelectorAll('tr[data-ph]').forEach(tr=>tr.onclick=()=>{TF.ph=TF.ph===tr.dataset.ph?'':tr.dataset.ph;re()})}};
 
@@ -1877,7 +1886,7 @@ function show(kind,key){
 filterBar=function(){
   const pOpt=P.map((p,i)=>`<option value="${i}" ${FS.p===String(i)?'selected':''}>${esc(p.name)}</option>`).join('');
   const mOpt=MACH.map((m,i)=>`<option value="${i}" ${FS.m===String(i)?'selected':''}>${esc(m)}</option>`).join('');
-  const qOpt=Object.entries(QUICK).map(([k,q])=>{const[a,b]=q.f();return `<option value="${k}" ${FS.q===k?'selected':''}>${q.n} (${dm(Math.max(a,D0))} – ${dm(b)})</option>`}).join('');
+  const qOpt=QE().map(([k,q])=>{const[a,b]=q.f();return `<option value="${k}" ${FS.q===k?'selected':''}>${q.n} (${dm(Math.max(a,D0))} – ${dm(b)})</option>`}).join('');
   return `<div class="tf fb2">
    <label>Dự án<select id="f-p"><option value="">Tất cả dự án</option>${pOpt}</select></label>
    <label>Máy<select id="f-m"><option value="">Tất cả máy</option>${mOpt}</select></label>
@@ -1891,7 +1900,7 @@ bindFilter=function(rerender){
   const on=(id,ev,fn)=>{const el=$(id);if(el)el[ev]=fn};
   on('f-p','onchange',e=>{FS.p=e.target.value;saveFS();rerender()});
   on('f-m','onchange',e=>{FS.m=e.target.value;saveFS();rerender()});
-  if($('f-clear'))$('f-clear').onclick=()=>{FS.p='';FS.m='';FS.q='mtd';FS.from=MONTH0(DEND);FS.to=DEND;FS.g='day';saveFS();rerender()}};
+  if($('f-clear'))$('f-clear').onclick=()=>{FS.p='';FS.m='';FS.q='d1';FS.from=DLAST;FS.to=DLAST;FS.g='day';saveFS();rerender()}};
 /* Điều hành = theo dõi & biểu đồ; bảng số liệu chuyển sang Báo cáo kỳ */
 const _dhR=V.dh.render;
 function dhTables(){const s=_dhR.call(V.dh),i=s.lastIndexOf('<section class="grid">');return i<0?'':s.slice(i)}
@@ -2129,7 +2138,7 @@ V.lsx.render=function(){const all=lsxAll(),pp=FS.p===''?null:P[+FS.p],bar=lsxBar
 V.lsx.after=function(){const re=()=>show('v','lsx');withLsxPeriod(()=>V.sx.after.call(V.sx));bindFilter(re);
   $('f-p').onchange=e=>{FS.p=e.target.value;saveFS();re()};
   $('f-h').onchange=e=>{H3.h=e.target.value;re()};
-  $('f-clear').onclick=()=>{FS.p='';FS.m='';H3.h='';FS.q='mtd';FS.from=MONTH0(DEND);FS.to=DEND;FS.g='day';saveFS();re()};
+  $('f-clear').onclick=()=>{FS.p='';FS.m='';H3.h='';FS.q='d1';FS.from=DLAST;FS.to=DLAST;FS.g='day';saveFS();re()};
   const a=$('view').querySelector('[data-lsxall]');if(a)a.onclick=()=>{FS.q='all';FS.from=D0;FS.to=DEND;FS.g='month';saveFS();re()}};
 
 /* ================= KHUNG GIAO DIỆN DDC-SHIPYARD: dải tiêu đề, tìm kiếm, chuông cảnh báo ================= */
@@ -2165,9 +2174,9 @@ function sfPush(kind,key){if(kind!=='v')return;
 function sfChip(){const el=$('sfc');if(!el)return;sfPull(CUR);const parts=[];
   if(SF.p!==''&&P[+SF.p])parts.push(`<b>${esc(P[+SF.p].name)}</b>`);const m3=CUR&&CUR.kind==='v'&&(CUR.key==='lsx'||CUR.key==='ne');if(SF.m!==''&&MACH[+SF.m]&&!m3)parts.push(esc(MACH[+SF.m]));if(m3&&H3.h)parts.push(esc(H3.h));
   const tq=SF.q?QUICK[SF.q].n:`${dm(SF.from)} – ${dm(SF.to)}`;parts.push(tq);
-  const on=SF.p!==''||SF.m!==''||SF.q!=='mtd'||!!H3.h;el.className='sfc'+(on?' on':'');
+  const on=SF.p!==''||SF.m!==''||SF.q!=='d1'||!!H3.h;el.className='sfc'+(on?' on':'');
   el.innerHTML=`<svg viewBox="0 0 24 24"><path d="M3 4h18l-7 8v6l-4 2v-8z"/></svg><span title="Bộ lọc chung – áp dụng cho Tổng quan, Nesting (lệnh sản xuất), Vật tư, Cutting">${parts.join(' · ')}</span>${on?'<button id="sfc-x" title="Bỏ lọc ở mọi trang">✕</button>':''}`;
-  const x=$('sfc-x');if(x)x.onclick=()=>{Object.assign(SF,{p:'',m:'',q:'mtd',from:MONTH0(DEND),to:DEND});TF.ph='';KF.open=null;THF.k='';H3.h='';const c=CUR;CUR=null;show(c.kind,c.key)}}
+  const x=$('sfc-x');if(x)x.onclick=()=>{Object.assign(SF,{p:'',m:'',q:'d1',from:DLAST,to:DLAST});TF.ph='';KF.open=null;THF.k='';H3.h='';const c=CUR;CUR=null;show(c.kind,c.key)}}
 /* ================= LIÊN KẾT: gắn link trang khác và xem ngay trong báo cáo ================= */
 /* Link dùng chung: file lien_ket.txt ở thư mục gốc repo (mỗi dòng "Tên | link"); link riêng: lưu trong trình duyệt máy đang dùng */
 const LK_BASE=location.pathname.includes('/lich_su/')?location.pathname.split('/lich_su/')[0]+'/':'';
@@ -2272,12 +2281,14 @@ const _kpiS0=kpiS;kpiS=function(l,...a){return _kpiS0(l,...a).replace('<div clas
 /* ===== BỘ CHỌN THỜI GIAN GỌN: 1 ô · bấm mở bảng chọn nhanh + khoảng ngày ===== */
 function trcHtml(id,q,from,to){const lab=q&&QUICK[q]?QUICK[q].n:'Tùy chọn';
   return `<div class="trc" id="${id}"><button type="button" class="trb" title="Chọn khoảng thời gian"><svg class="ic" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 10h18"/></svg><span class="trl"><b>${esc(lab)}</b><em>${dm(from)} – ${dm(to)}/${new Date(to).getUTCFullYear()}</em></span><svg class="cv" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>
-  <div class="trp" hidden><div class="trh">Chọn nhanh</div><div class="trq">${Object.entries(QUICK).map(([k,v])=>{const[a,b]=v.f();return `<button type="button" data-trq="${k}" aria-pressed="${q===k}"><b>${v.n}</b><small>${dm(Math.max(a,D0))} – ${dm(b)}</small></button>`}).join('')}</div>
+  <div class="trp" hidden><div class="trh">Chọn nhanh</div><div class="trq">${QE().map(([k,v])=>{const[a,b]=v.f();return `<button type="button" data-trq="${k}" aria-pressed="${q===k}"><b>${v.n}</b><small>${dm(Math.max(a,D0))} – ${dm(b)}</small></button>`}).join('')}</div>
+  <div class="trs">${[['w','Tuần trong tháng '+(MO0+1)],['m','Tháng trong năm '+YR0],['q','Quý trong năm '+YR0]].map(([t,lb])=>`<label>${lb}<select data-trs><option value="">— chọn —</option>${Object.entries(QUICK).filter(([k,v])=>v.s===t).map(([k,v])=>{const[x,y]=v.f();return `<option value="${k}"${q===k?' selected':''}>${t==='w'?'Tuần '+k.slice(1)+' ('+dm(x)+' – '+dm(y)+')':t==='m'?'Tháng '+k.slice(1):'Quý '+QR[+k.slice(1)-1]+' ('+dm(x)+' – '+dm(y)+')'}</option>`}).join('')}</select></label>`).join('')}</div>
   <div class="trh">Hoặc chọn từ ngày – đến ngày</div><div class="trr"><input type="date" data-trf value="${isoD(from)}" min="${D.ev.d0}" max="${D.date}" aria-label="Từ ngày"><span>→</span><input type="date" data-trt value="${isoD(to)}" min="${D.ev.d0}" max="${D.date}" aria-label="Đến ngày"><button type="button" class="go" data-tra>Áp dụng</button></div></div></div>`}
 function trcBind(id,onQ,onR){const w=$(id);if(!w)return;const p=w.querySelector('.trp');
-  w.querySelector('.trb').onclick=e=>{e.stopPropagation();document.querySelectorAll('.trp').forEach(x=>{if(x!==p)x.hidden=true});p.hidden=!p.hidden};
+  w.querySelector('.trb').onclick=e=>{e.stopPropagation();document.querySelectorAll('.trp').forEach(x=>{if(x!==p)x.hidden=true});p.hidden=!p.hidden;if(!p.hidden){p.style.left='0';p.style.right='auto';const r=p.getBoundingClientRect();if(r.right>innerWidth-8){p.style.left='auto';p.style.right='0';if(p.getBoundingClientRect().left<8){p.style.right='auto';p.style.left=(8-w.getBoundingClientRect().left)+'px'}}}};
   p.onclick=e=>e.stopPropagation();
   w.querySelectorAll('[data-trq]').forEach(b=>b.onclick=()=>{p.hidden=true;onQ(b.dataset.trq)});
+  w.querySelectorAll('[data-trs]').forEach(x=>x.onchange=()=>{if(x.value){p.hidden=true;onQ(x.value)}});
   w.querySelector('[data-tra]').onclick=()=>{const f=w.querySelector('[data-trf]'),t=w.querySelector('[data-trt]'),a=parseD(f.value),b=parseD(t.value);if(a==null||b==null||a>b){(a==null?f:t).focus();return}p.hidden=true;onR(Math.max(D0,a),Math.min(DEND,b))}}
 document.addEventListener('click',()=>document.querySelectorAll('.trp:not([hidden])').forEach(p=>p.hidden=true));
 document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.trp:not([hidden])').forEach(p=>p.hidden=true)});
