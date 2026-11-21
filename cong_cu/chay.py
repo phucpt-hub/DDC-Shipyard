@@ -194,21 +194,28 @@ def main():
         try: return any(n.strip().upper() == 'SƠ CHẾ_THÉP TẤM' for n in sheet_names(f))
         except Exception: return False
     cut_moi = [f for f in cut if _la_moi(f)]; cut = [f for f in cut if f not in cut_moi]; nes = files_in('3_NESTING'); cfg = files_in('4_CAU_HINH')
-    if not cut: sys.exit('THIẾU file Cutting trong du_lieu/1_CUTTING')
+    sys.path.insert(0, CC); import luu_so_che
+    f_luu = os.path.join(DL, '1_CUTTING_LUU', 'so_che_cu.pkl.gz'); ban_luu = luu_so_che.doc(f_luu) if not cut else None
+    if not cut and not ban_luu: sys.exit('THIẾU file Cutting trong du_lieu/1_CUTTING')
     if not kho: sys.exit('THIẾU file tồn kho trong du_lieu/2_TON_KHO')
-    f_cut, (d_kho, _, f_khos, ten_kho) = cut[-1], kho[-1]
-    log('File Cutting:', os.path.basename(f_cut)); log('File tồn kho:', ten_kho, '←', ', '.join(os.path.basename(f) for f in f_khos))
+    f_cut, (d_kho, _, f_khos, ten_kho) = (cut[-1] if cut else None), kho[-1]
+    log('File Cutting:', os.path.basename(f_cut) if f_cut else 'BẢN LƯU Sơ chế cũ ' + ban_luu['ngay']); log('File tồn kho:', ten_kho, '←', ', '.join(os.path.basename(f) for f in f_khos))
     # Ngày báo cáo = ngày mới nhất trong tên file Cutting / tồn kho; không có ngày trong tên thì lấy hôm nay (giờ VN)
     now = datetime.datetime.utcnow() + datetime.timedelta(hours=7)
-    d_cut = name_date(f_cut)
+    d_cut = name_date(f_cut) if f_cut else datetime.date.fromisoformat(ban_luu['ngay'])
     ds = [d for d in (d_cut, d_kho) if d and d <= now.date()]
     ngay = max(ds) if ds else now.date()
     os.environ.update(NGAY_CUTTING=str(d_cut or ''), NGAY_KHO=str(d_kho or ''))
     if d_cut and d_kho and d_cut != d_kho: log(f'Lưu ý: file Cutting ngày {d_cut:%d/%m}, file tồn kho ngày {d_kho:%d/%m} – phần kho tính theo ngày {d_kho:%d/%m}')
     log('Ngày báo cáo:', ngay)
-    to_sheets(f_cut, os.path.join(CC, 'sheets.pkl'), SHEETS_CUTTING)
+    if f_cut:
+        to_sheets(f_cut, os.path.join(CC, 'sheets.pkl'), SHEETS_CUTTING)
+        ten_cut = os.path.splitext(os.path.basename(f_cut))[0]
+    else:
+        luu_so_che.dung_ban_luu(f_luu, os.path.join(CC, 'sheets.pkl'), log)
+        ten_cut = 'BẢN LƯU SƠ CHẾ CŨ ' + datetime.date.fromisoformat(ban_luu['ngay']).strftime('%d.%m.%Y')
+    so_che_cu = luu_so_che.chup(os.path.join(CC, 'sheets.pkl'))
     # file Cutting MỚI (từ 01/11/2026): đổi bố cục rồi nối vào dữ liệu file cũ
-    ten_cut = os.path.splitext(os.path.basename(f_cut))[0]
     moi = sorted(files_in('1_CUTTING_MOI') + cut_moi, key=lambda f: (name_date(f) or datetime.date(1900, 1, 1), commit_time(f)))
     if moi:
         log('File Cutting mới:', os.path.basename(moi[-1]))
@@ -218,6 +225,16 @@ def main():
             ten_cut += ' + ' + os.path.splitext(os.path.basename(moi[-1]))[0]
         except Exception as e:
             log('KHÔNG gộp được file Cutting mới:', repr(e))
+    # bản lưu file Sơ chế cũ: giữ LSX bị xóa khỏi file cũ, cập nhật bản lưu (chỉ khi đọc được file cũ thật)
+    try:
+        giu = luu_so_che.gop(os.path.join(CC, 'sheets.pkl'), so_che_cu, f_luu, d_cut, log, ghi=bool(f_cut))
+        try:
+            pn = os.path.join(TMP, 'nguon.json'); ng = json.load(open(pn, encoding='utf-8')) if os.path.exists(pn) else {}
+            ng['1_CUTTING_LUU'] = dict(ngay=(ban_luu or luu_so_che.doc(f_luu) or {}).get('ngay', ''), giu=len(giu), lsx=giu[:60], dung=not f_cut)
+            json.dump(ng, open(pn, 'w', encoding='utf-8'), ensure_ascii=False)
+        except Exception as e: log('Không ghi được thông tin bản lưu:', e)
+    except Exception as e:
+        log('KHÔNG xử lý được bản lưu Sơ chế cũ:', repr(e))
     doc_kho(f_khos, os.path.join(CC, 'kho', 'sheets.pkl'))
     nfiles = []
     NES_OK = []

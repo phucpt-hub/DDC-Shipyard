@@ -118,7 +118,7 @@ NGUON_DA_TAI = {}
 def main():
     hom_nay = (datetime.datetime.utcnow() + datetime.timedelta(hours=7)).strftime('%d.%m.%Y')
     co_link = False
-    loi_cutting = False
+    loi_cutting = False; loi_cu = False
     for bien, thu_muc, ten in NGUON:
         links = [x for x in re.split(r'[\n;]+', os.environ.get(bien, '')) if x.strip()]
         for i, link in enumerate(links):
@@ -139,7 +139,7 @@ def main():
                 if os.path.exists(dich): os.remove(dich)
                 NGUON_DA_TAI[thu_muc] = dict(loi=str(e)[:200], ma=ma_rut_gon(url), loai=loai,
                                              luc=(datetime.datetime.utcnow() + datetime.timedelta(hours=7)).strftime('%d/%m/%Y %H:%M'))
-                if bien == 'NGUON_CUTTING': loi_cutting = True
+                if bien == 'NGUON_CUTTING': loi_cutting = True; loi_cu = True
                 if bien == 'NGUON_CUTTING_MOI':
                     if 'đăng nhập' in str(e):   # file chưa mở chia sẻ: lỗi lâu dài, cần chủ file sửa → vẫn cập nhật phần file cũ
                         log('  → File Cutting mới chưa mở chia sẻ "Bất kỳ ai có đường liên kết đều xem được": lần này chỉ dùng file cũ.')
@@ -154,6 +154,10 @@ def main():
         tay = file_tay_hom_nay('1_CUTTING', 'CUTTING_LINK')
         if tay:
             log(f'Link Cutting lỗi nhưng đã có file tải tay hôm nay: {tay} – dùng file này để cập nhật báo cáo.')
+            return
+        # file Sơ chế cũ hết hạn / mất link / lỗi: dùng bản lưu (du_lieu/1_CUTTING_LUU) thay cho file cũ, phần còn lại vẫn cập nhật
+        if loi_cu and os.path.exists(os.path.join(DL, '1_CUTTING_LUU', 'so_che_cu.pkl.gz')):
+            log('Link Sơ chế cũ lỗi → dùng BẢN LƯU Sơ chế cũ (du_lieu/1_CUTTING_LUU), vẫn cập nhật báo cáo với file Cutting mới / tồn kho / nesting.')
             return
         # Không dựng báo cáo từ file Cutting cũ trong repo (sẽ làm báo cáo lùi ngày, mất chi tiết LSX).
         # Dừng lần chạy này: website giữ nguyên báo cáo gần nhất, lần chạy sau sẽ thử tải lại.
