@@ -63,7 +63,14 @@ jobs:
             echo "Không có thay đổi"
           else
             git commit -m "Cập nhật báo cáo $(date +'%d/%m/%Y %H:%M')"
-            git push
+            # trong lúc chạy (2–5 phút) máy văn phòng có thể vừa đẩy dữ liệu mới lên → lấy về, đặt báo cáo lên trên rồi đẩy lại (thử 5 lần)
+            for i in 1 2 3 4 5; do
+              if git push; then exit 0; fi
+              echo "Đẩy lên bị từ chối (repo vừa có thay đổi mới) – lấy về và thử lại lần $i"
+              git pull --rebase --autostash -X theirs origin main || { git rebase --abort; git pull --no-rebase -X ours --no-edit origin main; }
+              sleep $((i * 5))
+            done
+            echo "Không đẩy được báo cáo sau 5 lần thử"; exit 1
           fi
 
       - name: Yêu cầu GitHub Pages dựng lại trang
